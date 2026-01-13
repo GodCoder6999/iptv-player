@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal IPTV Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
+    <style>
+        :root {
+            --bg-body: #0b0b10;
+            --bg-card: #16161e;
+            --bg-header: #13131a;
+            --accent-yellow: #fce83a;
+            --accent-cyan: #00e5ff;
+            --text-main: #ffffff;
+            --text-muted: #7a7a8c;
+            --border-color: #252530;
+            --tv-bezel: #202025;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* --- LOAD SCREEN --- */
+        #loadScreen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .load-box {
+            background: var(--bg-card); padding: 30px; border-radius: 12px;
+            text-align: center; border: 1px solid var(--border-color); 
+            width: 650px; max-width: 95%; max-height: 90vh; overflow-y: auto;
+        }
+        
+        .input-row {
+            display: flex; gap: 10px; margin-bottom: 10px; align-items: center;
+        }
+        .url-input {
+            flex: 1; background: #000; border: 1px solid #333;
+            color: #fff; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.95rem;
+        }
+        .btn-remove {
+            background: #ff4444; color: #fff; border: none; width: 40px; height: 40px;
+            border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-add {
+            background: #252530; color: #fff; border: 1px dashed #666; width: 100%; padding: 12px;
+            border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-size: 0.9rem;
+        }
+        .btn-add:hover { background: #333; border-color: #888; }
+
+        .btn-start {
+            background: var(--accent-yellow); color: #000; padding: 14px 40px;
+            border: none; font-weight: bold; border-radius: 30px; cursor: pointer;
+            font-size: 1.1rem; width: 100%; box-shadow: 0 4px 15px rgba(252, 232, 58, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-start:active { transform: scale(0.98); }
+        
+        /* --- LIST VIEW --- */
+        #listView {
+            padding: 20px; height: 100%; max-width: 1000px; margin: 0 auto;
+            width: 100%; display: none; flex-direction: column;
+        }
+        .search-input {
+            width: 100%; background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 15px 20px; border-radius: 8px; color: #fff; font-size: 1.1rem; outline: none; margin-bottom: 20px;
+        }
+        .list-content { flex: 1; overflow-y: auto; padding-right: 10px; }
+        .list-content::-webkit-scrollbar { width: 8px; }
+        .list-content::-webkit-scrollbar-track { background: var(--bg-body); }
+        .list-content::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        .channel-row {
+            display: flex; align-items: center; background-color: var(--bg-card);
+            border: 1px solid var(--border-color); margin-bottom: 12px; padding: 15px 20px; border-radius: 8px;
+        }
+        .row-actions { display: flex; align-items: center; gap: 15px; margin-right: 30px; min-width: 140px; }
+        .btn-watch { background-color: var(--accent-yellow); color: #000; border: none; padding: 8px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        
+        .row-logo { width: 50px; height: 50px; background: #000; border-radius: 6px; margin-right: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .row-logo img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .row-info { flex: 1; }
+        .row-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #fff; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Cyan Badge for Source */
+        .badge-source { background: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 229, 255, 0.3); }
+        .badge-group { background: #252530; color: #aaa; }
+
+        /* --- PLAYER VIEW --- */
+        #playerView { display: none; height: 100vh; flex-direction: column; }
+        .player-header {
+            height: 60px; background: var(--bg-header); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0;
+        }
+        .btn-header {
+            background: transparent; border: 1px solid #333; color: #fff;
+            padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .player-body { flex: 1; display: flex; overflow: hidden; position: relative; background: #000; }
+
+        /* --- RETRO TV & CONTROLS --- */
+        .video-wrapper {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            position: relative; perspective: 1000px;
+        }
+
+        .retro-tv-box {
+            background-color: var(--tv-bezel);
+            padding: 30px 35px 50px 35px;
+            border-radius: 30px;
+            box-shadow: inset 0 0 20px #000, 0 20px 50px #000, 0 5px 0 #151515;
+            position: relative; transition: all 0.5s ease;
+            max-width: 90%; width: fit-content;
+        }
+
+        .tv-screen {
+            border-radius: 20px; overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,1);
+            border: 3px solid #000; position: relative;
+            background: #000; width: 800px; max-width: 100%; aspect-ratio: 16/9;
+        }
+
+        .tv-screen::after { /* Scanlines */
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px; pointer-events: none; opacity: 0.3; z-index: 5;
+        }
+
+        /* Live Resolution Badge */
+        .res-badge {
+            position: absolute; top: 15px; left: 15px; z-index: 30;
+            background: rgba(0,0,0,0.6); color: #00ff00; font-family: monospace;
+            padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;
+            border: 1px solid #00ff00; pointer-events: none;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        /* Quality Controls */
+        .player-controls {
+            position: absolute; top: 15px; right: 15px; 
+            z-index: 30; display: flex; gap: 10px;
+        }
+        .quality-select {
+            background: rgba(0,0,0,0.8); color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow); padding: 5px 10px;
+            border-radius: 4px; font-size: 0.8rem; cursor: pointer; outline: none; display: none; 
+        }
+        .fs-btn {
+            background: rgba(0,0,0,0.8); color: #fff; border: 1px solid #444;
+            padding: 5px 10px; border-radius: 4px; cursor: pointer;
+        }
+
+        video { width: 100%; height: 100%; outline: none; display: block; }
+
+        /* Fullscreen Mods */
+        .player-body.is-fullscreen .retro-tv-box { padding: 0; border-radius: 0; box-shadow: none; width: 100%; height: 100%; max-width: none; background: none; }
+        .player-body.is-fullscreen .tv-screen { border-radius: 0; border: none; box-shadow: none; width: 100%; height: 100%; aspect-ratio: auto; }
+        .player-body.is-fullscreen .tv-decor-bottom, .player-body.is-fullscreen .tv-speaker, .player-body.is-fullscreen .tv-screen::after { display: none; }
+
+        .tv-decor-bottom { position: absolute; bottom: 15px; right: 35px; display: flex; gap: 15px; }
+        .tv-knob { width: 25px; height: 25px; background: #151515; border-radius: 50%; box-shadow: inset 0 1px 3px rgba(255,255,255,0.1), 0 2px 2px #000; }
+        .tv-speaker { position: absolute; bottom: 15px; left: 35px; width: 100px; height: 25px; background-image: linear-gradient(to right, #000 50%, transparent 50%); background-size: 4px 100%; opacity: 0.5; }
+        
+        .status-pill {
+            display: inline-block; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem;
+            margin-top: 5px; color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadScreen">
+        <div class="load-box">
+            <h2 style="color: var(--accent-yellow); margin-bottom: 20px;">IPTV Universal Player</h2>
+            <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">
+                Supports standard <b>.m3u/.m3u8</b> links AND non-standard URLs (via auto-proxy).
+            </p>
+            
+            <div id="inputContainer">
+                <div class="input-row">
+                    <input type="text" class="url-input" placeholder="Paste URL (e.g. tvpass.org/playlist/m3u)" value="https://tvpass.org/playlist/m3u">
+                    <button class="btn-remove" onclick="removeRow(this)" style="opacity:0.5; pointer-events:none;"><i class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+
+            <button class="btn-add" onclick="addInputRow()"><i class="fa-solid fa-plus"></i> Add Another Playlist URL</button>
+
+            <button class="btn-start" onclick="loadAllPlaylists()">LOAD CHANNELS</button>
+            
+            <div id="statusLog" style="margin-top:15px; text-align:left; max-height:100px; overflow-y:auto; font-size:0.85rem; color:#888;"></div>
+        </div>
+    </div>
+
+    <div id="listView">
+        <input type="text" id="channelSearch" class="search-input" placeholder="Search channels..." onkeyup="filterChannels()">
+        <div id="listContent" class="list-content"></div>
+    </div>
+
+    <div id="playerView">
+        <div class="player-header">
+            <div class="header-left">
+                <button class="btn-header" style="border-color: var(--accent-yellow); color:var(--accent-yellow)" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i> Back to List
+                </button>
+            </div>
+            <div><button class="btn-header"><i class="fa-solid fa-comments"></i> Chat</button></div>
+        </div>
+
+        <div class="player-body" id="playerBody">
+            <div class="video-wrapper">
+                <div class="retro-tv-box">
+                    <div class="tv-screen">
+                        <div id="resBadge" class="res-badge">Ready</div>
+                        <div class="player-controls">
+                            <select id="qualitySelect" class="quality-select" onchange="changeQuality(this.value)">
+                                <option value="-1">Auto</option>
+                            </select>
+                            <button class="fs-btn" onclick="toggleCustomFullscreen()"><i class="fa-solid fa-expand"></i></button>
+                        </div>
+                        <video id="videoPlayer" controls></video>
+                    </div>
+                    <div class="tv-speaker"></div>
+                    <div class="tv-decor-bottom">
+                        <div class="tv-knob" style="transform: rotate(15deg);"></div>
+                        <div class="tv-knob" style="transform: rotate(-45deg);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allChannels = [];
+        const video = document.getElementById('videoPlayer');
+        const playerBody = document.getElementById('playerBody');
+        const qualitySelect = document.getElementById('qualitySelect');
+        const resBadge = document.getElementById('resBadge');
+        let hls;
+
+        // --- 1. UI INPUT LOGIC ---
+        function addInputRow() {
+            const container = document.getElementById('inputContainer');
+            const div = document.createElement('div');
+            div.className = 'input-row';
+            div.innerHTML = `
+                <input type="text" class="url-input" placeholder="Another Playlist URL...">
+                <button class="btn-remove" onclick="removeRow(this)"><i class="fa-solid fa-times"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeRow(btn) { btn.parentElement.remove(); }
+
+        function logStatus(msg, type='info') {
+            const log = document.getElementById('statusLog');
+            const color = type === 'error' ? '#ff4444' : (type === 'success' ? '#00ff00' : '#888');
+            log.innerHTML += `<div style="color:${color}; margin-bottom:4px;">> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // --- 2. SMART FETCH LOGIC ---
+        async function fetchSmart(url) {
+            // 1. Try Direct
+            try {
+                const response = await fetch(url);
+                if (response.ok) return await response.text();
+                throw new Error("Direct fetch failed");
+            } catch (e) {
+                // 2. Try AllOrigins Proxy
+                try {
+                    logStatus(`Direct failed (${url}), trying Proxy 1...`, 'info');
+                    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) return await response.text();
+                    throw new Error("Proxy 1 failed");
+                } catch (e2) {
+                     // 3. Try Corsproxy.io (backup)
+                    try {
+                        logStatus(`Proxy 1 failed, trying Proxy 2...`, 'info');
+                        const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                        const response = await fetch(proxyUrl2);
+                        if (response.ok) return await response.text();
+                        throw new Error("All proxies failed");
+                    } catch (e3) {
+                        throw e3;
+                    }
+                }
+            }
+        }
+
+        async function loadAllPlaylists() {
+            const inputs = document.querySelectorAll('.url-input');
+            const btn = document.querySelector('.btn-start');
+            document.getElementById('statusLog').innerHTML = ''; // Clear log
+            
+            let urls = [];
+            inputs.forEach(input => { if(input.value.trim()) urls.push(input.value.trim()); });
+
+            if(urls.length === 0) return alert("Please add at least one URL.");
+
+            btn.innerText = `Fetching...`;
+            btn.disabled = true;
+            allChannels = []; 
+
+            for (let i = 0; i < urls.length; i++) {
+                let url = urls[i];
+                let sourceLabel = 'Playlist ' + (i+1);
+                
+                try {
+                    // Try to clean hostname for label
+                    try { sourceLabel = new URL(url).hostname.replace('www.',''); } catch(e){}
+
+                    logStatus(`Fetching: ${sourceLabel}...`);
+                    const content = await fetchSmart(url);
+                    
+                    const newChannels = parseM3U(content, sourceLabel);
+                    if(newChannels.length > 0) {
+                        logStatus(`Success: Loaded ${newChannels.length} channels from ${sourceLabel}`, 'success');
+                        allChannels = allChannels.concat(newChannels);
+                    } else {
+                        logStatus(`Warning: No channels found in ${sourceLabel} (Check format)`, 'error');
+                    }
+                    
+                } catch (e) {
+                    logStatus(`Failed: ${sourceLabel} - ${e.message}`, 'error');
+                }
+            }
+
+            if(allChannels.length > 0) {
+                renderList(allChannels);
+                document.getElementById('loadScreen').style.display = 'none';
+                document.getElementById('listView').style.display = 'flex';
+            } else {
+                btn.innerText = "LOAD CHANNELS";
+                btn.disabled = false;
+                alert("Could not load any channels. Check the logs below the button.");
+            }
+        }
+
+        function parseM3U(content, sourceLabel) {
+            const lines = content.split('\n');
+            const channels = [];
+            let current = {};
+            
+            lines.forEach(line => {
+                line = line.trim();
+                if(line.startsWith('#EXTINF:')) {
+                    const logo = line.match(/tvg-logo="([^"]*)"/);
+                    const group = line.match(/group-title="([^"]*)"/);
+                    // Smart name extraction: take everything after the last comma
+                    const name = line.substring(line.lastIndexOf(',') + 1).trim();
+                    
+                    current.logo = logo ? logo[1] : null;
+                    current.group = group ? group[1] : 'General';
+                    current.name = name || 'Unknown Channel';
+                } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
+                    current.url = line;
+                    current.source = sourceLabel;
+                    if(current.name) { // Only push if we have metadata or at least a URL
+                        channels.push(current);
+                    }
+                    current = {};
+                }
+            });
+            return channels;
+        }
+
+        function renderList(channels) {
+            const container = document.getElementById('listContent');
+            container.innerHTML = '';
+            
+            channels.forEach(ch => {
+                const div = document.createElement('div');
+                div.className = 'channel-row';
+                
+                const logoHtml = ch.logo 
+                    ? `<img src="${ch.logo}" onerror="this.parentElement.innerHTML='TV'">` 
+                    : `<span style="font-weight:bold; color:#555;">${ch.name.substring(0,2)}</span>`;
+
+                div.innerHTML = `
+                    <div class="row-actions">
+                        <button class="btn-watch" onclick="openPlayer('${ch.url}')"><i class="fa-solid fa-play"></i> Watch</button>
+                    </div>
+                    <div class="row-logo">${logoHtml}</div>
+                    <div class="row-info">
+                        <div class="row-title">${ch.name}</div>
+                        <div style="margin-top:5px;">
+                            <span class="badge badge-source"><i class="fa-solid fa-link"></i> ${ch.source}</span>
+                            <span class="badge badge-group">${ch.group}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function filterChannels() {
+            const term = document.getElementById('channelSearch').value.toLowerCase();
+            const filtered = allChannels.filter(ch => 
+                ch.name.toLowerCase().includes(term) || 
+                ch.group.toLowerCase().includes(term) ||
+                ch.source.toLowerCase().includes(term)
+            );
+            renderList(filtered);
+        }
+
+        // --- 3. PLAYER CORE ---
+        function openPlayer(url) {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('playerView').style.display = 'flex';
+            qualitySelect.style.display = 'none'; 
+            resBadge.innerText = "Connecting...";
+
+            if(Hls.isSupported()) {
+                if(hls) hls.destroy();
+                hls = new Hls({maxBufferLength: 60, enableWorker: true});
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                    video.play();
+                    updateQualityOptions(hls.levels);
+                });
+                hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+                    const level = hls.levels[data.level];
+                    if(level) resBadge.innerText = `${level.width}x${level.height} | LIVE`;
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play();
+                resBadge.innerText = "Native Player";
+            }
+        }
+
+        function updateQualityOptions(levels) {
+            qualitySelect.innerHTML = '<option value="-1">Auto</option>';
+            if(levels.length > 1) {
+                qualitySelect.style.display = 'block';
+                levels.forEach((level, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.text = (level.height || 'Level '+index) + 'p';
+                    qualitySelect.appendChild(opt);
+                });
+            }
+        }
+
+        function changeQuality(val) {
+            if(hls) hls.currentLevel = parseInt(val);
+        }
+
+        function toggleCustomFullscreen() {
+            if (!document.fullscreenElement) {
+                playerBody.requestFullscreen();
+                playerBody.classList.add('is-fullscreen');
+            } else {
+                document.exitFullscreen();
+                playerBody.classList.remove('is-fullscreen');
+            }
+        }
+        document.addEventListener('fullscreenchange', () => {
+             if (!document.fullscreenElement) playerBody.classList.remove('is-fullscreen');
+        });
+
+        function goBack() {
+            video.pause();
+            if(hls) hls.destroy();
+            document.getElementById('playerView').style.display = 'none';
+            document.getElementById('listView').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
