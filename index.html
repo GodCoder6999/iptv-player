@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal IPTV Player</title>
+    <title>IPTV Player: Fox Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
     <style>
@@ -13,6 +13,7 @@
             --bg-header: #13131a;
             --accent-yellow: #fce83a;
             --accent-cyan: #00e5ff;
+            --accent-red: #ff4757;
             --text-main: #ffffff;
             --text-muted: #7a7a8c;
             --border-color: #252530;
@@ -42,9 +43,16 @@
             width: 650px; max-width: 95%; max-height: 90vh; overflow-y: auto;
         }
         
-        .input-row {
-            display: flex; gap: 10px; margin-bottom: 10px; align-items: center;
+        .section-divider {
+            width: 100%; height: 1px; background: #333; margin: 25px 0; position: relative;
         }
+        .section-divider span {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--bg-card); padding: 0 10px; color: #666; font-size: 0.8rem;
+        }
+
+        /* Input Styles */
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
         .url-input {
             flex: 1; background: #000; border: 1px solid #333;
             color: #fff; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.95rem;
@@ -57,16 +65,23 @@
             background: #252530; color: #fff; border: 1px dashed #666; width: 100%; padding: 12px;
             border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-size: 0.9rem;
         }
-        .btn-add:hover { background: #333; border-color: #888; }
 
+        /* Buttons */
         .btn-start {
             background: var(--accent-yellow); color: #000; padding: 14px 40px;
             border: none; font-weight: bold; border-radius: 30px; cursor: pointer;
             font-size: 1.1rem; width: 100%; box-shadow: 0 4px 15px rgba(252, 232, 58, 0.3);
             transition: transform 0.2s;
         }
-        .btn-start:active { transform: scale(0.98); }
-        
+        .btn-fox {
+            background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; padding: 14px 40px;
+            border: none; font-weight: bold; border-radius: 30px; cursor: pointer;
+            font-size: 1.1rem; width: 100%; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.2s;
+        }
+        .btn-start:active, .btn-fox:active { transform: scale(0.98); }
+
         /* --- LIST VIEW --- */
         #listView {
             padding: 20px; height: 100%; max-width: 1000px; margin: 0 auto;
@@ -87,15 +102,12 @@
         }
         .row-actions { display: flex; align-items: center; gap: 15px; margin-right: 30px; min-width: 140px; }
         .btn-watch { background-color: var(--accent-yellow); color: #000; border: none; padding: 8px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
-        
         .row-logo { width: 50px; height: 50px; background: #000; border-radius: 6px; margin-right: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .row-logo img { width: 100%; height: 100%; object-fit: cover; }
-        
         .row-info { flex: 1; }
         .row-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #fff; }
         
-        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        /* Cyan Badge for Source */
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; margin-right: 8px; text-transform: uppercase; }
         .badge-source { background: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 229, 255, 0.3); }
         .badge-group { background: #252530; color: #aaa; }
 
@@ -111,12 +123,11 @@
         }
         .player-body { flex: 1; display: flex; overflow: hidden; position: relative; background: #000; }
 
-        /* --- RETRO TV & CONTROLS --- */
+        /* --- RETRO TV FRAME --- */
         .video-wrapper {
             flex: 1; display: flex; align-items: center; justify-content: center;
             position: relative; perspective: 1000px;
         }
-
         .retro-tv-box {
             background-color: var(--tv-bezel);
             padding: 30px 35px 50px 35px;
@@ -125,21 +136,20 @@
             position: relative; transition: all 0.5s ease;
             max-width: 90%; width: fit-content;
         }
-
         .tv-screen {
             border-radius: 20px; overflow: hidden;
             box-shadow: inset 0 0 30px rgba(0,0,0,1);
             border: 3px solid #000; position: relative;
             background: #000; width: 800px; max-width: 100%; aspect-ratio: 16/9;
         }
-
-        .tv-screen::after { /* Scanlines */
+        /* Scanlines Overlay */
+        .tv-screen::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
             background-size: 100% 4px; pointer-events: none; opacity: 0.3; z-index: 5;
         }
 
-        /* Live Resolution Badge */
+        /* --- PLAYER CONTROLS --- */
         .res-badge {
             position: absolute; top: 15px; left: 15px; z-index: 30;
             background: rgba(0,0,0,0.6); color: #00ff00; font-family: monospace;
@@ -147,8 +157,6 @@
             border: 1px solid #00ff00; pointer-events: none;
             text-shadow: 0 0 5px #00ff00;
         }
-
-        /* Quality Controls */
         .player-controls {
             position: absolute; top: 15px; right: 15px; 
             z-index: 30; display: flex; gap: 10px;
@@ -162,8 +170,11 @@
             background: rgba(0,0,0,0.8); color: #fff; border: 1px solid #444;
             padding: 5px 10px; border-radius: 4px; cursor: pointer;
         }
+        .fs-btn:hover { background: #fff; color: #000; }
 
+        /* Video vs Iframe logic */
         video { width: 100%; height: 100%; outline: none; display: block; }
+        iframe { width: 100%; height: 100%; border: 0; display: none; }
 
         /* Fullscreen Mods */
         .player-body.is-fullscreen .retro-tv-box { padding: 0; border-radius: 0; box-shadow: none; width: 100%; height: 100%; max-width: none; background: none; }
@@ -173,21 +184,13 @@
         .tv-decor-bottom { position: absolute; bottom: 15px; right: 35px; display: flex; gap: 15px; }
         .tv-knob { width: 25px; height: 25px; background: #151515; border-radius: 50%; box-shadow: inset 0 1px 3px rgba(255,255,255,0.1), 0 2px 2px #000; }
         .tv-speaker { position: absolute; bottom: 15px; left: 35px; width: 100px; height: 25px; background-image: linear-gradient(to right, #000 50%, transparent 50%); background-size: 4px 100%; opacity: 0.5; }
-        
-        .status-pill {
-            display: inline-block; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem;
-            margin-top: 5px; color: #fff;
-        }
     </style>
 </head>
 <body>
 
     <div id="loadScreen">
         <div class="load-box">
-            <h2 style="color: var(--accent-yellow); margin-bottom: 20px;">IPTV Universal Player</h2>
-            <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">
-                Supports standard <b>.m3u/.m3u8</b> links AND non-standard URLs (via auto-proxy).
-            </p>
+            <h2 style="color: var(--accent-yellow);">IPTV Universal</h2>
             
             <div id="inputContainer">
                 <div class="input-row">
@@ -195,11 +198,16 @@
                     <button class="btn-remove" onclick="removeRow(this)" style="opacity:0.5; pointer-events:none;"><i class="fa-solid fa-times"></i></button>
                 </div>
             </div>
-
-            <button class="btn-add" onclick="addInputRow()"><i class="fa-solid fa-plus"></i> Add Another Playlist URL</button>
-
+            <button class="btn-add" onclick="addInputRow()"><i class="fa-solid fa-plus"></i> Add Playlist URL</button>
             <button class="btn-start" onclick="loadAllPlaylists()">LOAD CHANNELS</button>
             
+            <div class="section-divider"><span>OR</span></div>
+
+            <button class="btn-fox" onclick="loadFoxTV()">
+                <i class="fa-solid fa-tv"></i> WATCH FOX TV LIVE
+            </button>
+            <p style="color:#666; font-size:0.8rem; margin-top:5px;">Direct Stream • No Popups</p>
+
             <div id="statusLog" style="margin-top:15px; text-align:left; max-height:100px; overflow-y:auto; font-size:0.85rem; color:#888;"></div>
         </div>
     </div>
@@ -213,7 +221,7 @@
         <div class="player-header">
             <div class="header-left">
                 <button class="btn-header" style="border-color: var(--accent-yellow); color:var(--accent-yellow)" onclick="goBack()">
-                    <i class="fa-solid fa-arrow-left"></i> Back to List
+                    <i class="fa-solid fa-arrow-left"></i> Exit
                 </button>
             </div>
             <div><button class="btn-header"><i class="fa-solid fa-comments"></i> Chat</button></div>
@@ -224,13 +232,20 @@
                 <div class="retro-tv-box">
                     <div class="tv-screen">
                         <div id="resBadge" class="res-badge">Ready</div>
+                        
                         <div class="player-controls">
                             <select id="qualitySelect" class="quality-select" onchange="changeQuality(this.value)">
                                 <option value="-1">Auto</option>
                             </select>
-                            <button class="fs-btn" onclick="toggleCustomFullscreen()"><i class="fa-solid fa-expand"></i></button>
+                            <button class="fs-btn" onclick="toggleCustomFullscreen()" title="Fullscreen">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
                         </div>
+
                         <video id="videoPlayer" controls></video>
+                        
+                        <iframe id="foxFrame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
+                    
                     </div>
                     <div class="tv-speaker"></div>
                     <div class="tv-decor-bottom">
@@ -245,12 +260,13 @@
     <script>
         let allChannels = [];
         const video = document.getElementById('videoPlayer');
+        const iframe = document.getElementById('foxFrame');
         const playerBody = document.getElementById('playerBody');
         const qualitySelect = document.getElementById('qualitySelect');
         const resBadge = document.getElementById('resBadge');
         let hls;
 
-        // --- 1. UI INPUT LOGIC ---
+        // --- UI INPUT LOGIC ---
         function addInputRow() {
             const container = document.getElementById('inputContainer');
             const div = document.createElement('div');
@@ -261,9 +277,7 @@
             `;
             container.appendChild(div);
         }
-
         function removeRow(btn) { btn.parentElement.remove(); }
-
         function logStatus(msg, type='info') {
             const log = document.getElementById('statusLog');
             const color = type === 'error' ? '#ff4444' : (type === 'success' ? '#00ff00' : '#888');
@@ -271,32 +285,46 @@
             log.scrollTop = log.scrollHeight;
         }
 
-        // --- 2. SMART FETCH LOGIC ---
+        // --- 2. FOX TV SPECIAL LOGIC ---
+        function loadFoxTV() {
+            document.getElementById('loadScreen').style.display = 'none';
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('playerView').style.display = 'flex';
+            
+            // Switch Players
+            video.style.display = 'none';
+            iframe.style.display = 'block';
+            
+            // UI Adjustments for Iframe Mode
+            qualitySelect.style.display = 'none';
+            resBadge.innerText = "FOX TV LIVE";
+            resBadge.style.color = "#ff4757";
+            resBadge.style.borderColor = "#ff4757";
+            
+            // Set Source
+            iframe.src = "https://dlhd.link/stream/stream-54.php";
+            
+            if(hls) { hls.destroy(); hls = null; }
+            video.pause();
+        }
+
+        // --- 3. STANDARD PLAYLIST LOGIC ---
         async function fetchSmart(url) {
-            // 1. Try Direct
             try {
                 const response = await fetch(url);
                 if (response.ok) return await response.text();
-                throw new Error("Direct fetch failed");
+                throw new Error("Direct failed");
             } catch (e) {
-                // 2. Try AllOrigins Proxy
                 try {
-                    logStatus(`Direct failed (${url}), trying Proxy 1...`, 'info');
                     const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
                     const response = await fetch(proxyUrl);
                     if (response.ok) return await response.text();
-                    throw new Error("Proxy 1 failed");
+                    throw new Error("Proxy failed");
                 } catch (e2) {
-                     // 3. Try Corsproxy.io (backup)
-                    try {
-                        logStatus(`Proxy 1 failed, trying Proxy 2...`, 'info');
-                        const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                        const response = await fetch(proxyUrl2);
-                        if (response.ok) return await response.text();
-                        throw new Error("All proxies failed");
-                    } catch (e3) {
-                        throw e3;
-                    }
+                    const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                    const response = await fetch(proxyUrl2);
+                    if (response.ok) return await response.text();
+                    throw new Error("All proxies failed");
                 }
             }
         }
@@ -304,11 +332,10 @@
         async function loadAllPlaylists() {
             const inputs = document.querySelectorAll('.url-input');
             const btn = document.querySelector('.btn-start');
-            document.getElementById('statusLog').innerHTML = ''; // Clear log
+            document.getElementById('statusLog').innerHTML = '';
             
             let urls = [];
             inputs.forEach(input => { if(input.value.trim()) urls.push(input.value.trim()); });
-
             if(urls.length === 0) return alert("Please add at least one URL.");
 
             btn.innerText = `Fetching...`;
@@ -318,24 +345,20 @@
             for (let i = 0; i < urls.length; i++) {
                 let url = urls[i];
                 let sourceLabel = 'Playlist ' + (i+1);
-                
-                try {
-                    // Try to clean hostname for label
-                    try { sourceLabel = new URL(url).hostname.replace('www.',''); } catch(e){}
+                try { try { sourceLabel = new URL(url).hostname.replace('www.',''); } catch(e){} } catch(e){}
 
-                    logStatus(`Fetching: ${sourceLabel}...`);
+                logStatus(`Fetching: ${sourceLabel}...`);
+                try {
                     const content = await fetchSmart(url);
-                    
                     const newChannels = parseM3U(content, sourceLabel);
                     if(newChannels.length > 0) {
-                        logStatus(`Success: Loaded ${newChannels.length} channels from ${sourceLabel}`, 'success');
+                        logStatus(`Success: ${newChannels.length} channels`, 'success');
                         allChannels = allChannels.concat(newChannels);
                     } else {
-                        logStatus(`Warning: No channels found in ${sourceLabel} (Check format)`, 'error');
+                        logStatus(`No channels in ${sourceLabel}`, 'error');
                     }
-                    
                 } catch (e) {
-                    logStatus(`Failed: ${sourceLabel} - ${e.message}`, 'error');
+                    logStatus(`Failed: ${sourceLabel}`, 'error');
                 }
             }
 
@@ -346,7 +369,7 @@
             } else {
                 btn.innerText = "LOAD CHANNELS";
                 btn.disabled = false;
-                alert("Could not load any channels. Check the logs below the button.");
+                alert("Failed to load channels. Check logs.");
             }
         }
 
@@ -354,24 +377,19 @@
             const lines = content.split('\n');
             const channels = [];
             let current = {};
-            
             lines.forEach(line => {
                 line = line.trim();
                 if(line.startsWith('#EXTINF:')) {
                     const logo = line.match(/tvg-logo="([^"]*)"/);
                     const group = line.match(/group-title="([^"]*)"/);
-                    // Smart name extraction: take everything after the last comma
                     const name = line.substring(line.lastIndexOf(',') + 1).trim();
-                    
                     current.logo = logo ? logo[1] : null;
                     current.group = group ? group[1] : 'General';
                     current.name = name || 'Unknown Channel';
                 } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
                     current.url = line;
                     current.source = sourceLabel;
-                    if(current.name) { // Only push if we have metadata or at least a URL
-                        channels.push(current);
-                    }
+                    if(current.name) channels.push(current);
                     current = {};
                 }
             });
@@ -381,26 +399,16 @@
         function renderList(channels) {
             const container = document.getElementById('listContent');
             container.innerHTML = '';
-            
             channels.forEach(ch => {
                 const div = document.createElement('div');
                 div.className = 'channel-row';
-                
-                const logoHtml = ch.logo 
-                    ? `<img src="${ch.logo}" onerror="this.parentElement.innerHTML='TV'">` 
-                    : `<span style="font-weight:bold; color:#555;">${ch.name.substring(0,2)}</span>`;
-
+                const logoHtml = ch.logo ? `<img src="${ch.logo}" onerror="this.parentElement.innerHTML='TV'">` : `<span style="font-weight:bold; color:#555;">${ch.name.substring(0,2)}</span>`;
                 div.innerHTML = `
-                    <div class="row-actions">
-                        <button class="btn-watch" onclick="openPlayer('${ch.url}')"><i class="fa-solid fa-play"></i> Watch</button>
-                    </div>
+                    <div class="row-actions"><button class="btn-watch" onclick="openPlayer('${ch.url}')"><i class="fa-solid fa-play"></i> Watch</button></div>
                     <div class="row-logo">${logoHtml}</div>
                     <div class="row-info">
                         <div class="row-title">${ch.name}</div>
-                        <div style="margin-top:5px;">
-                            <span class="badge badge-source"><i class="fa-solid fa-link"></i> ${ch.source}</span>
-                            <span class="badge badge-group">${ch.group}</span>
-                        </div>
+                        <div style="margin-top:5px;"><span class="badge badge-source">${ch.source}</span><span class="badge badge-group">${ch.group}</span></div>
                     </div>
                 `;
                 container.appendChild(div);
@@ -409,34 +417,34 @@
 
         function filterChannels() {
             const term = document.getElementById('channelSearch').value.toLowerCase();
-            const filtered = allChannels.filter(ch => 
-                ch.name.toLowerCase().includes(term) || 
-                ch.group.toLowerCase().includes(term) ||
-                ch.source.toLowerCase().includes(term)
-            );
+            const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(term) || ch.group.toLowerCase().includes(term));
             renderList(filtered);
         }
 
-        // --- 3. PLAYER CORE ---
+        // --- 4. HLS PLAYER CORE ---
         function openPlayer(url) {
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
+            
+            // Switch to Video Mode
+            video.style.display = 'block';
+            iframe.style.display = 'none';
+            iframe.src = ""; // Stop iframe audio if playing
+
             qualitySelect.style.display = 'none'; 
             resBadge.innerText = "Connecting...";
+            resBadge.style.color = "#00ff00";
+            resBadge.style.borderColor = "#00ff00";
 
             if(Hls.isSupported()) {
                 if(hls) hls.destroy();
                 hls = new Hls({maxBufferLength: 60, enableWorker: true});
                 hls.loadSource(url);
                 hls.attachMedia(video);
-                
-                hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                    video.play();
-                    updateQualityOptions(hls.levels);
-                });
-                hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-                    const level = hls.levels[data.level];
-                    if(level) resBadge.innerText = `${level.width}x${level.height} | LIVE`;
+                hls.on(Hls.Events.MANIFEST_PARSED, (e, data) => { video.play(); updateQualityOptions(hls.levels); });
+                hls.on(Hls.Events.LEVEL_SWITCHED, (e, data) => { 
+                    const lvl = hls.levels[data.level];
+                    if(lvl) resBadge.innerText = `${lvl.width}x${lvl.height} | LIVE`;
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
@@ -449,18 +457,14 @@
             qualitySelect.innerHTML = '<option value="-1">Auto</option>';
             if(levels.length > 1) {
                 qualitySelect.style.display = 'block';
-                levels.forEach((level, index) => {
+                levels.forEach((l, i) => {
                     const opt = document.createElement('option');
-                    opt.value = index;
-                    opt.text = (level.height || 'Level '+index) + 'p';
+                    opt.value = i; opt.text = l.height + 'p';
                     qualitySelect.appendChild(opt);
                 });
             }
         }
-
-        function changeQuality(val) {
-            if(hls) hls.currentLevel = parseInt(val);
-        }
+        function changeQuality(val) { if(hls) hls.currentLevel = parseInt(val); }
 
         function toggleCustomFullscreen() {
             if (!document.fullscreenElement) {
@@ -471,15 +475,22 @@
                 playerBody.classList.remove('is-fullscreen');
             }
         }
-        document.addEventListener('fullscreenchange', () => {
-             if (!document.fullscreenElement) playerBody.classList.remove('is-fullscreen');
-        });
+        document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) playerBody.classList.remove('is-fullscreen'); });
 
         function goBack() {
             video.pause();
+            iframe.src = ""; // Stop Fox TV
             if(hls) hls.destroy();
             document.getElementById('playerView').style.display = 'none';
-            document.getElementById('listView').style.display = 'flex';
+            
+            // Decide where to go back to: Load Screen or List View
+            if(iframe.style.display === 'block') {
+                 // If we were watching Fox, go back to Load Screen
+                 document.getElementById('loadScreen').style.display = 'flex';
+            } else {
+                 // If normal list, go back to list
+                 document.getElementById('listView').style.display = 'flex';
+            }
         }
     </script>
 </body>
