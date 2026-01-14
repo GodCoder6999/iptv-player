@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Master: Portal Edition</title>
+    <title>IPTV Master: Working Retro TV</title>
     
     <link rel="preconnect" href="https://dlhd.link" crossorigin>
-    <link rel="dns-prefetch" href="https://dlhd.link">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,804 +13,421 @@
     
     <style>
         :root {
-            --bg-deep: #050505;
-            --bg-glass: rgba(20, 20, 30, 0.95);
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-card-hover: rgba(255, 255, 255, 0.15);
-            --accent-yellow: #ffd700;
-            --accent-purple: #b983ff;
-            --accent-red: #ff4757;
-            --accent-cyan: #00e5ff;
-            --accent-green: #00b894; 
-            --accent-orange: #ff9f43; /* New for Stalker */
-            --text-main: #ffffff;
-            --text-dim: #aaaaaa;
-            --tv-bezel: #151515;
-            --font-ui: 'Segoe UI', system-ui, sans-serif;
+            --bg-body: #111;
+            --tv-case: #2b2b2b;
+            --tv-panel: #1a1a1a;
+            --led-red: #ff3333;
+            --led-green: #33ff33;
+            --accent-gold: #d4af37;
         }
 
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; padding: 0;
-            font-family: var(--font-ui);
-            background-color: var(--bg-deep);
-            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 80%);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex; flex-direction: column; overflow: hidden;
+            background: radial-gradient(circle, #222 0%, #000 100%);
+            height: 100vh; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Courier New', monospace;
         }
 
-        /* --- LOAD SCREEN --- */
-        #loadScreen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 100;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(5,5,5,0.98);
+        /* --- THE TV UNIT --- */
+        .tv-unit {
+            position: relative;
+            width: 900px; max-width: 95vw;
+            background: var(--tv-case);
+            border-radius: 30px;
             padding: 20px;
-            transition: opacity 0.5s;
+            box-shadow: 
+                inset 0 0 40px #000,
+                0 0 0 10px #1a1a1a,
+                0 20px 50px rgba(0,0,0,0.8);
+            display: flex;
+            gap: 20px;
+            border: 2px solid #333;
+            /* Plastic Texture */
+            background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3h1v1H1V3zm2-2h1v1H3V1z' fill='%23000000' fill-opacity='0.2'/%3E%3C/svg%3E");
         }
 
-        .load-box {
-            background: var(--bg-glass);
-            padding: 40px; border-radius: 24px;
-            width: 100%; max-width: 650px;
-            box-shadow: 0 0 60px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.08);
-            text-align: center;
-            max-height: 90vh; overflow-y: auto;
+        /* --- SCREEN AREA --- */
+        .screen-container {
+            flex: 3;
+            position: relative;
+            background: #000;
+            border-radius: 60% 60% 60% 60% / 10% 10% 10% 10%; /* Curved CRT look */
+            border: 15px solid #111;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.1);
+            overflow: hidden;
+            aspect-ratio: 4/3;
         }
 
-        h2 { font-weight: 300; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 30px; font-size: 1.8rem; }
-        h2 span { font-weight: 800; color: var(--accent-yellow); text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-
-        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .url-input {
-            flex: 1; background: rgba(0,0,0,0.5); border: 2px solid #333;
-            color: #fff; padding: 15px; border-radius: 12px; font-size: 1rem; transition: 0.3s;
-        }
-        .url-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
-
-        /* Login Forms (Xtream & Stalker) */
-        .login-form {
-            display: none; background: rgba(255, 255, 255, 0.03);
-            padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px; animation: slideDown 0.3s ease;
-        }
-        
-        #xtreamForm { border-color: rgba(0, 229, 255, 0.2); background: rgba(0, 229, 255, 0.05); }
-        #stalkerForm { border-color: rgba(255, 159, 67, 0.2); background: rgba(255, 159, 67, 0.05); }
-
-        @keyframes slideDown { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
-
-        .form-input {
-            width: 100%; background: #000; border: 1px solid #444;
-            color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px;
-            font-size: 0.95rem; font-family: monospace;
-        }
-        .form-input:focus { border-color: var(--accent-cyan); }
-        
-        /* Specific styling for Stalker inputs */
-        .stalker-input:focus { border-color: var(--accent-orange); }
-
-        .btn-action {
-            width: 100%; padding: 16px; border-radius: 12px; border: none;
-            font-weight: 700; font-size: 1rem; cursor: pointer;
-            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        
-        .btn-yellow { background: var(--accent-yellow); color: #000; }
-        .btn-purple { background: linear-gradient(135deg, #a55eea, #8854d0); color: #fff; }
-        .btn-red { background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; }
-        .btn-cyan { background: linear-gradient(135deg, #00e5ff, #00a8ff); color: #000; }
-        .btn-green { background: linear-gradient(135deg, #00b894, #00cec9); color: #000; }
-        .btn-orange { background: linear-gradient(135deg, #ff9f43, #ee5253); color: #000; }
-        .btn-dark { background: rgba(255,255,255,0.1); color: #fff; }
-        
-        .section-divider { 
-            display: flex; align-items: center; margin: 30px 0; color: var(--text-dim); font-size: 0.8rem; letter-spacing: 2px;
-        }
-        .section-divider::before, .section-divider::after {
-            content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.1); margin: 0 10px;
-        }
-
-        /* --- LIST VIEW --- */
-        #listView {
-            padding: 30px; height: 100%; width: 100%; max-width: 1400px; margin: 0 auto;
-            display: none; flex-direction: column;
-        }
-
-        .search-container { position: relative; margin-bottom: 25px; }
-        .search-input {
-            width: 100%; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
-            padding: 18px 25px 18px 50px; border-radius: 50px; color: #fff; font-size: 1.1rem;
-            backdrop-filter: blur(5px);
-        }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
-
-        .list-content { 
-            flex: 1; overflow-y: auto; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 15px; padding-bottom: 20px;
-            transform: translateZ(0); 
-        }
-        .list-content::-webkit-scrollbar { width: 6px; }
-        .list-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-
-        .channel-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px; padding: 15px;
-            display: flex; align-items: center; gap: 15px;
-            transition: 0.2s; cursor: pointer;
-            position: relative; overflow: hidden;
-        }
-        .channel-card:hover { background: var(--bg-card-hover); border-color: rgba(255,255,255,0.3); transform: scale(1.02); }
-
-        .card-logo {
-            width: 50px; height: 50px; border-radius: 10px;
-            background: #000; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: #555; overflow: hidden; flex-shrink: 0;
-        }
-        .card-logo img { width: 100%; height: 100%; object-fit: cover; }
-
-        .card-info { flex: 1; min-width: 0; }
-        .card-title { 
-            font-weight: 600; font-size: 1rem; margin-bottom: 4px; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
-        .card-meta { display: flex; gap: 6px; font-size: 0.75rem; }
-        
-        .badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; }
-        .bg-cyan { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); }
-        .bg-purple { background: rgba(185, 131, 255, 0.15); color: var(--accent-purple); }
-        .bg-green { background: rgba(0, 184, 148, 0.15); color: var(--accent-green); }
-        .bg-orange { background: rgba(255, 159, 67, 0.15); color: var(--accent-orange); }
-        .bg-gray { background: rgba(255,255,255,0.1); color: #aaa; }
-
-        /* --- PLAYER VIEW --- */
-        #playerView { display: none; height: 100vh; flex-direction: column; }
-        
-        .player-header {
-            height: 80px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 40px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-            z-index: 10;
-        }
-        .btn-back {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            padding: 10px 25px; border-radius: 30px; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; font-weight: 600;
-            transition: 0.2s; backdrop-filter: blur(5px);
-        }
-        .btn-back:hover { background: rgba(255,255,255,0.25); }
-
-        #channelTitle {
-            font-size: 1.5rem; font-weight: 800; letter-spacing: 1px;
-            color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            display: flex; align-items: center; gap: 10px;
-        }
-        #channelTitle span {
-            font-size: 0.8rem; background: var(--accent-yellow); color: #000;
-            padding: 2px 6px; border-radius: 4px; vertical-align: middle;
-        }
-
-        .player-body { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-
-        .tv-frame {
-            background: var(--tv-bezel);
-            padding: 15px; border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            position: relative; transition: all 0.5s ease;
-            width: 90%; max-width: 1200px;
-            transform: translateZ(0);
-            background-image: radial-gradient(#222 15%, transparent 16%), radial-gradient(#222 15%, transparent 16%);
-            background-size: 4px 4px;
-        }
-        
         .screen-glass {
-            background: #000; border-radius: 8px; overflow: hidden;
-            border: 2px solid #000; position: relative;
-            width: 100%; aspect-ratio: 16/9;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            width: 100%; height: 100%;
+            position: relative;
+            background: #000;
+            z-index: 2;
         }
 
-        /* Scanlines */
+        /* Scanlines & Glare */
         .screen-glass::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px; pointer-events: none; opacity: 0.1; z-index: 5;
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06));
+            z-index: 10;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+        
+        .screen-glass::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 80%);
+            z-index: 11;
+            pointer-events: none;
         }
 
-        video, iframe { width: 100%; height: 100%; border: none; display: block; }
+        /* Video Players */
+        video, iframe { width: 100%; height: 100%; object-fit: fill; display: block; }
+        #foxContainer, #daddyContainer { display: none; width: 100%; height: 100%; }
+
+        /* Power Off Effect */
+        .screen-off-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: #000; z-index: 20;
+            display: none;
+        }
+        .tv-off .screen-off-overlay { display: block; animation: turn-off 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
         
-        #foxContainer, #daddyContainer { 
-            display: none; width: 100%; height: 100%; background: #000; 
+        @keyframes turn-off {
+            0% { transform: scale(1, 1.3) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
+            60% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(10); }
+            100% { transform: scale(0, 0.001) translate3d(0, 0, 0); filter: brightness(50); opacity: 0; }
         }
 
-        .res-badge {
-            position: absolute; top: 15px; left: 15px; z-index: 20;
-            background: rgba(0,0,0,0.7); color: #00ff00; 
-            padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.8rem;
-            pointer-events: none; border: 1px solid rgba(0,255,0,0.3);
+        /* --- CONTROL PANEL (Right Side) --- */
+        .control-panel {
+            flex: 1;
+            background: var(--tv-panel);
+            border-radius: 10px;
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            gap: 25px;
+            box-shadow: inset 0 0 20px #000;
+            max-width: 180px;
         }
-        
-        .screen-controls {
-            position: absolute; top: 15px; right: 15px; z-index: 20; display: flex; gap: 10px;
-        }
-        .ctl-btn {
-            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; width: 36px; height: 36px; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: 0.2s; backdrop-filter: blur(4px);
-        }
-        .ctl-btn:hover { background: #fff; color: #000; transform: scale(1.1); }
-        
-        /* Decorations */
-        .tv-speaker {
-            position: absolute; bottom: 15px; left: 35px; width: 120px; height: 15px;
-            background-image: linear-gradient(to right, #050505 50%, transparent 50%);
-            background-size: 4px 100%; opacity: 0.5;
-        }
-        .tv-knob {
-            width: 20px; height: 20px; background: #111; border-radius: 50%;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 5px #000;
-            position: absolute; bottom: 15px; right: 35px;
-        }
-        
-        .player-body.is-fullscreen .tv-frame {
-            padding: 0; border-radius: 0; background: none; box-shadow: none; width: 100%; height: 100%; max-width: none;
-        }
-        .player-body.is-fullscreen .screen-glass { border-radius: 0; border: none; width: 100%; height: 100%; }
-        .player-body.is-fullscreen .tv-speaker, .player-body.is-fullscreen .tv-knob { display: none; }
 
-        @media (max-width: 768px) {
-            .load-box { padding: 20px; width: 95%; }
-            #listView { padding: 10px; }
-            .list-content { grid-template-columns: 1fr; gap: 10px; }
-            .player-header { padding: 0 15px; height: 60px; }
-            #channelTitle { font-size: 1.1rem; }
-            .tv-frame { padding: 0; width: 100%; border-radius: 0; }
-            .screen-glass { border-radius: 0; }
-            .tv-speaker, .tv-knob { display: none; }
+        /* Channel Display (Digital) */
+        .digital-display {
+            background: #222;
+            color: var(--led-green);
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            padding: 5px 10px;
+            border: 2px inset #444;
+            border-radius: 4px;
+            text-shadow: 0 0 5px var(--led-green);
+            width: 100%; text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Knobs */
+        .knob-group {
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            width: 100%;
+        }
+        .knob-label { color: #888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        .knob-surround {
+            width: 90px; height: 90px;
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .knob {
+            width: 70px; height: 70px;
+            background: radial-gradient(circle, #333 0%, #111 100%);
+            border-radius: 50%;
+            border: 4px solid #000;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.1);
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: grab;
+        }
+        .knob::after { /* The Indicator Line */
+            content: ''; position: absolute; top: 5px; left: 50%;
+            width: 4px; height: 15px; background: #fff;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px #fff;
+        }
+        
+        .knob-btn {
+            position: absolute; width: 30px; height: 30px;
+            background: transparent; border: none; cursor: pointer;
+            color: #555; font-size: 1.2rem;
+        }
+        .knob-btn:hover { color: #fff; }
+        .k-left { left: 0; } .k-right { right: 0; }
+
+        /* Power Button */
+        .power-group { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .power-btn {
+            width: 40px; height: 40px;
+            background: radial-gradient(circle, #ff5555 0%, #990000 100%);
+            border: 3px solid #550000;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255,0,0,0.5);
+            cursor: pointer;
+            position: relative;
+        }
+        .power-btn:active { transform: scale(0.95); box-shadow: inset 0 0 10px #000; }
+        .led-light {
+            width: 8px; height: 8px; background: #300; border-radius: 50%; margin-top: 5px;
+            transition: 0.3s;
+        }
+        .tv-on .led-light { background: #f00; box-shadow: 0 0 10px #f00; }
+
+        /* Playback Buttons */
+        .playback-controls {
+            display: flex; gap: 10px; width: 100%; justify-content: center;
+        }
+        .rect-btn {
+            width: 40px; height: 25px;
+            background: #333; border: 1px solid #000;
+            border-radius: 2px; color: #aaa; font-size: 0.7rem;
+            cursor: pointer; box-shadow: 0 3px 0 #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .rect-btn:active { transform: translateY(3px); box-shadow: none; }
+
+        /* Speaker Grille */
+        .speaker-grille {
+            width: 100%; height: 60px;
+            background-image: linear-gradient(90deg, #111 50%, #222 50%);
+            background-size: 6px 100%;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px #000;
+            margin-top: 15px;
+        }
+
+        /* Overlay UI */
+        .ui-overlay {
+            position: absolute; top: 20px; left: 20px; color: #0f0;
+            font-family: monospace; font-size: 1.2rem;
+            text-shadow: 0 0 5px #0f0; display: none; z-index: 15;
+        }
+
+        /* Menu Button */
+        .menu-btn-float {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.7); color: #fff;
+            border: 1px solid #fff; padding: 10px 20px;
+            border-radius: 30px; cursor: pointer; z-index: 100;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .tv-unit { flex-direction: column; width: 95%; padding: 10px; }
+            .control-panel { 
+                flex-direction: row; width: 100%; max-width: none; 
+                height: auto; padding: 10px; justify-content: space-around;
+            }
+            .knob-group { width: auto; }
+            .knob-surround { width: 60px; height: 60px; }
+            .knob { width: 50px; height: 50px; }
+            .speaker-grille { display: none; }
         }
     </style>
 </head>
-<body>
+<body class="tv-on"> <button class="menu-btn-float" onclick="window.location.reload()">
+        <i class="fa-solid fa-list"></i> Channels
+    </button>
 
-    <div id="loadScreen">
-        <div class="load-box">
-            <h2>IPTV <span>MASTER</span></h2>
-            
-            <div id="inputContainer">
-                <div class="input-row">
-                    <input type="text" class="url-input" value="https://iptv-org.github.io/iptv/index.m3u" placeholder="Playlist URL...">
-                    <button class="btn-action btn-red" onclick="removeRow(this)" style="width:50px; margin:0;"><i class="fa-solid fa-times"></i></button>
-                </div>
-            </div>
-            
-            <button class="btn-action btn-dark" onclick="addInputRow()">
-                <i class="fa-solid fa-plus"></i> Add M3U URL
-            </button>
-
-            <button class="btn-action btn-cyan" onclick="toggleForm('xtreamForm')">
-                <i class="fa-solid fa-server"></i> Connect via Xtream Codes
-            </button>
-
-            <div id="xtreamForm" class="login-form">
-                <input type="text" id="xcUrl" class="form-input" placeholder="URL (e.g. http://server.com:8080)">
-                <input type="text" id="xcUser" class="form-input" placeholder="Username">
-                <input type="text" id="xcPass" class="form-input" placeholder="Password">
-                <button class="btn-action btn-yellow" onclick="connectXtream()">LOGIN & LOAD</button>
-            </div>
-
-            <button class="btn-action btn-orange" onclick="toggleForm('stalkerForm')">
-                <i class="fa-solid fa-microchip"></i> Connect Stalker / MAG
-            </button>
-
-            <div id="stalkerForm" class="login-form">
-                <div style="text-align: left; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent-orange);">
-                    <i class="fa-solid fa-info-circle"></i> Simulates MAG device connection
-                </div>
-                <input type="text" id="stPortal" class="form-input stalker-input" placeholder="Portal Address (e.g. http://mag.portal.com/c/)">
-                <input type="text" id="stMac" class="form-input stalker-input" placeholder="MAC Address (00:1A:79:...)" onkeyup="formatMac(this)" maxlength="17">
-                <input type="text" id="stSn" class="form-input stalker-input" placeholder="SN (Serial Number)">
-                <input type="text" id="stDevId" class="form-input stalker-input" placeholder="Device ID 1&2">
+    <div class="tv-unit">
+        <div class="screen-container">
+            <div class="screen-glass">
+                <video id="videoPlayer" playsinline></video>
+                <div id="foxContainer"></div>
+                <div id="daddyContainer"></div>
                 
-                <button class="btn-action btn-orange" onclick="connectStalker()">
-                    <i class="fa-solid fa-plug"></i> CONNECT PORTAL
-                </button>
-            </div>
-
-            <input type="file" id="fileInput" accept=".m3u,.m3u8" style="display:none;" onchange="handleFileUpload(this)">
-            <button class="btn-action btn-green" onclick="document.getElementById('fileInput').click()">
-                <i class="fa-solid fa-file-arrow-up"></i> Upload .M3U File
-            </button>
-
-            <button class="btn-action btn-yellow" onclick="loadAllPlaylists()">
-                LOAD URL PLAYLISTS
-            </button>
-
-            <div class="section-divider">PREMIUM LIBRARIES</div>
-
-            <button class="btn-action btn-purple" onclick="loadDaddyLive()">
-                <i class="fa-solid fa-satellite-dish"></i> DADDY LIVE (ULTIMATE)
-            </button>
-
-            <button class="btn-action btn-red" onclick="loadFoxTV()">
-                <i class="fa-solid fa-tv"></i> FOX TV LIVE
-            </button>
-
-            <div id="statusLog" style="margin-top:20px; text-align:left; color:var(--text-dim); font-size:0.8rem; font-family:monospace;"></div>
-        </div>
-    </div>
-
-    <div id="listView">
-        <div class="search-container">
-            <i class="fa-solid fa-search search-icon"></i>
-            <input type="text" id="channelSearch" class="search-input" placeholder="Find a channel..." oninput="handleSearch()">
-        </div>
-        <div id="listContent" class="list-content"></div>
-    </div>
-
-    <div id="playerView">
-        <div class="player-header">
-            <button class="btn-back" onclick="goBack()">
-                <i class="fa-solid fa-arrow-left"></i> Back
-            </button>
-            
-            <div id="channelTitle">
-                CHANNEL NAME <span>LIVE</span>
-            </div>
-        </div>
-
-        <div class="player-body" id="playerBody">
-            <div class="tv-frame">
-                <div class="screen-glass">
-                    <div id="resBadge" class="res-badge">Ready</div>
-                    <div class="screen-controls">
-                        <button class="ctl-btn" onclick="reloadStream()" title="Reload"><i class="fa-solid fa-rotate-right"></i></button>
-                        <button class="ctl-btn" onclick="toggleCustomFullscreen()" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
-                    </div>
-
-                    <video id="videoPlayer" controls></video>
-                    <div id="foxContainer"></div>
-                    <div id="daddyContainer"></div>
-                </div>
+                <div id="osd" class="ui-overlay">VOLUME: 100%</div>
                 
-                <div class="tv-speaker"></div>
-                <div class="tv-knob"></div>
+                <div class="screen-off-overlay"></div>
             </div>
+        </div>
+
+        <div class="control-panel">
+            
+            <div class="digital-display" id="channelDisplay">CH-01</div>
+
+            <div class="knob-group">
+                <div class="knob-label">VOLUME</div>
+                <div class="knob-surround">
+                    <button class="knob-btn k-left" onclick="adjustVolume(-0.1)"><i class="fa-solid fa-minus"></i></button>
+                    <div class="knob" id="volKnob"></div>
+                    <button class="knob-btn k-right" onclick="adjustVolume(0.1)"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="knob-group">
+                <div class="knob-label">QUALITY</div>
+                <div class="knob-surround">
+                    <button class="knob-btn k-left" onclick="cycleQuality(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="knob" id="qualKnob" style="transform: rotate(45deg);"></div>
+                    <button class="knob-btn k-right" onclick="cycleQuality(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="playback-controls">
+                <button class="rect-btn" onclick="togglePlay()"><i class="fa-solid fa-play"></i>/ <i class="fa-solid fa-pause"></i></button>
+                <button class="rect-btn" onclick="toggleMute()"><i class="fa-solid fa-volume-xmark"></i></button>
+            </div>
+
+            <div class="speaker-grille"></div>
+
+            <div class="power-group">
+                <button class="power-btn" onclick="togglePower()"></button>
+                <div class="led-light"></div>
+                <div class="knob-label" style="margin-top:5px;">POWER</div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // --- CORE VARIABLES ---
-        let allChannels = [];
+        /* --- LOGIC ENGINE --- */
         const video = document.getElementById('videoPlayer');
-        const foxContainer = document.getElementById('foxContainer');
+        const volKnob = document.getElementById('volKnob');
+        const qualKnob = document.getElementById('qualKnob');
+        const osd = document.getElementById('osd');
+        const channelDisplay = document.getElementById('channelDisplay');
         const daddyContainer = document.getElementById('daddyContainer');
-        const playerBody = document.getElementById('playerBody');
-        const resBadge = document.getElementById('resBadge');
-        let hls;
-        let searchTimer;
-        const RENDER_LIMIT = 100;
-
-        // --- DADDYLIVE DATA (Truncated for space, assume full list exists) ---
-        const dlChannels = [
-            { id: 51, name: "ABC USA" },{ id: 206, name: "AHC USA" },{ id: 283, name: "Antenna TV" },{ id: 302, name: "A&E USA" },{ id: 303, name: "AMC USA" },{ id: 304, name: "Animal Planet" },{ id: 123, name: "Astro SuperSport 1" },{ id: 44, name: "ESPN USA" },{ id: 45, name: "ESPN2 USA" },{ id: 31, name: "TNT Sports 1" }
-        ];
-
-        // --- UI UTILS ---
-        function toggleForm(id) {
-            // Close others first
-            ['xtreamForm', 'stalkerForm'].forEach(fid => {
-                if(fid !== id) document.getElementById(fid).style.display = 'none';
-            });
-            
-            const form = document.getElementById(id);
-            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
-        }
-
-        // MAC Formatting Helper
-        function formatMac(input) {
-            let r = input.value.replace(/[^0-9a-fA-F]/g,"");
-            if(r.length > 2) {
-                let groups = [];
-                for(let i=0; i<r.length; i+=2) groups.push(r.substr(i,2));
-                input.value = groups.join(":").toUpperCase();
-            } else {
-                input.value = r.toUpperCase();
-            }
-        }
-
-        // --- XTREAM LOGIC ---
-        async function connectXtream() {
-            const url = document.getElementById('xcUrl').value.trim();
-            const user = document.getElementById('xcUser').value.trim();
-            const pass = document.getElementById('xcPass').value.trim();
-
-            if(!url || !user || !pass) return alert("Please fill in all Xtream fields.");
-
-            const btn = document.querySelector('#xtreamForm .btn-action');
-            btn.innerText = "CONNECTING...";
-            
-            const apiUrl = `${url}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
-            
-            logStatus("Contacting Xtream Server...", 'info');
-
-            try {
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
-                const response = await fetch(proxyUrl);
-                
-                if(!response.ok) throw new Error("Server connection failed");
-                
-                const data = await response.json();
-                
-                if(data.length === 0) throw new Error("No channels found or invalid credentials");
-
-                allChannels = data.map(channel => ({
-                    name: channel.name,
-                    group: "XTREAM LIVE",
-                    source: "XC",
-                    logo: channel.stream_icon,
-                    url: `${url}/live/${user}/${pass}/${channel.stream_id}.m3u8`
-                }));
-
-                logStatus(`Xtream Connected! Loaded ${allChannels.length} channels`, 'success');
-                switchToListView();
-
-            } catch (e) {
-                console.error(e);
-                logStatus(`Xtream Error: ${e.message}`, 'error');
-                alert("Connection failed. Check URL/Credentials or CORS restriction.");
-            } finally {
-                btn.innerText = "LOGIN & LOAD";
-            }
-        }
-
-        // --- STALKER PORTAL LOGIC (New) ---
-        async function connectStalker() {
-            const portal = document.getElementById('stPortal').value.trim();
-            const mac = document.getElementById('stMac').value.trim();
-            
-            if(!portal || !mac) return alert("Portal Address and MAC are required.");
-            if(mac.length < 17) return alert("Invalid MAC address format.");
-
-            logStatus("Initializing Stalker handshake...", 'info');
-            
-            // Note: Real Stalker portals require server-side proxy to spoof headers.
-            // We will attempt to fetch assuming the user might be using a proxy URL or 
-            // if the portal allows direct access.
-            
-            setTimeout(() => {
-                // If the user pasted an M3U link in the Portal box by mistake, we try to load it
-                if(portal.includes('.m3u')) {
-                    logStatus("Detected M3U in portal field, redirecting...", 'info');
-                    fetchSmart(portal).then(content => {
-                        const newChannels = parseM3U(content, "STALKER");
-                        if(newChannels.length > 0) {
-                            allChannels = newChannels;
-                            switchToListView();
-                        } else {
-                            alert("Could not load playlist from Portal URL.");
-                        }
-                    });
-                    return;
-                }
-
-                // If it's a real portal, we can't connect client-side easily
-                logStatus("Error: Browser cannot spoof MAC headers for native Stalker.", 'error');
-                alert("Stalker connection requires a backend proxy to handle MAC spoofing. \n\nIf you have a direct playlist URL, use the M3U input above.");
-            }, 1000);
-        }
-
-        function switchToListView() {
-            if(allChannels.length > 0) {
-                renderList(allChannels);
-                document.getElementById('loadScreen').style.display = 'none';
-                document.getElementById('listView').style.display = 'flex';
-            }
-        }
-
-        // --- FILE UPLOAD LOGIC ---
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            logStatus(`Reading file: ${file.name}...`, 'info');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const content = e.target.result;
-                const newChannels = parseM3U(content, "LOCAL FILE");
-                
-                if (newChannels.length > 0) {
-                    allChannels = newChannels;
-                    logStatus(`Loaded ${allChannels.length} channels from file`, 'success');
-                    switchToListView();
-                } else {
-                    logStatus("No channels found in file", 'error');
-                    alert("Invalid M3U file");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // --- DADDYLIVE LOGIC ---
-        function loadDaddyLive() {
-            allChannels = dlChannels.map((item) => ({
-                name: item.name,
-                group: "DADDYLIVE",
-                source: "DLHD",
-                url: `https://dlhd.link/stream/stream-${item.id}.php`,
-                isIframe: true,
-                isDaddy: true
-            }));
-            switchToListView();
-        }
-
-        // --- FOX TV LOGIC ---
-        function loadFoxTV() {
-            document.getElementById('loadScreen').style.display = 'none';
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('playerView').style.display = 'flex';
-            playIframe("https://dlhd.link/stream/stream-54.php", "FOX LIVE", "fox");
-        }
-
-        // --- UI UTILS ---
-        function addInputRow() {
-            const container = document.getElementById('inputContainer');
-            const div = document.createElement('div');
-            div.className = 'input-row';
-            div.innerHTML = `
-                <input type="text" class="url-input" placeholder="Another Playlist URL...">
-                <button class="btn-action btn-red" onclick="removeRow(this)" style="width:50px; margin:0;"><i class="fa-solid fa-times"></i></button>
-            `;
-            container.appendChild(div);
-        }
-        function removeRow(btn) { btn.parentElement.remove(); }
+        const foxContainer = document.getElementById('foxContainer');
         
-        function logStatus(msg, type='info') {
-            const log = document.getElementById('statusLog');
-            const color = type === 'error' ? 'var(--accent-red)' : (type === 'success' ? 'var(--accent-cyan)' : 'var(--text-dim)');
-            log.innerHTML += `<div style="color:${color}; margin-bottom:4px;">> ${msg}</div>`;
-            log.scrollTop = log.scrollHeight;
-        }
-
-        // --- PLAYLIST FETCH LOGIC ---
-        async function fetchSmart(url) {
-            try {
-                const response = await fetch(url);
-                if (response.ok) return await response.text();
-                throw new Error("Direct failed");
-            } catch (e) {
-                try {
-                    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-                    const response = await fetch(proxyUrl);
-                    if (response.ok) return await response.text();
-                    throw new Error("Proxy failed");
-                } catch (e2) {
-                    const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                    const response = await fetch(proxyUrl2);
-                    if (response.ok) return await response.text();
-                    throw new Error("All proxies failed");
-                }
-            }
-        }
-
-        async function loadAllPlaylists() {
-            const inputs = document.querySelectorAll('.url-input');
-            document.getElementById('statusLog').innerHTML = '';
-            let urls = [];
-            inputs.forEach(input => { if(input.value.trim()) urls.push(input.value.trim()); });
-            if(urls.length === 0) return alert("Please enter a URL.");
-
-            allChannels = []; 
-            logStatus("Connecting...", 'info');
-
-            for (let i = 0; i < urls.length; i++) {
-                let url = urls[i];
-                let sourceLabel = 'Source ' + (i+1);
-                try {
-                    const content = await fetchSmart(url);
-                    const newChannels = parseM3U(content, sourceLabel);
-                    if(newChannels.length > 0) {
-                        logStatus(`Loaded ${newChannels.length} channels`, 'success');
-                        allChannels = allChannels.concat(newChannels);
-                    } else {
-                        logStatus(`Empty playlist: ${sourceLabel}`, 'error');
-                    }
-                } catch (e) {
-                    logStatus(`Failed to load: ${sourceLabel}`, 'error');
-                }
-            }
-
-            if(allChannels.length > 0) {
-                switchToListView();
+        let isTvOn = true;
+        let volLevel = 1;
+        let volRotation = 0;
+        let qualRotation = 45;
+        let hls;
+        
+        // --- 1. POWER CONTROL ---
+        function togglePower() {
+            const body = document.body;
+            isTvOn = !isTvOn;
+            
+            if (isTvOn) {
+                body.classList.add('tv-on');
+                body.classList.remove('tv-off');
+                if(video.src || hls) video.play();
+                showOSD("POWER ON");
             } else {
-                alert("No channels found. Check logs.");
+                body.classList.remove('tv-on');
+                body.classList.add('tv-off');
+                video.pause();
+                // Hide iframes
+                daddyContainer.style.display = 'none';
+                foxContainer.style.display = 'none';
             }
         }
 
-        function parseM3U(content, sourceLabel) {
-            const lines = content.split('\n');
-            const channels = [];
-            let current = {};
-            lines.forEach(line => {
-                line = line.trim();
-                if(line.startsWith('#EXTINF:')) {
-                    const logo = line.match(/tvg-logo="([^"]*)"/);
-                    const group = line.match(/group-title="([^"]*)"/);
-                    const name = line.substring(line.lastIndexOf(',') + 1).trim();
-                    current.logo = logo ? logo[1] : null;
-                    current.group = group ? group[1] : 'General';
-                    current.name = name || 'Unknown Channel';
-                } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
-                    current.url = line;
-                    current.source = sourceLabel;
-                    current.isIframe = false;
-                    if(current.name) channels.push(current);
-                    current = {};
-                }
-            });
-            return channels;
-        }
-
-        // --- RENDER LOGIC ---
-        function renderList(channels) {
-            const container = document.getElementById('listContent');
-            container.innerHTML = ''; 
-            const subset = channels.slice(0, RENDER_LIMIT);
-            const fragment = document.createDocumentFragment();
-
-            subset.forEach(ch => {
-                const card = document.createElement('div');
-                card.className = 'channel-card';
-                card.onclick = () => decidePlayer(ch.url, ch.isIframe, ch.isDaddy, ch.name);
-                
-                let badgeClass = 'bg-cyan';
-                if(ch.group === 'DADDYLIVE') badgeClass = 'bg-purple';
-                if(ch.group === 'XTREAM LIVE') badgeClass = 'bg-green';
-                if(ch.source === 'STALKER') badgeClass = 'bg-orange';
-                
-                const logoHtml = ch.logo 
-                    ? `<img src="${ch.logo}" onerror="this.style.display='none'">` 
-                    : `${ch.name.substring(0,2)}`;
-
-                card.innerHTML = `
-                    <div class="card-logo">${logoHtml}</div>
-                    <div class="card-info">
-                        <div class="card-title">${ch.name}</div>
-                        <div class="card-meta">
-                            <span class="badge ${badgeClass}">${ch.source}</span>
-                            <span class="badge bg-gray">${ch.group}</span>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-play play-icon"></i>
-                `;
-                fragment.appendChild(card);
-            });
-            container.appendChild(fragment);
-
-            if(channels.length > RENDER_LIMIT) {
-                const info = document.createElement('div');
-                info.style.textAlign = 'center';
-                info.style.color = 'var(--text-dim)';
-                info.style.padding = '20px';
-                info.innerText = `Showing top ${RENDER_LIMIT} of ${channels.length} channels...`;
-                container.appendChild(info);
-            }
-        }
-
-        function handleSearch() {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => {
-                const term = document.getElementById('channelSearch').value.toLowerCase();
-                const filtered = allChannels.filter(ch => 
-                    ch.name.toLowerCase().includes(term) || 
-                    ch.group.toLowerCase().includes(term)
-                );
-                renderList(filtered);
-            }, 300);
-        }
-
-        function decidePlayer(url, isIframe, isDaddy, name) {
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('playerView').style.display = 'flex';
+        // --- 2. VOLUME CONTROL (Knob Logic) ---
+        function adjustVolume(change) {
+            if (!isTvOn) return;
             
-            const titleHtml = name ? `${name} <span>LIVE</span>` : `LIVE STREAM <span>ON AIR</span>`;
-            document.getElementById('channelTitle').innerHTML = titleHtml;
+            volLevel += change;
+            if (volLevel > 1) volLevel = 1;
+            if (volLevel < 0) volLevel = 0;
+            
+            video.volume = volLevel;
+            
+            // Rotate Knob visually
+            volRotation += (change * 100); 
+            volKnob.style.transform = `rotate(${volRotation}deg)`;
+            
+            showOSD(`VOLUME: ${Math.round(volLevel * 100)}%`);
+        }
 
-            if(isIframe) {
-                playIframe(url, isDaddy ? "DADDY LIVE" : "LIVE STREAM", isDaddy ? "daddy" : "iframe");
+        function toggleMute() {
+            video.muted = !video.muted;
+            showOSD(video.muted ? "MUTED" : "UNMUTED");
+        }
+
+        // --- 3. QUALITY CONTROL (HLS Levels) ---
+        function cycleQuality(direction) {
+            if (!isTvOn || !hls) {
+                showOSD("NO SIGNAL");
+                return;
+            }
+
+            // Visual Rotation
+            qualRotation += (direction * 45);
+            qualKnob.style.transform = `rotate(${qualRotation}deg)`;
+
+            const levels = hls.levels;
+            let current = hls.currentLevel; // -1 is auto
+            
+            if (current === -1 && direction > 0) current = 0;
+            else if (current === -1 && direction < 0) current = levels.length - 1;
+            else current += direction;
+
+            if (current >= levels.length) current = -1; // Loop back to Auto
+            if (current < -1) current = levels.length - 1;
+
+            hls.currentLevel = current;
+            
+            let label = (current === -1) ? "AUTO" : `${levels[current].height}p`;
+            showOSD(`QUALITY: ${label}`);
+            channelDisplay.innerText = label;
+        }
+
+        // --- 4. PLAYBACK CONTROL ---
+        function togglePlay() {
+            if (!isTvOn) return;
+            if (video.paused) {
+                video.play();
+                showOSD("PLAY");
             } else {
-                playHLS(url);
+                video.pause();
+                showOSD("PAUSE");
             }
         }
 
-        function playIframe(url, label, type) {
-            video.style.display = 'none';
-            video.pause();
-            foxContainer.style.display = 'none';
-            daddyContainer.style.display = 'none';
-            
-            let target = (type === 'fox') ? foxContainer : daddyContainer;
-            target.style.display = 'block';
-            target.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" loading="eager" referrerpolicy="no-referrer"></iframe>`;
-            
-            resBadge.innerText = label;
-            resBadge.style.color = "var(--accent-red)";
-            resBadge.style.borderColor = "var(--accent-red)";
+        // --- UTILS ---
+        let osdTimer;
+        function showOSD(text) {
+            osd.innerText = text;
+            osd.style.display = 'block';
+            clearTimeout(osdTimer);
+            osdTimer = setTimeout(() => {
+                osd.style.display = 'none';
+            }, 2000);
         }
 
-        function playHLS(url) {
-            foxContainer.innerHTML = '';
-            daddyContainer.innerHTML = '';
-            foxContainer.style.display = 'none';
-            daddyContainer.style.display = 'none';
-            
-            video.style.display = 'block';
-            resBadge.innerText = "HLS STREAM";
-            resBadge.style.color = "var(--accent-yellow)";
-            resBadge.style.borderColor = "var(--accent-yellow)";
+        // --- INIT DUMMY STREAM (To show it working) ---
+        // You would normally call loadStream(url) from your list page
+        window.onload = function() {
+            // Load a default test channel to demonstrate controls
+            loadHLS("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"); 
+            channelDisplay.innerText = "CH-01";
+        };
 
-            if(Hls.isSupported()) {
-                if(hls) hls.destroy();
-                hls = new Hls({maxBufferLength: 30});
+        function loadHLS(url) {
+            if (Hls.isSupported()) {
+                if (hls) hls.destroy();
+                hls = new Hls();
                 hls.loadSource(url);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play();
+                });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
                 video.play();
-            }
-        }
-
-        function toggleCustomFullscreen() {
-            if (!document.fullscreenElement) {
-                playerBody.requestFullscreen();
-                playerBody.classList.add('is-fullscreen');
-            } else {
-                document.exitFullscreen();
-                playerBody.classList.remove('is-fullscreen');
-            }
-        }
-
-        function reloadStream() {
-            const isIframe = (foxContainer.style.display === 'block' || daddyContainer.style.display === 'block');
-            if(isIframe) {
-               const target = (daddyContainer.style.display === 'block') ? daddyContainer : foxContainer;
-               const currentIframe = target.querySelector('iframe');
-               if(currentIframe) {
-                   const src = currentIframe.src;
-                   target.innerHTML = '';
-                   setTimeout(() => {
-                       target.innerHTML = `<iframe src="${src}" allowfullscreen allow="encrypted-media" loading="eager" referrerpolicy="no-referrer"></iframe>`;
-                   }, 100);
-               }
-            } else {
-                if(hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
-            }
-        }
-
-        document.addEventListener('fullscreenchange', () => { 
-            if (!document.fullscreenElement) playerBody.classList.remove('is-fullscreen'); 
-        });
-
-        function goBack() {
-            video.pause();
-            foxContainer.innerHTML = '';
-            daddyContainer.innerHTML = '';
-            if(hls) hls.destroy();
-            document.getElementById('playerView').style.display = 'none';
-            
-            if (foxContainer.style.display === 'block') {
-                 document.getElementById('loadScreen').style.display = 'flex';
-            } else {
-                document.getElementById('listView').style.display = 'flex';
             }
         }
     </script>
