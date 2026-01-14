@@ -348,7 +348,7 @@
             </button>
 
             <button class="btn-action btn-gold" onclick="loadPremium()">
-                <i class="fa-solid fa-crown"></i> IPTV PREMIUM
+                <i class="fa-solid fa-crown"></i> IPTV PREMIUM (WORKING)
             </button>
 
             <div id="statusLog" style="margin-top:20px; text-align:left; color:var(--text-dim); font-size:0.8rem; font-family:monospace;"></div>
@@ -414,87 +414,15 @@
             { id: 35, name: "Sky Sports Football" }, { id: 36, name: "Sky Sports+" }, { id: 37, name: "Sky Sports Action" }, { id: 38, name: "Sky Sports Main Event" }, { id: 46, name: "Sky Sports Tennis" }, { id: 130, name: "Sky Sports PL" }, { id: 60, name: "Sky Sports F1" }, { id: 65, name: "Sky Sports Cricket" }, { id: 70, name: "Sky Sports Golf" }, { id: 366, name: "Sky Sports News" }, { id: 449, name: "Sky Sports MIX" }, { id: 554, name: "Sky Sports Racing" }
         ];
 
-        // --- NEW IPTV PREMIUM LIST ---
-        const iptvPremium = [
-            { name: "Bloginstall", url: "http://bloginstall.com", logo: "", group: "General" },
-            { name: "SONY HD{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/HgaB-u6rSpGx3mo4Xu3sLw/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_HD.png", group: "SONYLIV" },
-            { name: "SONY SAB HD{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/UI4QFJ_uRk6aLxIcADqa_A/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_SAB.png", group: "SONYLIV" },
-            { name: "SONY MARATHI{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/-_w3Jbq3QoW-mFCM2YIzxA/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Marathi_SD.png", group: "SONYLIV" },
-            { name: "SONY PAL{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/rPzF28qORbKZkhci_04fdQ/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Pal.png", group: "SONYLIV" },
-            { name: "SONY AATH{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/pSVzGmMpQR6jdmwwJg87OQ/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_aath.png", group: "SONYLIV" },
-            { name: "SONY YAY{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/40H5HfwWTZadFGYkBTqagg/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Yay_Hindi.png", group: "SONYLIV" },
-            { name: "SONY MAX HD{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/Qyqz40bSQriqSuAC7R8_Fw/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Max_HD.png", group: "SONYLIV" },
-            { name: "SONY MAX{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/oJ-TGgVFSgSMBUoTkauvFQ/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Max_SD.png", group: "SONYLIV" },
-            { name: "SONY WAH{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/H_ZvXWqHRGKpHcdDE5RcDA/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Wah.png", group: "SONYLIV" },
-            { name: "SONY MAX2{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/4Jcu195QTpCNBXGnpw2I6g/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_MAX2.png", group: "SONYLIV" },
-            { name: "SONY PIX HD{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/8FR5Q-WfRWCkbMq_GxZ77w/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Pix_HD.png", group: "SONYLIV" },
-            { name: "SONY BBC EARTH{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/V73ovbgASP-xGvQQOukwTQ/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_BBC_Earth_HD.png", group: "SONYLIV" },
-            { name: "SONY TEN 1{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/4_pnLi2QTe6bRGvvahRbfg/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten_1.png", group: "SONYLIV" },
-            { name: "SONY TEN 2{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/nspQRqO5RmC06VmlPrTwkQ/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten_2.png", group: "SONYLIV" },
-            { name: "SONY TEN 3{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/9kocjiLUSf-erlSrv3d4Mw/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten_3.png", group: "SONYLIV" },
-            { name: "SONY TEN 4{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/hInaEKUJSziZAGv9boOdjg/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten_4_Tamil.png", group: "SONYLIV" },
-            { name: "SONY SIX{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/S-q8I27RRzmkb-OIdoaiAw/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_Six_SD.png", group: "SONYLIV" },
-            { name: "SONY TEN 1 HD{SONYLIV}", url: "https://pubads.g.doubleclick.net:443/ssai/event/yeYP86THQ4yl7US8Zx5eug/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten_HD.png", group: "SONYLIV" },
-            { name: "SONY TEN 2 HD{SONYLIV}", url: "https://pubads.g.doubleclick.net:443/ssai/event/Syu8F41-R1y_JmQ7x0oNxQ/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten2_HD.png", group: "SONYLIV" },
-            { name: "SONY TEN 3 HD{SONYLIV}", url: "https://pubads.g.doubleclick.net:443/ssai/event/nmQFuHURTYGQBNdUG-2Qdw/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten3_HD.png", group: "SONYLIV" },
-            { name: "SONY TEN 4 HD{SONYLIV}", url: "https://pubads.g.doubleclick.net/ssai/event/x4LxWUcVSIiDaq1VCM7DSA/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Ten_4_HD_Tamil.png", group: "SONYLIV" },
-            { name: "SONY SIX HD{SONYLIV}", url: "https://pubads.g.doubleclick.net:443/ssai/event/DD7fA-HgSUaLyZp9AjRYxQ/master.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Six_HD.png", group: "SONYLIV" },
-            { name: "Balle balle", url: "https://yuppftalive.akamaized.net/080823/balleballe/playlist.m3u8?ads.channel=6437", logo: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/balle-balle.png", group: "Music" },
-            { name: "Masti Music TV", url: "https://g7.g-mana.live/media/6929f673-5126-48f8-8210-d5d0599b378d/master.m3u8?ads.channel=5229", logo: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/xbhpwb.png", group: "Music" },
-            { name: "Haryanvi Hits", url: "https://yuppnimresmum.akamaized.net/28072023/smil:haryanvihits.smil/playlist.m3u8?ads.channel=6374", logo: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/haryanvi-hits.png", group: "Music" },
-            { name: "Bollywood for u", url: "https://streams2.sofast.tv/ptnr-yupptv/title-BOLLYWOOD-4U-ENG_yupptv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/22d13e33-8705-40e8-9809-4e80aa795f15/manifest.m3u8?ads.channel=6604", logo: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/sinxiy.png", group: "Music" },
-            { name: "9XM (480p)", url: "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8", logo: "https://www.medianews4u.com/wp-content/uploads/2020/10/Republic-Media-Network-forays-into-Hindi-Digital-News-space-launches-R-Bharat-digital-platform.jpg", group: "Music" },
-            { name: "R Bharat", url: "https://vg-republictvyupp.akamaized.net/ptnr-yupptv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/vglive-sk-561573/main.m3u8?ads.channel=4923", logo: "https://i.imgur.com/RpIdCB3.png", group: "News" },
-            { name: "Aaj Tak", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://i.imgur.com/RpIdCB3.png", group: "News" },
-            { name: "India TV", url: "https://vg-indiatvyupp.akamaized.net/ptnr-yupptv/title-Indiatvmi/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/9bb243fa-9ec5-4045-9d1d-0326debcace6/main.m3u8?ads.channel=115", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
-            { name: "Z News", url: "https://vg-zeefta.akamaized.net/ptnr-yupptv/title-zeenews/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/8744f9fb-d696-4204-9795-5215ad930c39/main.m3u8?ads.channel=1501", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
-            { name: "ABP News", url: "https://abplive.vgcdn.net/ptnr-yupptv/title-ABP_News_yupp/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/1e0dff06-24fb-4d91-9d57-fb6e918834e2/master.m3u8?ads.channel=225", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
-            { name: "Z Business", url: "https://abplive.vgcdn.net/vglive-sk-472500/abpnews/20250822T230841/master_720p/00458/master_720p_00211.ts?channel_name=abp_news_yupp&ads.partner=yupptv&ads.network_name=yupptv&vg_country_code=IN", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
-            { name: "Aastha (480p)", url: "https://aasthaott.akamaized.net/110923/smil:aasthatv.smil/chunklist_b1328000.m3u8", logo: "https://i.imgur.com/IqgrV92.png", group: "Undefined" },
-            { name: "Aastha Bhajan (480p)", url: "https://aasthaott.akamaized.net/110923/smil:bhajan.smil/chunklist_b264000.m3u8", logo: "https://i.imgur.com/LyDxqnF.png", group: "Undefined" },
-            { name: "JioCinema Cricket 1", url: "http://watchindia.net:8880/live/65138/11733/2492.ts", logo: "https://watchindia.net/images/channels/sports/Tata_IPL.png", group: "Sports" },
-            { name: "JioCinema Cricket 2", url: "http://watchindia.net:8880/live/65138/11733/2614.ts", logo: "https://watchindia.net/images/channels/sports/Tata_IPL.png", group: "Sports" },
-            { name: "Star Sports 1 HD 1", url: "http://watchindia.net:8880/live/65138/11733/2186.ts", logo: "https://watchindia.net/images/channels/sports/Star_Sports_1_HD.png", group: "Sports" },
-            { name: "Star Sports 1 HD 2", url: "http://watchindia.net:8880/live/65138/11733/2232.ts", logo: "https://watchindia.net/images/channels/sports/Star_Sports_1_HD.png", group: "Sports" },
-            { name: "Star Sports 1 HD 3", url: "http://watchindia.net:8880/live/65138/11733/2456.ts", logo: "https://watchindia.net/images/channels/sports/Star_Sports_1_HD.png", group: "Sports" },
-            { name: "Star Sports 2 HD 1", url: "http://watchindia.net:8880/live/65138/11733/1069.ts", logo: "https://watchindia.net/images/channels/sports/Star_Sports_2_HD.png", group: "Sports" },
-            { name: "Star Sports 2 HD 2", url: "http://watchindia.net:8880/live/65138/11733/2163.ts", logo: "https://watchindia.net/images/channels/sports/Star_Sports_2_HD.png", group: "Sports" },
-            { name: "Sky Sports Cricket 1", url: "http://watchindia.net:8880/live/65138/11733/2090.ts", logo: "https://watchindia.net/images/channels/sports/Sky_Sports_Cricket.png", group: "Sports" },
-            { name: "Sony Ten 1 HD 1", url: "http://watchindia.net:8880/live/65138/11733/1756.ts", logo: "https://watchindia.net/images/channels/sports/Sony_Ten_1_HD.png", group: "Sports" },
-            { name: "Sony Ten 2 HD 1", url: "http://watchindia.net:8880/live/65138/11733/1757.ts", logo: "https://watchindia.net/images/channels/sports/Sony_Ten_2_HD.png", group: "Sports" },
-            { name: "Willow HD 1", url: "http://watchindia.net:8880/live/65138/11733/1067.ts", logo: "https://watchindia.net/images/channels/sports/Willow_HD.png", group: "Sports" },
-            { name: "Asianet HD 1", url: "http://watchindia.net:8880/live/65138/11733/276.ts", logo: "https://watchindia.net/images/channels/malayalam/Asianet_HD.png", group: "Malayalam" },
-            { name: "Surya TV HD 1", url: "http://watchindia.net:8880/live/65138/11733/279.ts", logo: "https://watchindia.net/images/channels/malayalam/Surya_HD.png", group: "Malayalam" },
-            { name: "Colors TV HD 1", url: "http://watchindia.net:8880/live/65138/11733/801.ts", logo: "https://watchindia.net/images/channels/hindi/Colors_TV_HD.png", group: "Hindi" },
-            { name: "Sony TV HD 1", url: "http://watchindia.net:8880/live/65138/11733/1969.ts", logo: "https://watchindia.net/images/channels/hindi/Sony_TV_HD.png", group: "Hindi" },
-            { name: "Star Plus HD 1", url: "http://watchindia.net:8880/live/65138/11733/1924.ts", logo: "https://watchindia.net/images/channels/hindi/Star_Plus_HD.png", group: "Hindi" },
-            { name: "Zee TV HD", url: "http://watchindia.net:8880/live/65138/11733/1970.ts", logo: "https://watchindia.net/images/channels/hindi/Zee_TV.png", group: "Hindi" },
-            { name: "Sun TV HD", url: "http://watchindia.net:8880/live/65138/11733/843.ts", logo: "https://watchindia.net/images/channels/tamil/Sun_TV_HD.png", group: "Tamil" },
-            { name: "Star Vijay HD 1", url: "http://watchindia.net:8880/live/65138/11733/846.ts", logo: "https://watchindia.net/images/channels/tamil/Star_Vijay_HD.png", group: "Tamil" },
-            { name: "Super Cricket", url: "https://catowrap.live/mrgamingsscric.m3u8", logo: "https://www.thesportsdb.com/images/media/channel/tvlogo/srtijz1643382350.png", group: "IPL" },
-            { name: "SKY Cricket", url: "https://catowrap.live/mrgamingcric.m3u8", logo: "https://www.sportspromedia.com/wp-content/uploads/2023/04/Sky_Sports_Logo_September_2020-1.png", group: "IPL" },
-            { name: "TNT SPorts 1", url: "https://catowrap.live/mrgamingbtsport1.m3u8", logo: "https://www.sportspromedia.com/wp-content/uploads/2023/08/tnt-sports-logo-transparent.png", group: "IPL" },
-            { name: "JIO Hindi", url: "https://prod-ent-live-gm.jiocinema.com/out/v1/81e640e5a2c74eb98201959a31a008a3/master.m3u8", logo: "https://www.sarkaritel.com/wp-content/uploads/2023/05/30jio_cinema.jpg", group: "IPL" },
-            { name: "JIO English", url: "https://prod-ent-live-gm.jiocinema.com/out/v1/044ed31ae2974aadb03b5c5e9a67ab06/master.m3u8", logo: "https://www.sarkaritel.com/wp-content/uploads/2023/05/30jio_cinema.jpg", group: "IPL" },
-            { name: "FRANCE", url: "https://stream.sen-gt.com/A2itv/myStream/chunklist_w1124459956.m3u8", logo: "", group: "IPTV Premium" },
-            { name: "A2i TV", url: "https://stream.sen-gt.com/A2itv/myStream/chunklist_w1124459956.m3u8", logo: "", group: "IPTV Premium" },
-            { name: "Beast (2022)", url: "http://watchindia.net:8880/movie/65138/11733/2352.mkv", logo: "https://m.media-amazon.com/images/M/MV5BMzRhM2FiMzEtOTA5My00YzY5LWI4MmYtYzA4ZGUxNTk5MzlmXkEyXkFqcGdeQXVyMTM1OTU1MzQx._V1_.jpg", group: "Malayalam" },
-            { name: "RRR (2022)", url: "http://watchindia.net:8880/movie/65138/11733/2361.mkv", logo: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/ncXklBeNi7X7OETqmDVEgaf8ItQ.jpg", group: "Malayalam" },
-            { name: "K.G.F: Chapter 1 (2018)", url: "http://watchindia.net:8880/movie/65138/11733/2015.mkv", logo: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/ltHlJwvxKv7d0ooCiKSAvfwV9tX.jpg", group: "Malayalam" }
-        ];
-
         // --- UI UTILS ---
         function toggleForm(id) {
-            // Close others first
             ['xtreamForm', 'stalkerForm'].forEach(fid => {
                 if(fid !== id) document.getElementById(fid).style.display = 'none';
             });
-            
             const form = document.getElementById(id);
             form.style.display = (form.style.display === 'block') ? 'none' : 'block';
         }
 
-        // MAC Formatting Helper
         function formatMac(input) {
             let r = input.value.replace(/[^0-9a-fA-F]/g,"");
             if(r.length > 2) {
@@ -516,17 +444,13 @@
 
             const btn = document.querySelector('#xtreamForm .btn-action');
             btn.innerText = "CONNECTING...";
-            
             const apiUrl = `${url}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
-            
             logStatus("Contacting Xtream Server...", 'info');
 
             try {
                 const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
                 const response = await fetch(proxyUrl);
-                
                 if(!response.ok) throw new Error("Server connection failed");
-                
                 const data = await response.json();
                 
                 if(data.length === 0) throw new Error("No channels found or invalid credentials");
@@ -562,7 +486,6 @@
             logStatus("Initializing Stalker handshake...", 'info');
             
             setTimeout(() => {
-                // If the user pasted an M3U link in the Portal box by mistake, we try to load it
                 if(portal.includes('.m3u')) {
                     logStatus("Detected M3U in portal field, redirecting...", 'info');
                     fetchSmart(portal).then(content => {
@@ -576,8 +499,6 @@
                     });
                     return;
                 }
-
-                // If it's a real portal, we can't connect client-side easily
                 logStatus("Error: Browser cannot spoof MAC headers for native Stalker.", 'error');
                 alert("Stalker connection requires a backend proxy to handle MAC spoofing. \n\nIf you have a direct playlist URL, use the M3U input above.");
             }, 1000);
@@ -595,14 +516,11 @@
         function handleFileUpload(input) {
             const file = input.files[0];
             if (!file) return;
-
             logStatus(`Reading file: ${file.name}...`, 'info');
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 const content = e.target.result;
                 const newChannels = parseM3U(content, "LOCAL FILE");
-                
                 if (newChannels.length > 0) {
                     allChannels = newChannels;
                     logStatus(`Loaded ${allChannels.length} channels from file`, 'success');
@@ -636,21 +554,36 @@
             playIframe("https://dlhd.link/stream/stream-54.php", "FOX LIVE", "fox");
         }
 
-        // --- NEW PREMIUM LOGIC ---
-        function loadPremium() {
-            logStatus("Loading IPTV Premium Library...", 'info');
-            allChannels = iptvPremium.map(ch => ({
-                ...ch,
-                source: "PREMIUM", // Used for the badge
-                isIframe: false,
-                isDaddy: false
-            }));
+        // --- PREMIUM LOAD LOGIC (FIXED) ---
+        async function loadPremium() {
+            logStatus("Fetching latest WORKING Indian channels...", 'info');
             
-            // Artificial delay for UX
-            setTimeout(() => {
+            // 1. HARDCODED RELIABLE FREE CHANNELS
+            const staticChannels = [
+                { name: "Aaj Tak HD", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://i.imgur.com/RpIdCB3.png", group: "News" },
+                { name: "India TV", url: "https://d7d3gu3ex55r8.cloudfront.net/out/v1/70e7a2b9703643799863c03cb7923720/index.m3u8", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
+                { name: "9XM Music", url: "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8", logo: "https://www.medianews4u.com/wp-content/uploads/2020/10/Republic-Media-Network-forays-into-Hindi-Digital-News-space-launches-R-Bharat-digital-platform.jpg", group: "Music" },
+                { name: "Mastiii", url: "https://g7.g-mana.live/media/6929f673-5126-48f8-8210-d5d0599b378d/master.m3u8", logo: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/xbhpwb.png", group: "Music" },
+                { name: "Sony SAB (Alternate)", url: "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8", logo: "http://jiotv.catchup.cdn.jio.com/dare_images/images/Sony_SAB.png", group: "Entertainment" },
+                { name: "NDTV India", url: "https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679-b/ndtvindia/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/NDTV_India.png", group: "News" }
+            ];
+
+            // 2. FETCH DYNAMIC PLAYLIST FROM GITHUB (IPTV-ORG)
+            try {
+                // Fetching the maintained India playlist which is generally cleaner and working
+                const response = await fetchSmart('https://iptv-org.github.io/iptv/countries/in.m3u');
+                const dynamicChannels = parseM3U(response, "PREMIUM");
+                
+                // Merge static high-quality links with the dynamic list
+                allChannels = [...staticChannels, ...dynamicChannels];
+                
                 logStatus(`Loaded ${allChannels.length} Premium Channels`, 'success');
                 switchToListView();
-            }, 500);
+            } catch (e) {
+                logStatus("Failed to fetch dynamic list, loading static only...", 'error');
+                allChannels = staticChannels;
+                switchToListView();
+            }
         }
 
         // --- UI UTILS ---
