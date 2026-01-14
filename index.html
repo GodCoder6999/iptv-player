@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Ultimate: Unlocked Edition</title>
+    <title>IPTV Player: Real Names Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
     <style>
@@ -213,7 +213,7 @@
             <div class="section-divider"><span>SPECIAL LIBRARIES</span></div>
 
             <button class="btn-daddy" onclick="loadDaddyLive()">
-                <i class="fa-solid fa-satellite-dish"></i> DADDYLIVE LIBRARY (NAMES + UNLOCKED)
+                <i class="fa-solid fa-satellite-dish"></i> DADDYLIVE LIBRARY (REAL NAMES)
             </button>
 
             <button class="btn-fox" onclick="loadFoxTV()">
@@ -277,49 +277,63 @@
         let searchTimer; 
         const RENDER_LIMIT = 100; 
 
-        // --- 1. DADDYLIVE MAPPING ENGINE ---
-        // Mapping common IDs to Real Names based on known lists
-        const dlMap = {
-            19: "CBS (WBZ)", 20: "CBS Sports Network", 51: "ABC USA", 
-            344: "VH1", 371: "MTV", 12: "ESPN 1", 13: "ESPN 2", 
-            14: "ESPN News", 315: "Sky Sports Main Event", 316: "Sky Sports Premier League",
-            317: "Sky Sports Football", 318: "Sky Sports Cricket", 319: "Sky Sports Golf",
-            320: "Sky Sports F1", 40: "Cartoon Network", 41: "Disney Channel",
-            42: "Nickelodeon", 300: "BBC One", 301: "BBC Two", 
-            302: "ITV 1", 303: "Channel 4", 50: "Fox News",
-            54: "Fox TV (Main)", 55: "Fox Sports 1", 56: "Fox Sports 2",
-            280: "HBO East", 281: "HBO 2", 282: "HBO Signature",
-            600: "BeIN Sports 1", 601: "BeIN Sports 2", 700: "UFC Fight Pass"
-        };
+        // --- 1. DADDYLIVE LOGIC (REAL NAMES) ---
+        async function loadDaddyLive() {
+            const btn = document.querySelector('.btn-daddy');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> FETCHING LIST...`;
+            btn.disabled = true;
 
-        function loadDaddyLive() {
-            allChannels = [];
-            // Generate 750 Channels with Name Mapping
-            for(let i=1; i<=750; i++) {
-                let niceName = `DaddyLive Stream ${i}`;
-                let group = "DLHD";
+            try {
+                // Fetching from a reliable community source for accurate naming
+                // Using dtankdempse's list via raw GitHub
+                const url = "https://raw.githubusercontent.com/dtankdempse/daddylive-m3u/main/daddylive.m3u";
+                const content = await fetchSmart(url);
                 
-                // If ID exists in our map, use the real name
-                if(dlMap[i]) {
-                    niceName = dlMap[i];
-                    group = "DLHD ★"; // Highlight known channels
-                }
+                // Parse specifically for DaddyLive ID extraction
+                const lines = content.split('\n');
+                allChannels = [];
+                let current = {};
 
-                allChannels.push({
-                    name: niceName,
-                    group: group,
-                    source: "DADDYLIVE",
-                    url: `https://dlhd.link/stream/stream-${i}.php`,
-                    isIframe: true // This triggers the unlocked player
+                lines.forEach(line => {
+                    line = line.trim();
+                    if(line.startsWith('#EXTINF:')) {
+                        const logo = line.match(/tvg-logo="([^"]*)"/);
+                        const group = line.match(/group-title="([^"]*)"/);
+                        const name = line.substring(line.lastIndexOf(',') + 1).trim();
+                        current.logo = logo ? logo[1] : null;
+                        current.group = group ? group[1] : 'DADDYLIVE';
+                        current.name = name;
+                    } else if(line.startsWith('http')) {
+                        // Extract the ID from the URL (usually ends in stream-123.php or similar)
+                        // The GitHub list might have full URLs, we need to extract just the number
+                        // to ensure it works with our unlocked iframe player.
+                        const match = line.match(/stream-(\d+)/); 
+                        if (match && match[1]) {
+                             const id = match[1];
+                             current.url = `https://dlhd.link/stream/stream-${id}.php`;
+                             current.isIframe = true;
+                             current.source = "DADDYLIVE";
+                             allChannels.push(current);
+                        }
+                        current = {};
+                    }
                 });
+
+                logStatus(`Loaded ${allChannels.length} DaddyLive channels with names!`, 'success');
+                renderList(allChannels);
+                document.getElementById('loadScreen').style.display = 'none';
+                document.getElementById('listView').style.display = 'flex';
+
+            } catch (e) {
+                alert("Failed to fetch DaddyLive list. " + e.message);
+                logStatus("DaddyLive Fetch Error: " + e.message, 'error');
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> DADDYLIVE LIBRARY (REAL NAMES)`;
+                btn.disabled = false;
             }
-            
-            renderList(allChannels);
-            document.getElementById('loadScreen').style.display = 'none';
-            document.getElementById('listView').style.display = 'flex';
         }
 
-        // --- 2. FOX TV DIRECT ---
+        // --- 2. FOX TV LOGIC ---
         function loadFoxTV() {
             document.getElementById('loadScreen').style.display = 'none';
             document.getElementById('listView').style.display = 'none';
@@ -327,7 +341,7 @@
             playIframe("https://dlhd.link/stream/stream-54.php", "FOX LIVE");
         }
 
-        // --- 3. UI LOGIC ---
+        // --- 3. STANDARD UI LOGIC ---
         function addInputRow() {
             const container = document.getElementById('inputContainer');
             const div = document.createElement('div');
@@ -346,7 +360,7 @@
             log.scrollTop = log.scrollHeight;
         }
 
-        // --- 4. DATA LOGIC ---
+        // --- 4. PLAYLIST FETCH LOGIC ---
         async function fetchSmart(url) {
             try {
                 const response = await fetch(url);
@@ -427,7 +441,7 @@
                 } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
                     current.url = line;
                     current.source = sourceLabel;
-                    current.isIframe = false; 
+                    current.isIframe = false;
                     if(current.name) channels.push(current);
                     current = {};
                 }
@@ -449,13 +463,13 @@
                 const logoHtml = ch.logo ? `<img src="${ch.logo}" onerror="this.parentElement.innerHTML='TV'">` : `<span style="font-weight:bold; color:#555;">${ch.name.substring(0,2)}</span>`;
                 
                 let badgeClass = 'badge-source';
-                if(ch.group.includes('DLHD')) badgeClass = 'badge-dl';
+                if(ch.source === 'DADDYLIVE') badgeClass = 'badge-dl';
                 
                 let btnClass = 'btn-watch';
-                if(ch.group.includes('DLHD')) btnClass += ' dl-btn';
+                if(ch.source === 'DADDYLIVE') btnClass += ' dl-btn';
 
                 div.innerHTML = `
-                    <div class="row-actions"><button class="${btnClass}" onclick="decidePlayer('${ch.url}', ${ch.isIframe})"><i class="fa-solid fa-play"></i> Watch</button></div>
+                    <div class="row-actions"><button class="${btnClass}" onclick="decidePlayer('${ch.url}', ${ch.isIframe}, '${ch.name}')"><i class="fa-solid fa-play"></i> Watch</button></div>
                     <div class="row-logo">${logoHtml}</div>
                     <div class="row-info">
                         <div class="row-title">${ch.name}</div>
@@ -490,19 +504,12 @@
         }
 
         // --- 6. PLAYER CONTROLLER ---
-        function decidePlayer(url, isIframe) {
+        function decidePlayer(url, isIframe, name) {
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
 
             if(isIframe) {
-                // Determine name for badge
-                let name = "LIVE STREAM";
-                // Try to find if this URL matches a known map channel
-                const idMatch = url.match(/stream-(\d+)\.php/);
-                if(idMatch && dlMap[idMatch[1]]) {
-                    name = dlMap[idMatch[1]];
-                }
-                playIframe(url, name);
+                playIframe(url, name || "LIVE STREAM");
             } else {
                 playHLS(url);
             }
@@ -518,7 +525,7 @@
             resBadge.style.color = "#ff4757";
             resBadge.style.borderColor = "#ff4757";
 
-            // NO SANDBOX (CRITICAL FIX FOR DADDYLIVE)
+            // NO SANDBOX - Ensures playback
             iframeContainer.innerHTML = `
                 <iframe 
                     src="${url}" 
@@ -588,7 +595,6 @@
             if(hls) hls.destroy();
             document.getElementById('playerView').style.display = 'none';
             
-            // Return logic
             if(iframeContainer.style.display === 'block' && resBadge.innerText === 'FOX LIVE') {
                  document.getElementById('loadScreen').style.display = 'flex';
             } else {
