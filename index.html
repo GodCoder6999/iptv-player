@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Master: Xtream Edition</title>
+    <title>IPTV Master: Upload Edition</title>
     
     <link rel="preconnect" href="https://dlhd.link" crossorigin>
     <link rel="dns-prefetch" href="https://dlhd.link">
@@ -22,6 +22,7 @@
             --accent-purple: #b983ff;
             --accent-red: #ff4757;
             --accent-cyan: #00e5ff;
+            --accent-green: #00b894; /* New for Upload */
             --text-main: #ffffff;
             --text-dim: #aaaaaa;
             --tv-bezel: #151515;
@@ -97,6 +98,7 @@
         .btn-purple { background: linear-gradient(135deg, #a55eea, #8854d0); color: #fff; }
         .btn-red { background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; }
         .btn-cyan { background: linear-gradient(135deg, #00e5ff, #00a8ff); color: #000; }
+        .btn-green { background: linear-gradient(135deg, #00b894, #00cec9); color: #000; }
         .btn-dark { background: rgba(255,255,255,0.1); color: #fff; }
         
         .section-divider { 
@@ -157,6 +159,7 @@
         .badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; }
         .bg-cyan { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); }
         .bg-purple { background: rgba(185, 131, 255, 0.15); color: var(--accent-purple); }
+        .bg-green { background: rgba(0, 184, 148, 0.15); color: var(--accent-green); }
         .bg-gray { background: rgba(255,255,255,0.1); color: #aaa; }
 
         /* --- PLAYER VIEW --- */
@@ -297,8 +300,13 @@
                 <button class="btn-action btn-yellow" onclick="connectXtream()">LOGIN & LOAD</button>
             </div>
 
+            <input type="file" id="fileInput" accept=".m3u,.m3u8" style="display:none;" onchange="handleFileUpload(this)">
+            <button class="btn-action btn-green" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-solid fa-file-arrow-up"></i> Upload .M3U File
+            </button>
+
             <button class="btn-action btn-yellow" onclick="loadAllPlaylists()">
-                LOAD M3U PLAYLISTS
+                LOAD URL PLAYLISTS
             </button>
 
             <div class="section-divider">PREMIUM LIBRARIES</div>
@@ -364,6 +372,7 @@
         const resBadge = document.getElementById('resBadge');
         let hls;
         let searchTimer;
+        let currentUrl = "";
         const RENDER_LIMIT = 100;
 
         // --- DADDYLIVE DATA ---
@@ -387,13 +396,11 @@
             const btn = document.querySelector('#xtreamForm .btn-action');
             btn.innerText = "CONNECTING...";
             
-            // Construct API URL
             const apiUrl = `${url}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
             
             logStatus("Contacting Xtream Server...", 'info');
 
             try {
-                // Use Proxy to bypass CORS
                 const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
                 const response = await fetch(proxyUrl);
                 
@@ -403,7 +410,6 @@
                 
                 if(data.length === 0) throw new Error("No channels found or invalid credentials");
 
-                // Map Xtream Data to Player Format
                 allChannels = data.map(channel => ({
                     name: channel.name,
                     group: "XTREAM LIVE",
@@ -425,6 +431,32 @@
             } finally {
                 btn.innerText = "LOGIN & LOAD";
             }
+        }
+
+        // --- FILE UPLOAD LOGIC ---
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            logStatus(`Reading file: ${file.name}...`, 'info');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const newChannels = parseM3U(content, "LOCAL FILE");
+                
+                if (newChannels.length > 0) {
+                    allChannels = newChannels;
+                    logStatus(`Loaded ${allChannels.length} channels from file`, 'success');
+                    renderList(allChannels);
+                    document.getElementById('loadScreen').style.display = 'none';
+                    document.getElementById('listView').style.display = 'flex';
+                } else {
+                    logStatus("No channels found in file", 'error');
+                    alert("Invalid M3U file");
+                }
+            };
+            reader.readAsText(file);
         }
 
         // --- DADDYLIVE LOGIC ---
@@ -494,19 +526,16 @@
         async function loadAllPlaylists() {
             const inputs = document.querySelectorAll('.url-input');
             document.getElementById('statusLog').innerHTML = '';
-            
             let urls = [];
             inputs.forEach(input => { if(input.value.trim()) urls.push(input.value.trim()); });
-            
             if(urls.length === 0) return alert("Please enter a URL.");
 
             allChannels = []; 
-            logStatus("Connecting to satellites...", 'info');
+            logStatus("Connecting...", 'info');
 
             for (let i = 0; i < urls.length; i++) {
                 let url = urls[i];
                 let sourceLabel = 'Source ' + (i+1);
-                
                 try {
                     const content = await fetchSmart(url);
                     const newChannels = parseM3U(content, sourceLabel);
@@ -568,7 +597,7 @@
                 
                 let badgeClass = 'bg-cyan';
                 if(ch.group === 'DADDYLIVE') badgeClass = 'bg-purple';
-                if(ch.group === 'XTREAM LIVE') badgeClass = 'bg-yellow'; // New Badge Color
+                if(ch.group === 'XTREAM LIVE') badgeClass = 'bg-green';
                 
                 const logoHtml = ch.logo 
                     ? `<img src="${ch.logo}" onerror="this.style.display='none'">` 
@@ -611,7 +640,6 @@
             }, 300);
         }
 
-        // --- PLAYER LOGIC ---
         function decidePlayer(url, isIframe, isDaddy, name) {
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
@@ -634,7 +662,7 @@
             
             let target = (type === 'fox') ? foxContainer : daddyContainer;
             target.style.display = 'block';
-            target.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" loading="eager"></iframe>`;
+            target.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" loading="eager" referrerpolicy="no-referrer"></iframe>`;
             
             resBadge.innerText = label;
             resBadge.style.color = "var(--accent-red)";
@@ -683,7 +711,7 @@
                    const src = currentIframe.src;
                    target.innerHTML = '';
                    setTimeout(() => {
-                       target.innerHTML = `<iframe src="${src}" allowfullscreen allow="encrypted-media" loading="eager"></iframe>`;
+                       target.innerHTML = `<iframe src="${src}" allowfullscreen allow="encrypted-media" loading="eager" referrerpolicy="no-referrer"></iframe>`;
                    }, 100);
                }
             } else {
