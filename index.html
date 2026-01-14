@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Player: Fox Unlocked</title>
+    <title>IPTV Player: DaddyLive Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
     <style>
@@ -14,6 +14,7 @@
             --accent-yellow: #fce83a;
             --accent-cyan: #00e5ff;
             --accent-red: #ff4757;
+            --accent-purple: #a55eea; /* New DaddyLive Color */
             --text-main: #ffffff;
             --text-muted: #7a7a8c;
             --border-color: #252530;
@@ -65,16 +66,25 @@
             border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-size: 0.9rem;
         }
         
+        /* Main Buttons */
         .btn-start {
             background: var(--accent-yellow); color: #000; padding: 14px 40px;
             border: none; font-weight: bold; border-radius: 30px; cursor: pointer;
-            font-size: 1.1rem; width: 100%; margin-bottom: 10px;
+            font-size: 1.1rem; width: 100%; margin-bottom: 10px; transition: transform 0.2s;
         }
         .btn-fox {
             background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; padding: 14px 40px;
             border: none; font-weight: bold; border-radius: 30px; cursor: pointer;
             font-size: 1.1rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 10px; transition: transform 0.2s;
         }
+        .btn-daddy {
+            background: linear-gradient(135deg, #a55eea, #8854d0); color: #fff; padding: 14px 40px;
+            border: none; font-weight: bold; border-radius: 30px; cursor: pointer;
+            font-size: 1.1rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.2s;
+        }
+        .btn-start:active, .btn-fox:active, .btn-daddy:active { transform: scale(0.98); }
 
         /* --- LIST VIEW --- */
         #listView {
@@ -87,14 +97,20 @@
         }
         .list-content { flex: 1; overflow-y: auto; padding-right: 10px; }
         .list-content::-webkit-scrollbar { width: 8px; }
+        .list-content::-webkit-scrollbar-track { background: var(--bg-body); }
         .list-content::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
         .channel-row {
             display: flex; align-items: center; background-color: var(--bg-card);
             border: 1px solid var(--border-color); margin-bottom: 12px; padding: 15px 20px; border-radius: 8px;
+            transform: translateZ(0);
         }
         .row-actions { display: flex; align-items: center; gap: 15px; margin-right: 30px; min-width: 140px; }
         .btn-watch { background-color: var(--accent-yellow); color: #000; border: none; padding: 8px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        
+        /* Different Button Colors based on Source */
+        .btn-watch.dl-btn { background-color: var(--accent-purple); color: #fff; }
+
         .row-logo { width: 50px; height: 50px; background: #000; border-radius: 6px; margin-right: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .row-logo img { width: 100%; height: 100%; object-fit: cover; }
         .row-info { flex: 1; }
@@ -102,7 +118,9 @@
         
         .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; margin-right: 8px; text-transform: uppercase; }
         .badge-source { background: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 229, 255, 0.3); }
+        .badge-dl { background: rgba(165, 94, 234, 0.1); color: var(--accent-purple); border: 1px solid rgba(165, 94, 234, 0.3); }
         .badge-group { background: #252530; color: #aaa; }
+        .results-info { color: #555; font-size: 0.8rem; padding: 10px; text-align: center; }
 
         /* --- PLAYER VIEW --- */
         #playerView { display: none; height: 100vh; flex-direction: column; }
@@ -135,7 +153,6 @@
             border: 3px solid #000; position: relative;
             background: #000; width: 800px; max-width: 100%; aspect-ratio: 16/9;
         }
-        /* Scanlines */
         .tv-screen::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
@@ -162,10 +179,10 @@
         /* Video vs Iframe */
         video { width: 100%; height: 100%; outline: none; display: block; }
         
-        #foxContainer {
+        #iframeContainer {
             width: 100%; height: 100%; display: none; background: #000;
         }
-        #foxContainer iframe {
+        #iframeContainer iframe {
             width: 100%; height: 100%; border: 0;
         }
 
@@ -194,7 +211,11 @@
             <button class="btn-add" onclick="addInputRow()"><i class="fa-solid fa-plus"></i> Add Playlist</button>
             <button class="btn-start" onclick="loadAllPlaylists()">LOAD CHANNELS</button>
             
-            <div class="section-divider"><span>LIVE SPECIAL</span></div>
+            <div class="section-divider"><span>SPECIAL LIBRARIES</span></div>
+
+            <button class="btn-daddy" onclick="loadDaddyLive()">
+                <i class="fa-solid fa-satellite-dish"></i> DADDYLIVE LIBRARY (750+ CHANNELS)
+            </button>
 
             <button class="btn-fox" onclick="loadFoxTV()">
                 <i class="fa-solid fa-tv"></i> WATCH FOX TV LIVE
@@ -204,7 +225,7 @@
     </div>
 
     <div id="listView">
-        <input type="text" id="channelSearch" class="search-input" placeholder="Search channels..." onkeyup="filterChannels()">
+        <input type="text" id="channelSearch" class="search-input" placeholder="Search channels..." oninput="handleSearch()">
         <div id="listContent" class="list-content"></div>
     </div>
 
@@ -233,7 +254,7 @@
                         </div>
 
                         <video id="videoPlayer" controls></video>
-                        <div id="foxContainer"></div>
+                        <div id="iframeContainer"></div>
                     
                     </div>
                     <div class="tv-speaker"></div>
@@ -249,41 +270,47 @@
     <script>
         let allChannels = [];
         const video = document.getElementById('videoPlayer');
-        const foxContainer = document.getElementById('foxContainer');
+        const iframeContainer = document.getElementById('iframeContainer');
         const playerBody = document.getElementById('playerBody');
         const qualitySelect = document.getElementById('qualitySelect');
         const resBadge = document.getElementById('resBadge');
         let hls;
 
-        // --- 1. FOX TV FIX (Removed Sandbox) ---
+        // --- OPTIMIZATION VARIABLES ---
+        let searchTimer; 
+        const RENDER_LIMIT = 100; 
+
+        // --- 1. DADDYLIVE LOGIC (NEW) ---
+        function loadDaddyLive() {
+            // Generate 750 Channels
+            allChannels = [];
+            for(let i=1; i<=750; i++) {
+                allChannels.push({
+                    name: `DaddyLive Channel ${i}`,
+                    group: "DLHD",
+                    source: "DADDYLIVE",
+                    url: `https://dlhd.link/stream/stream-${i}.php`,
+                    isIframe: true
+                });
+            }
+            
+            // Render and Switch
+            renderList(allChannels);
+            document.getElementById('loadScreen').style.display = 'none';
+            document.getElementById('listView').style.display = 'flex';
+        }
+
+        // --- 2. FOX TV LOGIC ---
         function loadFoxTV() {
+            // Quick switch to player
             document.getElementById('loadScreen').style.display = 'none';
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
             
-            video.style.display = 'none';
-            video.pause();
-            foxContainer.style.display = 'block';
-            
-            qualitySelect.style.display = 'none';
-            resBadge.innerText = "FOX LIVE";
-            resBadge.style.color = "#ff4757";
-            resBadge.style.borderColor = "#ff4757";
-
-            // NO SANDBOX ATTRIBUTE - This allows the stream to play
-            foxContainer.innerHTML = `
-                <iframe 
-                    src="https://dlhd.link/stream/stream-54.php" 
-                    width="100%" 
-                    height="100%" 
-                    style="border:0;" 
-                    allowfullscreen
-                    allow="encrypted-media"
-                ></iframe>
-            `;
+            playIframe("https://dlhd.link/stream/stream-54.php", "FOX LIVE");
         }
 
-        // --- 2. STANDARD UI LOGIC ---
+        // --- 3. STANDARD UI LOGIC ---
         function addInputRow() {
             const container = document.getElementById('inputContainer');
             const div = document.createElement('div');
@@ -302,7 +329,7 @@
             log.scrollTop = log.scrollHeight;
         }
 
-        // --- 3. STANDARD PLAYLIST LOGIC ---
+        // --- 4. PLAYLIST FETCH LOGIC ---
         async function fetchSmart(url) {
             try {
                 const response = await fetch(url);
@@ -357,7 +384,7 @@
             }
 
             if(allChannels.length > 0) {
-                renderList(allChannels);
+                renderList(allChannels); 
                 document.getElementById('loadScreen').style.display = 'none';
                 document.getElementById('listView').style.display = 'flex';
             } else {
@@ -383,6 +410,7 @@
                 } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
                     current.url = line;
                     current.source = sourceLabel;
+                    current.isIframe = false; // Standard playlists are usually HLS
                     if(current.name) channels.push(current);
                     current = {};
                 }
@@ -390,38 +418,101 @@
             return channels;
         }
 
+        // --- 5. RENDER LOGIC ---
         function renderList(channels) {
             const container = document.getElementById('listContent');
-            container.innerHTML = '';
-            channels.forEach(ch => {
+            container.innerHTML = ''; 
+            
+            const subset = channels.slice(0, RENDER_LIMIT);
+            const fragment = document.createDocumentFragment();
+
+            subset.forEach(ch => {
                 const div = document.createElement('div');
                 div.className = 'channel-row';
                 const logoHtml = ch.logo ? `<img src="${ch.logo}" onerror="this.parentElement.innerHTML='TV'">` : `<span style="font-weight:bold; color:#555;">${ch.name.substring(0,2)}</span>`;
+                
+                // Customize badge style
+                let badgeClass = 'badge-source';
+                if(ch.group === 'DLHD') badgeClass = 'badge-dl';
+                
+                // Customize button style
+                let btnClass = 'btn-watch';
+                if(ch.group === 'DLHD') btnClass += ' dl-btn';
+
                 div.innerHTML = `
-                    <div class="row-actions"><button class="btn-watch" onclick="openPlayer('${ch.url}')"><i class="fa-solid fa-play"></i> Watch</button></div>
+                    <div class="row-actions"><button class="${btnClass}" onclick="decidePlayer('${ch.url}', ${ch.isIframe})"><i class="fa-solid fa-play"></i> Watch</button></div>
                     <div class="row-logo">${logoHtml}</div>
                     <div class="row-info">
                         <div class="row-title">${ch.name}</div>
-                        <div style="margin-top:5px;"><span class="badge badge-source">${ch.source}</span><span class="badge badge-group">${ch.group}</span></div>
+                        <div style="margin-top:5px;"><span class="badge ${badgeClass}">${ch.source}</span><span class="badge badge-group">${ch.group}</span></div>
                     </div>
                 `;
-                container.appendChild(div);
+                fragment.appendChild(div);
             });
+            
+            container.appendChild(fragment);
+
+            if(channels.length > RENDER_LIMIT) {
+                const info = document.createElement('div');
+                info.className = 'results-info';
+                info.innerText = `Showing top ${RENDER_LIMIT} matches. Type more to refine search.`;
+                container.appendChild(info);
+            }
+        }
+
+        function handleSearch() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => { filterChannels(); }, 300);
         }
 
         function filterChannels() {
             const term = document.getElementById('channelSearch').value.toLowerCase();
-            const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(term) || ch.group.toLowerCase().includes(term));
+            const filtered = allChannels.filter(ch => 
+                ch.name.toLowerCase().includes(term) || 
+                ch.group.toLowerCase().includes(term)
+            );
             renderList(filtered);
         }
 
-        function openPlayer(url) {
+        // --- 6. PLAYER CONTROLLER ---
+        function decidePlayer(url, isIframe) {
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
+
+            if(isIframe) {
+                playIframe(url, "LIVE STREAM");
+            } else {
+                playHLS(url);
+            }
+        }
+
+        function playIframe(url, label) {
+            video.style.display = 'none';
+            video.pause();
+            iframeContainer.style.display = 'block';
             
+            qualitySelect.style.display = 'none';
+            resBadge.innerText = label;
+            resBadge.style.color = "#ff4757";
+            resBadge.style.borderColor = "#ff4757";
+
+            // NO SANDBOX (Fixes the issue)
+            iframeContainer.innerHTML = `
+                <iframe 
+                    src="${url}" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    allowfullscreen
+                    allow="encrypted-media"
+                ></iframe>
+            `;
+        }
+
+        function playHLS(url) {
             video.style.display = 'block';
-            foxContainer.style.display = 'none';
-            foxContainer.innerHTML = ''; 
+            iframeContainer.style.display = 'none';
+            iframeContainer.innerHTML = ''; 
 
             qualitySelect.style.display = 'none'; 
             resBadge.innerText = "Connecting...";
@@ -471,12 +562,14 @@
 
         function goBack() {
             video.pause();
-            foxContainer.innerHTML = ''; 
+            iframeContainer.innerHTML = ''; 
             if(hls) hls.destroy();
             document.getElementById('playerView').style.display = 'none';
             
-            if(video.style.display === 'none') {
-                document.getElementById('loadScreen').style.display = 'flex';
+            // Return logic
+            if(iframeContainer.style.display === 'block' && resBadge.innerText === 'FOX LIVE') {
+                 // Special case: Fox TV direct return
+                 document.getElementById('loadScreen').style.display = 'flex';
             } else {
                 document.getElementById('listView').style.display = 'flex';
             }
