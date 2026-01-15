@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Master: Ultra Edition</title>
+    <title>IPTV Master: Portal Edition</title>
     
     <link rel="preconnect" href="https://dlhd.link" crossorigin>
     <link rel="dns-prefetch" href="https://dlhd.link">
@@ -24,8 +24,7 @@
             --accent-cyan: #00e5ff;
             --accent-green: #00b894; 
             --accent-orange: #ff9f43;
-            --accent-gold: #e58e26;
-            --accent-ultra: #ff00cc; /* Ultra Pink */
+            --accent-gold: #e58e26; /* Premium Gold */
             --text-main: #ffffff;
             --text-dim: #aaaaaa;
             --tv-bezel: #151515;
@@ -74,7 +73,7 @@
         }
         .url-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
 
-        /* Login Forms */
+        /* Login Forms (Xtream & Stalker) */
         .login-form {
             display: none; background: rgba(255, 255, 255, 0.03);
             padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
@@ -92,6 +91,8 @@
             font-size: 0.95rem; font-family: monospace;
         }
         .form-input:focus { border-color: var(--accent-cyan); }
+        
+        /* Specific styling for Stalker inputs */
         .stalker-input:focus { border-color: var(--accent-orange); }
 
         .btn-action {
@@ -110,15 +111,6 @@
         .btn-orange { background: linear-gradient(135deg, #ff9f43, #ee5253); color: #000; }
         .btn-gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; }
         .btn-dark { background: rgba(255,255,255,0.1); color: #fff; }
-        
-        /* ULTRA BUTTON STYLE */
-        .btn-ultra { 
-            background: linear-gradient(135deg, #ff00cc, #333399); 
-            color: #fff; 
-            border: 1px solid rgba(255, 0, 204, 0.5);
-            box-shadow: 0 0 15px rgba(255, 0, 204, 0.3);
-        }
-        .btn-ultra:hover { box-shadow: 0 0 25px rgba(255, 0, 204, 0.6); }
         
         .section-divider { 
             display: flex; align-items: center; margin: 30px 0; color: var(--text-dim); font-size: 0.8rem; letter-spacing: 2px;
@@ -166,7 +158,7 @@
             background: #000; display: flex; align-items: center; justify-content: center;
             font-weight: bold; color: #555; overflow: hidden; flex-shrink: 0;
         }
-        .card-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .card-logo img { width: 100%; height: 100%; object-fit: cover; }
 
         .card-info { flex: 1; min-width: 0; }
         .card-title { 
@@ -181,9 +173,7 @@
         .bg-green { background: rgba(0, 184, 148, 0.15); color: var(--accent-green); }
         .bg-orange { background: rgba(255, 159, 67, 0.15); color: var(--accent-orange); }
         .bg-gold { background: rgba(255, 215, 0, 0.15); color: var(--accent-yellow); border: 1px solid rgba(255,215,0,0.3); }
-        .bg-ultra { background: rgba(255, 0, 204, 0.15); color: var(--accent-ultra); border: 1px solid rgba(255,0,204,0.3); }
         .bg-gray { background: rgba(255,255,255,0.1); color: #aaa; }
-        .source-count { background: #333; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; margin-left: auto; }
 
         /* --- PLAYER VIEW --- */
         #playerView { display: none; height: 100vh; flex-direction: column; }
@@ -249,7 +239,6 @@
             background: rgba(0,0,0,0.7); color: #00ff00; 
             padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.8rem;
             pointer-events: none; border: 1px solid rgba(0,255,0,0.3);
-            transition: 0.3s;
         }
         
         .screen-controls {
@@ -326,20 +315,20 @@
             </button>
 
             <div id="stalkerForm" class="login-form">
-                <div style="text-align: left; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent-orange);">
-                    <i class="fa-solid fa-info-circle"></i> Requires proxy.php in same folder
-                </div>
-                <input type="text" id="stPortal" class="form-input stalker-input" placeholder="Portal Address (e.g. http://mag.portal.com/c/)">
-                <input type="text" id="stMac" class="form-input stalker-input" placeholder="MAC Address (00:1A:79:...)" onkeyup="formatMac(this)" maxlength="17">
-                <input type="text" id="stSn" class="form-input stalker-input" placeholder="Serial Number (sn)">
-                
-                <input type="text" id="stDevId" class="form-input stalker-input" placeholder="Device ID">
-                <input type="text" id="stDevId2" class="form-input stalker-input" placeholder="Device ID 2 (Optional/Same as ID 1)">
-                
-                <button class="btn-action btn-orange" onclick="connectStalker()">
-                    <i class="fa-solid fa-plug"></i> CONNECT PORTAL
-                </button>
-            </div>
+    <div style="text-align: left; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent-orange);">
+        <i class="fa-solid fa-info-circle"></i> Requires proxy.php in same folder
+    </div>
+    <input type="text" id="stPortal" class="form-input stalker-input" placeholder="Portal Address (e.g. http://mag.portal.com/c/)">
+    <input type="text" id="stMac" class="form-input stalker-input" placeholder="MAC Address (00:1A:79:...)" onkeyup="formatMac(this)" maxlength="17">
+    <input type="text" id="stSn" class="form-input stalker-input" placeholder="Serial Number (sn)">
+    
+    <input type="text" id="stDevId" class="form-input stalker-input" placeholder="Device ID">
+    <input type="text" id="stDevId2" class="form-input stalker-input" placeholder="Device ID 2 (Optional/Same as ID 1)">
+    
+    <button class="btn-action btn-orange" onclick="connectStalker()">
+        <i class="fa-solid fa-plug"></i> CONNECT PORTAL
+    </button>
+</div>
 
             <input type="file" id="fileInput" accept=".m3u,.m3u8" style="display:none;" onchange="handleFileUpload(this)">
             <button class="btn-action btn-green" onclick="document.getElementById('fileInput').click()">
@@ -351,10 +340,6 @@
             </button>
 
             <div class="section-divider">PREMIUM LIBRARIES</div>
-
-            <button class="btn-action btn-ultra" onclick="loadUltraPremium()">
-                <i class="fa-solid fa-gem"></i> ULTRA PREMIUM IPTV
-            </button>
 
             <button class="btn-action btn-purple" onclick="loadDaddyLive()">
                 <i class="fa-solid fa-satellite-dish"></i> DADDY LIVE (ULTIMATE)
@@ -396,7 +381,7 @@
                 <div class="screen-glass">
                     <div id="resBadge" class="res-badge">Ready</div>
                     <div class="screen-controls">
-                        <button class="ctl-btn" onclick="reloadStream()" title="Reload/Next Source"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button class="ctl-btn" onclick="reloadStream()" title="Reload"><i class="fa-solid fa-rotate-right"></i></button>
                         <button class="ctl-btn" onclick="toggleCustomFullscreen()" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
                     </div>
 
@@ -421,680 +406,161 @@
         const resBadge = document.getElementById('resBadge');
         let hls;
         let searchTimer;
-        const RENDER_LIMIT = 200;
+        const RENDER_LIMIT = 100;
 
-        // Auto-switch variables
-        let currentChannelUrls = [];
-        let currentUrlIndex = 0;
-
-        // --- RAW ULTRA M3U DATA ---
-        // I've pasted the raw data provided into this variable.
-        const rawUltraData = `
-#EXTINF:-1,EKUSHEY TV HD
-http://210.4.72.204/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8
-#EXTINF:-1,Bloomberg Asia
-https://liveprodapnortheast.global.ssl.fastly.net/ap1/Channel-APTVqvs-AWS-tokyo-1/Source-APTVqvs-1000-1_live.m3u8
-#EXTINF:-1,ABP News
-https://abp-i.akamaihd.net/hls/live/765529/abphindi/master.m3u8
-#EXTINF:-1,NDTV 24x7
-https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/ndtv24x7master.m3u8
-#EXTINF:-1,Sky News Extra
-https://skynewsau-live.akamaized.net/hls/live/2002691/skynewsau-extra3/master.m3u8?@amarnettv.live
-#EXTINF:-1,CBSN Newyork
-https://dai.google.com/linear/hls/event/rtcMlf4RTvOEkaudeany5w/master.m3u8?@amarnettv.live
-#EXTINF:-1,Newsmax TV
-https://nmxlive.akamaized.net/hls/live/529965/Live_1/index.m3u8?@amarnettv.live
-#EXTINF:-1,CNA HD
-https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_5.m3u8?@amarnettv.live
-#EXTINF:-1,CNA SD
-https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_3.m3u8?@amarnettv.live
-#EXTINF:-1,CGTN
-https://live.cgtn.com/1000/prog_index.m3u8?@amarnettv.live
-#EXTINF:-1,Arirang
-http://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8?@amarnettv.live
-#EXTINF:-1,Bloomberg
-https://liveproduseast.global.ssl.fastly.net/us/Channel-USTV-AWS-virginia-1/Source-USTV-240-1_live.m3u8?@amarnettv.live
-#EXTINF:-1,NDTV India
-https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/ndtvindiamaster.m3u8?@amarnettv.live
-#EXTINF:-1,NDTV 24x7
-https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/ndtv24x7master.m3u8?@amarnettv.live
-#EXTINF:-1,Amar Ujala
-https://streamcdn.amarujala.com/live/smil:stream1.smil/playlist.m3u8?@amarnettv.live
-#EXTINF:-1,Dunya News
-http://imob.dunyanews.tv/live/_definst_/dunyalive_1/FluxusTV.m3u8?@amarnettv.live
-#EXTINF:-1,NDTV 24x7
-https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/ndtv24x7master.m3u8?@IPTVSolution
-#EXTINF:-1,Al Istiqama TV
-http://jmc-live.ercdn.net/alistiqama/alistiqama_576p.m3u8
-#EXTINF:-1,Peace TV
-http://82.114.67.178:8081/hls/PeaceTV.m3u8
-#EXTINF:-1,Shubhsandesh
-http://6284rn2xr7xv-hls-live.wmncdn.net/shubhsandeshtv1/live123.stream/index.m3u8
-#EXTINF:-1,NASA TV
-https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master_2000.m3u8
-#EXTINF:-1,Groovy
-http://web.onair-radio.eu:1935/groovytv/groovytv/playlist.m3u8
-#EXTINF:-1,TV Cinec
-http://tv01.logicahost.com.br:1935/tvcinec/tvcinec/live.m3u8
-#EXTINF:-1,3ABN Kids
-https://moiptvhls-i.akamaihd.net/hls/live/652318/secure/master.m3u8
-#EXTINF:-1,Kabillion
-https://dai2.xumo.com/amagi_hls_data_xumo1212A-redboxkabillion/CDN/playlist.m3u8
-#EXTINF:-1,Spacetoon
-https://streams.spacetoon.com/live/stchannel/smil:livesmil.smil/playlist.m3u8
-#EXTINF:-1,Ócko
-http://ocko-live.ssl.cdn.cra.cz/channels/ocko/playlist/cze/live_lq.m3u8
-#EXTINF:-1,Ócko Expres
-http://ocko-live.ssl.cdn.cra.cz/channels/ocko_expres/playlist/cze/live_lq.m3u8
-#EXTINF:-1,Ócko Gold
-https://ocko-live-dash.ssl.cdn.cra.cz/cra_live2/ocko_gold.stream.1.smil/playlist.m3u8
-#EXTINF:-1,Ócko STAR
-http://ocko-live.ssl.cdn.cra.cz/channels/ocko_gold/playlist/cze/live_lq.m3u8
-#EXTINF:-1,RETRO MUSIC TV
-http://stream.mediawork.cz/retrotv//retrotvHQ1/playlist.m3u8
-#EXTINF:-1,Afrobeats
-https://stream.ecable.tv/afrobeats/index.m3u8
-#EXTINF:-1,Arabica Music
-http://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8
-#EXTINF:-1,DBM
-https://dbmtv.vedge.infomaniak.com/livecast/smil:dbmtv.smil/manifest.m3u8
-#EXTINF:-1,Kronehit HD
-https://bitcdn-kronehit.bitmovin.com/v2/hls/playlist.m3u8
-#EXTINF:-1,Magic TV
-https://itv.streams.ovh/magictv/magictv/playlist.m3u8
-#EXTINF:-1,Play TV
-http://connectiktv.ddns.net:5000/playtv/@playtv/chunklist.m3u8
-#EXTINF:-1,Play TV
-http://web.onair-radio.eu:1935/Alpha-Host/Alpha-Host/playlist.m3u8
-#EXTINF:-1,Public Music
-http://103.199.161.254/Content/publicmusic/Live/Channel(PublicMusic)/index.m3u8
-#EXTINF:-1,Qmusic
-https://dpp-qmusicnl-live.akamaized.net/streamx/QmusicNL.m3u8
-#EXTINF:-1,Radio Piter Pan TV
-https://58d921499d3d3.streamlock.net/RadioPiterpanTV/livestream/playlist.m3u8
-#EXTINF:-1,V2Beat TV
-https://abr.de1se01.v2beat.live/playlist.m3u8
-#EXTINF:-1,V2BEAT TV
-https://de1se01.v2beat.live/playlist.m3u8
-#EXTINF:-1,Óčko
-https://ocko-live.ssl.cdn.cra.cz/channels/ocko/playlist/cze/live_hq.m3u8
-#EXTINF:-1,Óčko Expres
-https://ocko-live.ssl.cdn.cra.cz/channels/ocko_expres/playlist/cze/live_hq.m3u8
-#EXTINF:-1,Óčko STAR
-https://ocko-live.ssl.cdn.cra.cz/channels/ocko_gold/playlist/cze/live_hq.m3u8
-#EXTINF:-1,Жар Птица
-http://streamer.rtcommufa.ru:1935/ptica/ptica1/playlist.m3u8
-#EXTINF:-1,М2
-https://live.m2.tv/hls3/stream.m3u8
-#EXTINF:-1,Матур ТВ HD
-https://public.streaming.matur-tv.ru/hls/h264_aac/stream.m3u8
-#EXTINF:-1,Новое
-https://hls-video01.cdnvideo.ru/video01/smil:video01.smil/playlist.m3u8
-#EXTINF:-1,Первый Музыкальный BY
-http://rtmp.one.by:1200
-#EXTINF:-1,Первый Музыкальный BY [FHD]
-http://rtmp.one.by:1300
-#EXTINF:-1,Первый Музыкальный RU BY
-http://rtmp.one.by:2200
-#EXTINF:-1,Первый Музыкальный RU HD BY
-http://rtmp.one.by:2300
-#EXTINF:-1,Страна FM
-http://live.stranafm.cdnvideo.ru/stranafm/stranafm_hd.sdp/playlist.m3u8
-#EXTINF:-1,Шансон-TB
-http://hls.shansontv.cdnvideo.ru/shansontv/smil:shansontv.smil/playlist.m3u8
-#EXTINF:-1,Шансон-TB
-https://hls-shansontv.cdnvideo.ru/shansontv/smil:shansontv.smil/playlist.m3u8
-#EXTINF:-1,Washington D.C. - USA
-https://video2archives.earthcam.com/archives/_definst_/MP4:permanent/7132/2019/09/25/1301.mp4/media_w993546773_9.ts
-#EXTINF:-1,Euro Sports 4K
-http://zabava-htlive.cdn.ngenix.net/hls/CH_EUROSPORT4K_HLS/bw6000000/variant.m3u8?version=2&offset=-3600&checkedby
-#EXTINF:-1,Red Bull TV
-https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_3360.m3u8
-#EXTINF:-1,Edge Sports
-https://imgedge.akamaized.net/amagi_hls_data_imgAAA2AA-edgesports/CDN/playlist.m3u8
-#EXTINF:-1,Euro Sports 4K
-http://zabava-htlive.cdn.ngenix.net/hls/CH_EUROSPORT4K_HLS/bw6000000/variant.m3u8?version=2&offset=-3600
-#EXTINF:-1,Red Bull TV
-http://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_928.m3u8?@amarnettv.live
-#EXTINF:-1,SaRaHa
-http://node-30.zeno.fm/5hx71hbuqhruv?listening-from-radio-garden=1601016201300&rj-tok=AAABdMQJqSIA6Gf4cI6DZUMhdA&rj-ttl=5
-#EXTINF:-1,Big FM
-http://sc-bb.1.fm:8017/;?listening-from-radio-garden=1601016386228
-#EXTINF:-1,Awaj FM
-http://streamasiacdn.atc-labs.com/radioawaj.aac?listening-from-radio-garden=1601016488674
-#EXTINF:-1,Suno FM 102.
-http://51.255.235.165:5476/;stream.mp3?listening-from-radio-garden=1601020600078
-#EXTINF:-1,2B! Radio Sangam Devi Maa
-http://ibadat.out.airtime.pro:8000/ibadat_a
-#EXTINF:-1,2B! Radio Sangam Ganesha
-http://radio2bindia.out.airtime.pro:8000/radio2bindia_a
-#EXTINF:-1,2B! Radio Sangam Gurbani
-http://gurbani.out.airtime.pro:8000/gurbani_a
-#EXTINF:-1,2B! Radio Sangam Guruvar
-http://iskon2b.out.airtime.pro:8000/iskon2b_a
-#EXTINF:-1,2B! Radio Sangam Krishna
-http://millenniumhits.out.airtime.pro:8000/millenniumhits_a
-#EXTINF:-1,2B! Radio Sangam Shiva
-http://hot.out.airtime.pro:8000/hot_a
-#EXTINF:-1,2B! Radio Sangam Shri Ram
-http://dard.out.airtime.pro:8000/dard_a
-#EXTINF:-1,Bollywood Punjabi Radio
-http://stream.zeno.fm/1k0y9f0cm0quv
-#EXTINF:-1,Harman Radio Australia
-http://harmanradio.net:8000/main_48.mp3
-#EXTINF:-1,Jesus Alive Radio
-http://stream.zenolive.com/qyb8s75nsceuv
-#EXTINF:-1,Radio BollyFm
-http://stream.radiobollyfm.in:8201/hd?t=1526570335
-#EXTINF:-1,Radio Sai Global Harmony Bhajan
-http://stream.radiosai.net:8000
-#EXTINF:-1,Radio Schizoid - Chillout / Ambient
-http://94.130.113.214:8000/chill
-#EXTINF:-1,Radio Schizoid - Dub Techno
-http://94.130.113.214:8000/dubtechno
-#EXTINF:-1,Radio Schizoid - Progressive Psychedelic Trance
-http://94.130.113.214:8000/prog
-#EXTINF:-1,Ujala Radio
-http://stream2.ujala.nl/stream/2/listen.mp3
-#EXTINF:-1,IIPC TV
-https://uni10rtmp.tulix.tv/iipctv/iipctv.smil/chunklist_w1550531622_b864000.m3u8?fluxusfaith.m3u8
-#EXTINF:-1,Asianet News
-http://103.199.161.254/Content/asianetnews/Live/Channel(Asianetnews)/index.m3u8
-#EXTINF:-1,Ayush TV
-http://95eryw39dwn4-hls-live.wmncdn.net/Ayushu/271ddf829afeece44d8732757fba1a66.sdp/index.m3u8
-#EXTINF:-1,DD Sports
-http://103.199.161.254/Content/ddsports/Live/Channel(DDSPORTS)/index.m3u8
-#EXTINF:-1,DD Sports
-http://103.199.161.254/Content/ddsports/Live/Channel(DDSPORTS)/Stream(02)/index.m3u8
-#EXTINF:-1,Desi Channel
-http://live.wmncdn.net/desichannel/7e2dd0aed46b70a5c77f4affdb702e4b.sdp/mono.m3u8
-#EXTINF:-1,Fashion TV
-http://fash1043.cloudycdn.services/slive/_definst_/ftv_pg16_adaptive.smil/playlist.m3u8
-#EXTINF:-1,Flowers TV
-http://103.199.161.254/Content/flowers/Live/Channel(Flowers)/index.m3u8
-#EXTINF:-1,Gaunda Punjab TV
-http://start.agmediachandigarh.com/gaundapunjab/tv/playlist.m3u8
-#EXTINF:-1,Harvest TV USA
-http://live.wmncdn.net/harvestusa/d57ffba6564caea2fee3f4085f19a098.sdp/playlist.m3u8
-#EXTINF:-1,Jaihind TV
-http://103.199.161.254/Content/jaihind/Live/Channel(Jaihind)/index.m3u8
-#EXTINF:-1,Janta TV
-http://live.wmncdn.net/jantatv/live.stream/index.m3u8
-#EXTINF:-1,Jeevan TV
-http://103.199.161.254/Content/jeevan/Live/Channel(Jeevan)/index.m3u8
-#EXTINF:-1,Kairali
-http://103.199.161.254/Content/kairali/Live/Channel(Kairali)/Stream(01)/index.m3u8
-#EXTINF:-1,Kairali News
-http://103.199.161.254/Content/people/Live/Channel(People)/index.m3u8
-#EXTINF:-1,Kairali TV
-http://103.199.161.254/Content/kairali/Live/Channel(Kairali)/index.m3u8
-#EXTINF:-1,Kairali We
-http://103.199.161.254/Content/we/Live/Channel(We)/index.m3u8
-#EXTINF:-1,Kappa TV
-http://103.199.161.254/Content/kappa/Live/Channel(Kappa)/index.m3u8
-#EXTINF:-1,Manorama News
-http://103.199.161.254/Content/manoramanews/Live/Channel(ManoramaNews)/index.m3u8
-#EXTINF:-1,Mathrubhumi News
-http://103.199.161.254/Content/mathrubhuminews/Live/Channel(Mathrubhuminews)/index.m3u8
-#EXTINF:-1,Media One
-http://103.199.161.254/Content/mediaone/Live/Channel(MediaOne)/index.m3u8
-#EXTINF:-1,Punjabi TV
-http://cdn9.live247stream.com/punjabitvcanada/tv/playlist.m3u8
-#EXTINF:-1,Reporter TV
-http://103.199.161.254/Content/reporter/Live/Channel(Reporter)/index.m3u8
-#EXTINF:-1,The Q India
-https://amg1-i.akamaihd.net/hls/live/784034/Q001/playlist.m3u8?__nn__=5606168722001&hdnea=st=1566232200~exp=1566235800~acl=/hls/live/784034/Q001/*~hmac=4de929fdc0ee53199a11237ee75a695383a82a42623fa92c1376493e5fc91d7b
-#EXTINF:-1,92 News
-http://92news.vdn.dstreamone.net/92newshd/92hd/playlist.m3u8
-#EXTINF:-1,Dunya News
-http://imob.dunyanews.tv/live/_definst_/dunyalive_1/chunklist_w1239250459.m3u8
-#EXTINF:-1,Zindagi TV
-https://5ad386ff92705.streamlock.net/live_transcoder/ngrp:zindagitv.stream_all/chunklist.m3u8
-#EXTINF:-1,ABC News
-https://content.uplynk.com/channel/3324f2467c414329b3b0cc5cd987b6be.m3u8
-#EXTINF:-1,Arirang
-http://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8
-#EXTINF:-1,TMZ
-https://dai2.xumo.com/xumocdn/p=roku/amagi_hls_data_xumo1234A-tmz/CDN/1280x720_5000000/index.m3u8
-#EXTINF:-1,Filmrise Classics
-https://dai2.xumo.com/amagi_hls_data_xumo1212A-filmriseclassictv/CDN/648x432_5000000/index.m3u8
-#EXTINF:-1,Filmrise Crime
-https://dai2.xumo.com/xumocdn/p=roku/amagi_hls_data_xumo1212A-filmrisecrime/CDN/640x432_2500000/index.m3u8
-#EXTINF:-1,CGTN Documentary
-https://livedoc.cgtn.com/1000d/prog_index.m3u8
-#EXTINF:-1,Channel NewsAsia
-https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_5.m3u8
-#EXTINF:-1,AMGTV
-https://2-fss-2.streamhoster.com/pl_138/201660-1270634-1/chunklist.m3u8
-#EXTINF:-1,Hulchul TV
-http://cdn12.henico.net:8080/live/jbani/index.m3u8
-#EXTINF:-1,Channel Y
-http://cdn19.live247stream.com/channely/tv/playlist.m3u8
-#EXTINF:-1,92 News
-http://92news.vdn.dstreamone.net/92newshd/92hd/playlist.m3u8?checkedby:iptvcat.com
-#EXTINF:-1,Dunya News
-http://imob.dunyanews.tv/live/_definst_/dunyalive_1/chunklist_w1239250459.m3u8?checkedby:iptvcat.com
-#EXTINF:-1,Eye 95 America (US)
-http://cdn20.liveonlineservices.com/hls/eye95tv.m3u8?checkedby:iptvcat.com
-#EXTINF:-1,Zindagi TV
-https://5ad386ff92705.streamlock.net/live_transcoder/ngrp:zindagitv.stream_all/chunklist.m3u8?checkedby:iptvcat.com
-#EXTINF:-1,NBC News
-https://nbcnewshls-i.akamaihd.net/hls/live/1005170/nnn_live1/index.m3u8
-#EXTINF:-1,Sky News
-https://skynewsau-live.akamaized.net/hls/live/2002689/skynewsau-extra1/master.m3u8
-#EXTINF:-1,Bloomberg Europe
-https://liveprodeuwest.akamaized.net/eu1/Channel-EUTVqvs-AWS-ireland-1/Source-EUTVqvs-1000-1_live.m3u8
-#EXTINF:-1,News Max
-https://nmxlive.akamaized.net/hls/live/529965/Live_1/index.m3u8
-#EXTINF:-1,AXN
-http://210.210.155.35/uq2663/h/h141/01.m3u8
-#EXTINF:-1,#EXTINF:-1 59.Channel TT
-https://2-fss-2.themediacdn.com/pl_118/amlst:201982-1318992/playlist.m3u8
-#EXTINF:-1,#EXTINF:-1 100.Zee Bioskop
-http://210.210.155.35/qwr9ew/s/s32/01.m3u8
-#EXTINF:-1,226.Tag TV 2
-https://cdn30.liveonlineservices.com/hls/tagtv.m3u8
-#EXTINF:-1,#EXTINF:-1 302.Food 52
-https://dai2.xumo.com/amagi_hls_data_xumo1212A-food52/CDN/1280x720_5000000/index.m3u8
-#EXTINF:-1,30A Music
-https://30a-tv.com/music.m3u8
-#EXTINF:-1,ANIMAL PLANET
-https://food-dlvr-ott.akamaized.net/primary/3/def27b3dd6854290bc7f42daa93c65ea/index_15.m3u8
-#EXTINF:-1,005. 42 - Extra TV 42
-http://45.5.117.182:8000/play/a0e0/index.m3u8
-#EXTINF:-1,007. A&E
-http://45.5.117.182:8000/play/a0hr/index.m3u8
-#EXTINF:-1,009. AMC
-http://45.5.117.182:8000/play/a0f5/index.m3u8
-#EXTINF:-1,MOVIES RUSSIAN
-http://myott.top/stream/DEKA6YA5JRN/107.m3u8
-#EXTINF:-1,9XM
-https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8?checkedby:iptvcat.com
-#EXTINF:-1,MU TV
-https://bcovlive-a.akamaihd.net/r2d2c4ca5bf57456fb1d16255c1a535c8/eu-west-1/eu-west-1/6058004203001/profile_2/chunklist.m3u8
-#EXTINF:-1,Aaj Tak HD
-https://aajtakhdlive-amd.akamaized.net/hls/live/2014415/aajtakhd/aajtakhdlive/live_720p/chunks.m3u8
-#EXTINF:-1,Good News Today
-https://tezlive-amd.akamaized.net/hls/live/2016145/gnt/gntlive/live_720p/chunks.m3u8
-#EXTINF:-1,Azstar TV
-http://live.livestreamtv.ca/azstar/smil:azstar.smil/playlist.m3u8
-#EXTINF:-1,Zindagi TV
-https://5ad386ff92705.streamlock.net/live_transcoder/ngrp:zindagitv.stream_all/chunklist.m3u
-#EXTINF:-1,Wild EARTH
-https://wildearth-roku.amagi.tv/masterR720P.m3u8
-#EXTINF:-1,SONY
-http://45.5.117.182:8000/play/a0ho/index.m3u8
-#EXTINF:-1,79.Discovery Investigation
-http://168.205.87.198:8555/live/adriana/123456/36.m3u8
-#EXTINF:-1,Horse and Country
-https://hncfree-samsungau.amagi.tv/playlist.m3u8
-#EXTINF:-1,Hindi TV
-https://drive.google.com/uc?export=download&id=1fJ46hqkJXL-lJbYegEfuG5XLOU8aEk1b
-#EXTINF:-1,IB Tv Usa
-http://208.86.19.13:81/509.stream/index.m3u8
-#EXTINF:-1,Canada One
-http://cdn8.live247stream.com/canadaone/tv/playlist.m3u8
-#EXTINF:-1,Nour TV
-https://cdn.bestream.io:19360/elfaro4/elfaro4.m3u8
-#EXTINF:-1,NPL TV
-https://d1k6kax80wecy5.cloudfront.net/WFqZJc/index.m3u8
-#EXTINF:-1,Raj TV
-http://103.199.161.254/Content/rajtv/Live/Channel(RajTV)/Stream(02)/index.m3u8
-#EXTINF:-1,9XM (480p)
-https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8
-#EXTINF:-1,Aaj Tak (404p)
-https://aajtaklive-amd.akamaized.net/hls/live/2014416/aajtak/aajtaklive/live_404p/chunks.m3u8
-#EXTINF:-1,ABP Ganga (1080p)
-https://abplivetv.akamaized.net/hls/live/2043013/ganga/master.m3u8
-#EXTINF:-1,ABP Majha (720p)
-https://abplivetv.akamaized.net/hls/live/2043011/manjha/master.m3u8
-#EXTINF:-1,ABP News (720p)
-https://abplivetv.akamaized.net/hls/live/2043010/hindi/master.m3u8
-#EXTINF:-1,ABP Sanjha (720p)
-https://d316coox0if60r.cloudfront.net/out/v1/7723f2221c3449c3910aaa8f91592bf0/index.m3u8
-#EXTINF:-1,Amrita TV (720p)
-https://dr1zhpsuem5f4.cloudfront.net/master.m3u8
-#EXTINF:-1,Balle Balle (720p)
-https://mcncdndigital.com/balleballetv/index.m3u8
-#EXTINF:-1,ET Now
-https://pubads.g.doubleclick.net/ssai/event/pJrzNyDoT_K_GwYQsijTsQ/master.m3u8
-#EXTINF:-1,ET Now Swadesh (720p)
-https://d32gxr3r1ksq2p.cloudfront.net/master.m3u8
-#EXTINF:-1,Global Punjab (1080p)
-https://server.livelegitpro.in/globalpunjab/globalpunjab/index.m3u8
-#EXTINF:-1,Hope Channel India (1080p)
-https://videodelivery.net/98334a974d26e45759c6baa8bceabbcf/manifest/video.m3u8
-#EXTINF:-1,India Today (720p) [Not 24/7]
-https://indiatodaylive.akamaized.net/hls/live/2014320/indiatoday/indiatodaylive/playlist.m3u8
-#EXTINF:-1,Isai Aruvi (576p)
-http://103.199.161.254/Content/isaiaruvi/Live/Channel(IsaiAruvi)/index.m3u8
-#EXTINF:-1,Kairali We
-https://yuppmedtaorire.akamaized.net/v1/master/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/wetv_nim_https/050522/wetv/playlist.m3u8
-#EXTINF:-1,Madha TV (600p)
-https://60e68b19dd194.streamlock.net:55/madhatv/madhatv.stream_HDp/playlist.m3u8
-#EXTINF:-1,Mazhavil Manorama
-https://yuppmedtaorire.akamaized.net/v1/master/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/mazhavilmanorama_nim_https/050522/mazhavilmanorama/playlist.m3u8
-#EXTINF:-1,Mercy TV (1080p)
-https://5dd3981940faa.streamlock.net/mercytv/mercytv/playlist.m3u8
-#EXTINF:-1,Mirror Now
-https://pubads.g.doubleclick.net/ssai/event/DXkHhH2QSnma-HnE3QJqlA/master.m3u8
-#EXTINF:-1,Naxatra News (720p)
-https://wearelive.livebox.co.in/naxatratvhls/naxatratv.m3u8
-#EXTINF:-1,NDTV 24X7 (480p) [Not 24/7]
-https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/master.m3u8
-#EXTINF:-1,NDTV India (480p) [Not 24/7]
-https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8
-#EXTINF:-1,NDTV Profit (480p)
-https://ndtvprofitelemarchana.akamaized.net/hls/live/2003680-b/ndtvprofit/master.m3u8
-#EXTINF:-1,NDTV Profit (480p) [Not 24/7]
-https://ndtvprofitelemarchana.akamaized.net/hls/live/2003680/ndtvprofit/master.m3u8
-#EXTINF:-1,Sanskar TV (1080p)
-https://d26idhjf0y1p2g.cloudfront.net/out/v1/cd66dd25b9774cb29943bab54bbf3e2f/index.m3u8
-#EXTINF:-1,Sanskar UK (1080p)
-https://d34z4embz0hjf6.cloudfront.net/out/v1/7ac2789ff9a544a49337d1ffc54ce61c/index.m3u8
-#EXTINF:-1,Sanskar USA (1080p)
-https://d2netiedy8cz3x.cloudfront.net/out/v1/9bf6fa4ac8d6432cb98da13b121ba3c2/index.m3u8
-#EXTINF:-1,Sanskar Web TV (1080p)
-https://deatfcv3xdvi3.cloudfront.net/out/v1/7a43dd2f64e34ec28da1b4bd6923251a/index.m3u8
-#EXTINF:-1,Satsang TV (1080p)
-https://d2vfwvjxwtwq1t.cloudfront.net/out/v1/6b24239d5517495b986e7705490c6e65/index.m3u8
-#EXTINF:-1,Satsang Web TV (1080p)
-https://d1ji7e9jbzm5g8.cloudfront.net/out/v1/769f22f64d80442889306b9c4abea63c/index.m3u8
-#EXTINF:-1,Shubh TV (1080p)
-https://d2g1vdc6ozl2o8.cloudfront.net/out/v1/0a0dc7d7911b4fddbb4dfc963fdd4b9e/index.m3u8
-#EXTINF:-1,Sudarshan News (720p)
-https://ott.livelegitpro.in/pusa/sudarshantv/index.m3u8
-#EXTINF:-1,Times Now [Geo-blocked]
-https://pubads.g.doubleclick.net/ssai/event/1mR1QUQ3Tg-VuKfiyjwNuA/master.m3u8
-#EXTINF:-1,Total Bhakti (1080p)
-https://d34z4embz0hjf6.cloudfront.net/out/v1/d55b3323a9f142638f897378f0b526fe/index.m3u8
-#EXTINF:-1,Tribe TV (720p)
-https://server.livelegitpro.in:9899/tribetv/tribetv/index.m3u8
-#EXTINF:-1,Gospel TV India (720p)
-http://live.adostream.com:1935/gospeltv/gospeltv/playlist.m3u8
-#EXTINF:-1,Star Cinema (576p)
-http://c0.cdn.trinity-tv.net/stream/nh9u54a7sfnc2hwzxr2zwykwkqm43bgyyzsm68ybbbnjei8kytwcgs3zm5gnw5c6efa5gr3fadzqe686w8gj2eaehrj89wvujvqza3kez78dtknwbbmnqf79yygmqqg7e9pnc3i3bpywjkiqrwke94yf.m3u8
-#EXTINF:-1,Star Family (576p)
-http://c0.cdn.trinity-tv.net/stream/zfmjgma9zn46fa797ez9fgkw7msh9mj4tppspg23gey6mmx5fqiy7ky3jqx4uhgsfsrd8r76si8ykb2anw9442g4qkq5fzpdvwdqf5te24ixu9zrx3aesm9fzt59q5y2s8qwgbqhvf6d3z5bjy3qb2t4.m3u8
-#EXTINF:-1,One Golf
-http://162.250.201.58:6211/pk/ONEGOLF/index.m3u8
-#EXTINF:-1,Freecatv Euro.Sports 2
-http://175.107.244.52:4457/play/a06w/index.m3u8
-#EXTINF:-1,Bein Sports 5 Arabic 🇶🇦
-http://175.107.244.52:4457/play/a06y/index.m3u8
-#EXTINF:-1,Time tv
-http://208.86.19.13:81/506.stream/index.m3u8
-#EXTINF:-1,Iqra Bangla freecatv
-http://208.86.19.13:81/507.stream/index.m3u8
-#EXTINF:-1,Deshi TV
-http://208.86.19.13:81/514.stream/index.m3u8
-#EXTINF:-1,Turkmenistan Sport 🇹🇲
-http://217.174.225.146/hls/ch004_720/index.m3u8
-#EXTINF:-1,Movie Bangla
-http://alvetv.com/moviebanglatv/8080/index.m3u8
-#EXTINF:-1,Bangla Jago
-http://banglajagotv.livebox.co.in:80/banglajagohls/24x7.m3u8
-#EXTINF:-1,RTV SPORT 🇸🇲
-http://d2hrvno5bw6tg2.cloudfront.net/smrtv-ch02/_definst_/ch-02/chunklist.m3u8
-#EXTINF:-1,Khushboo Bangla(BD2)
-http://idvd.multitvsolution.com/idvo/khushboo.m3u8
-#EXTINF:-1,Khusboo Bangla
-http://idvd.multitvsolution.com/idvo/khushboo_540p.m3u8
-#EXTINF:-1,R Plus Gold(BD2)
-http://idvd.multitvsolution.com/idvo/rplusgold.m3u8
-#EXTINF:-1,X SPORT
-http://iptv.prosto.tv:7000/ch110/video.m3u8
-#EXTINF:-1,X SPORT PLUS
-http://iptv.prosto.tv:7000/ch117/video.m3u8
-#EXTINF:-1,FIGHT BOX HD
-http://iptv.prosto.tv:7000/ch118/video.m3u8
-#EXTINF:-1,SPORT 5 GOLD HD
-http://mwy2tky6.akciatv.ru/iptv/ZP6CPSLL6GVWT2/12254/index.m3u8
-#EXTINF:-1,SPORT 5 PLUS HD
-http://mwy2tky6.akciatv.ru/iptv/ZP6CPSLL6GVWT2/12256/index.m3u8
-#EXTINF:-1,Red Bull TV Sports
-http://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_928.m3u8
-#EXTINF:-1,ABP ananda
-https://abplivetv.akamaized.net/hls/live/2043012/ananda/master.m3u8
-#EXTINF:-1,Turkmenistan Sport 🇹🇲
-https://alpha.tv.online.tm/legacyhls/ch004_720/index.m3u8
-#EXTINF:-1,Channel S (1080p)
-https://amigofx.com:1936/channelsreporter/channelsreporter/playlist.m3u8
-#EXTINF:-1,Colors Bangla(Yupp TV)
-https://catchup.yuppcdn.net/amazonv2/36/preview/colorsbanglahd/master/chunklist.m3u8
-#EXTINF:-1,Colors Bangla HD
-https://catchup.yuppcdn.net:443/amazonv2/36/preview/colorsbanglahd/master/chunklist.m3u8
-#EXTINF:-1,DESHI TV
-https://deshitv.deshitv24.net/live/myStream/playlist.m3u8
-#EXTINF:-1,Ekushay TV
-https://ekusheyserver.com/etvlivesn.m3u8
-#EXTINF:-1,Tennis Channel
-https://tennischannel-int-samsunguk.amagi.tv/playlist.m3u8
-#EXTINF:-1,Trace Sports Stars
-https://trace-sportstars-samsungnz.amagi.tv/playlist.m3u8
-#EXTINF:-1,[Jago] Dubai Sports 2
-http://dmitwlvvll.cdn.mangomolo.com/dubaisportshd/smil:dubaisportshd.smil/chunklist.m3u8
-#EXTINF:-1,[Jago] Dubai Sports 3
-http://dmitwlvvll.cdn.mangomolo.com/dubaisportshd5/smil:dubaisportshd5.smil/index.m3u8
-#EXTINF:-1,HIGH NEWS
-http://highmedia.livebox.co.in:80/HIGHNEWShls/LIVE.m3u8
-#EXTINF:-1,Times TV পাকিস্তান
-http://208.86.19.13:81/513.stream/index.m3u8
-#EXTINF:-1,AB Ananda Barta
-http://5dd3981940faa.streamlock.net:1935/abnews/abnews/chunklist_w644394347.m3u8
-#EXTINF:-1,GaziTV
-http://103.102.27.173/live/tvfeed1001/index.m3u8
-#EXTINF:-1,Zee Bangla (30min Left)
-https://catchup.yuppcdn.net/amazonv2/36/preview/zeebangla/master/chunklist.m3u8
-#EXTINF:-1,Star Jalsha HD (30min Left)
-https://catchup.yuppcdn.net/amazonv2/36/preview/starjalsha/master/chunklist.m3u8
-#EXTINF:-1,R Plus News
-https://thelegitpro.in/pntv/rplusnews24x7/index.m3u8
-#EXTINF:-1,Zee 24 Ghanta
-https://d75dqofg5kmfk.cloudfront.net/bpk-tv/24ghanta/default/index.m3u8
-#EXTINF:-1,Brat TV (1080p)
-https://brat-rakuten.amagi.tv/playlist.m3u8
-#EXTINF:-1,TV9 Bangla (720p)
-https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9banaen8yq/liveabr/playlist.m3u8
-#EXTINF:-1,Qatar TV 2 (720p)
-https://qatartv.akamaized.net/hls/live/2026574/qtv2/master.m3u8
-#EXTINF:-1,food
-https://dai2.xumo.com:443/amagi_hls_data_xumo1212A-food52/CDN/1280x720_5000000/index.m3u8
-#EXTINF:-1,CGTN
-http://iptv.prosto.tv:7000/ch84/video.m3u8
-#EXTINF:-1,ABP Ananda (akamai)
-https://abp-i.akamaihd.net:443/hls/live/765530/abpananda/master.m3u8
-#EXTINF:-1,Sony Aath
-http://isstnjz4.megogo.xyz/iptv/SNZC9Z4RPEYGA3/6641/index.m3u8
-#EXTINF:-1,ANNANDA BARTA
-http://5dd3981940faa.streamlock.net:1935/abnews/abnews/chunklist_w1725375788.m3u8
-#EXTINF:-1,HBTV
-http://hoabinhtvlive.746b3ddb.cdnviet.com/hoabinhtv/chunklist.m3u8
-#EXTINF:-1,ABP Ananda
-https://abp-i.akamaihd.net/hls/live/765530/abpananda/master.m3u8
-#EXTINF:-1,CHANNEL I
-http://208.86.19.13:81/510.stream/index.m3u8?
-#EXTINF:-1,Sports 4
-http://103.102.27.173/live/tvfeed1005/index.m3u8
-#EXTINF:-1,Sports 5
-http://103.102.27.173/live/tvfeed1006/index.m3u8
-#EXTINF:-1,Music India
-https://food-dlvr-ott.akamaized.net/primary/1/d9c0812d4aaf40599540a35be89fb629/index_9_0.m3u8
-#EXTINF:-1,14. Ntv HD
-http://tv.cloudcdn.me/live.ts?channelId=109&uid=5060&deviceMac=00:1A:79:73:9C:A1
-#EXTINF:-1,34. Biswa-Bangla HD
-http://176.119.29.52/live.ts?channelId=90253&uid=5060&deviceMac=00:1A:79:73:9C:A1
-#EXTINF:-1,39. Atn News Bangla
-http://176.119.29.52/live.ts?channelId=83&uid=5060&deviceMac=00:1A:79:73:9C:A1
-#EXTINF:-1,Zee Marathi
-http://103.120.172.74:1040
-#EXTINF:-1,Sony Sports Ten 1 HD(BD)
-http://103.2.153.38/trans1sd/smil:tensports1.smil/chunklist.m3u8
-#EXTINF:-1,Sony Sports Ten 2(BD)
-http://103.2.153.38/trans1sd/smil:tensports2.smil/chunklist.m3u8
-#EXTINF:-1,Sony Sports Ten 5 HD(BD)
-http://103.2.153.38/trans1sd/smil:tensports5.smil/chunklist.m3u8
-#EXTINF:-1,NTV(BD)
-http://103.230.105.252:1935/live/ntv/manifest.m3u8
-#EXTINF:-1,Star Bharat(BD)
-http://195.26.87.217/live.ts?channelId=12364&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,B4U Movies IN(BD)
-http://195.26.87.217/live.ts?channelId=152&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,Colors UK(BD)
-http://195.26.87.217/live.ts?channelId=161&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,Star Bharat HD(BD)
-http://195.26.87.217/live.ts?channelId=195&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,Ustsav Plus HD(BD)
-http://195.26.87.217/live.ts?channelId=201&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,Sony Max 2 UK(BD)
-http://195.26.87.217/live.ts?channelId=40479&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,HBO(BD)
-http://195.26.87.217/live.ts?channelId=49858&uid=7435&deviceMac=00:1A:79:51:4B:3A
-#EXTINF:-1,Bflix(BD)
-http://idvd.multitvsolution.com/idvo/bflixmovies.m3u8
-#EXTINF:-1,Hollywood HD(BD)
-http://iptv.prosto.tv:7000/ch50/video.m3u8
-#EXTINF:-1,Cartoon Network(BD)
-https://amg01448-samsungin-cartoonnw-samsungin-1y8kz.amagi.tv/playlist/amg01448-samsungin-cartoonnw-samsungin/cb553d1e786c648b93d43d63d5ef41a4d3246ad3032e90703dff06c231901d468ca2f9d3f537b63619d714af3f5e2f0e0433db18dd6511b6802eea0e6d287f09cfcceb2ada861317b3c60e383ebb281700ab0941d8380220dcec5759d438b0340446b00a230f338fbe51aa7e55978808821d57b189e5a4fd04706ded294fdfd20ffda8bd0c118d2ff9932372a75e26c7199604e6368ff19702cf69b66cc1168caa08baf212e7868bfa2a50c24d1bb2ccf90b774fb3833797c9936876b879294d1f6fb8c9cbfc4a7292524159fafadfbe37b04a80d165c94c3eb5158014a53e8e79a500a3a11ff3e4fbfe4c452babcd5f590aa5e1a98ba87a62f337b5f39bbd091c93944c2a5fa8718f3a353705d56f1c4b0b9a90d86276/82/640x360_1284800/index.m3u8
-#EXTINF:-1,Pogo(BD)
-https://amg01448-samsungin-pogo-samsungin-dzccl.amagi.tv/playlist/amg01448-samsungin-pogo-samsungin/playlist.m3u8
-#EXTINF:-1,MU TV
-https://bcovlive-a.akamaihd.net/r6b4170ad9e8e4ed49986ecc03bac588b/eu-west-1/6058004203001/playlist.m3u8
-#EXTINF:-1,Action Hollywood Movies(BD)
-https://cdn-apse1-prod.tsv2.amagi.tv/linear/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8
-#EXTINF:-1,SHEEMAROO BOLLYWOOD(BD)
-https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00864-shemarooenterta-shemabollywood-ono/playlist.m3u8
-#EXTINF:-1,Real Madrid TV
-https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01201-cinedigmenterta-realmadrid-cineverse/playlist.m3u8
-#EXTINF:-1,Bollywood HD (BD)
-https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-hd/43e99595-3ab3-4f82-a828-0d32dc308c98/0.m3u8
-#EXTINF:-1,Bollywood Classic(BD)
-https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/manifest.m3u8
-#EXTINF:-1,Food Food(BD)
-https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/foodfood/master.m3u8?ads.rnd=__CACHE_BUSTER__&ads.env_i=__env.i_
-#EXTINF:-1,9XM(BD)
-https://d75dqofg5kmfk.cloudfront.net/bpk-tv/9XM/default/index.m3u8
-#EXTINF:-1,DD National(BD)
-https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Ddnational/default/index.m3u8
-#EXTINF:-1,Music India(BD)
-https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Musicindia/default/index.m3u8
-#EXTINF:-1,Sangeet Bangla(BD)
-https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Sangeetbangla/default/index.m3u8
-#EXTINF:-1,Food Network English(BD)
-https://dplus.gammacdn.workers.dev/videos/112.m3u8
-#EXTINF:-1,Discovery Multi Audio(BD)
-https://dplus.gammacdn.workers.dev/videos/95.m3u8
-#EXTINF:-1,Live Sports Sony Ten 1 HD
-https://edge4-moblive.yuppcdn.net/trans1sd/smil:tensports1.smil/playlist.m3u8
-#EXTINF:-1,Live Sports Sony Ten 2 HD
-https://edge4-moblive.yuppcdn.net/trans1sd/smil:tensports2.smil/playlist.m3u8
-#EXTINF:-1,Live Sports Sony Ten 5 HD
-https://edge4-moblive.yuppcdn.net/trans1sd/smil:tensports5.smil/playlist.m3u8
-#EXTINF:-1,Ekushey TV
-https://ekusheyserver.com/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8
-#EXTINF:-1,DW English
-https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/stream03/streamPlaylist.m3u8
-#EXTINF:-1,SPORTSMAX 1
-https://is.gd/8Xi5qy
-#EXTINF:-1,BEIN SPORT LIVE 🇶🇦
-http://mmn.mypsx.net:1935/live/mmnhdsport/chunklist.m3u8
-#EXTINF:-1,PTV sports
-http://175.107.244.52:4457/play/a08g/index.m3u8
-#EXTINF:-1,Willow Cricket HD
-http://195.26.87.217/live?channelId=302&deviceMac=00:1A:79:33:E9:41
-#EXTINF:-1,Astro 🇲🇾 Cricket HD
-http://195.26.87.217/live?channelId=26034&deviceMac=00:1A:79:33:E9:41
-#EXTINF:-1,FOXSPORTS 3 HD.
-http://45.166.92.22:58001/play/a01j/index.m3u8
-#EXTINF:-1,GOLTV HD.
-http://45.166.92.22:58001/play/a04k/index.m3u8
-#EXTINF:-1,TyCSports HD.
-http://45.166.92.22:58001/play/a04d/index.m3u8
-#EXTINF:-1,STAR SPORTS 1
-http://103.102.27.173/live/tvfeed1003/index.m3u8
-#EXTINF:-1,SPORTSMAX
-https://prod-fastly-eu-central-1.video.pscp.tv/Transcoding/v1/hls/jotm3m_a8wn4PvnOuls_kj01ieR6k1mptTR8SytfsP8kBaL1eEexUbjoBZ3yZVSuP8qyO5Y8f-RwYhL_fDw7Rg/non_transcode/eu-central-1/periscope-replay-direct-prod-eu-central-1-public/tw_master_dynamic_highlatency.m3u8?type=live
-#EXTINF:-1,Setanta Sports 2 HD 🇷🇺
-http://2342512b.ucomist.net/iptv/AACXKHBLQUH7G7/270/index.m3u8
-#EXTINF:-1,TRACE SPORTS
-http://lightning-tracesport-samsungau.amagi.tv/playlist.m3u8
-#EXTINF:-1,Ru Sport
-http://streaming.astrakhan.ru/astrakhanrusporthd/tracks-v5a1/index.m3u8?source:iptvmate.net
-#EXTINF:-1,MAHAR SPORTS
-http://tv.mahar.live/esports/mahar.stream/playlist.m3u8
-#EXTINF:-1,Abu Dhabi Sports 3
-http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_sports3
-#EXTINF:-1,Abu Dhabi Sports 4
-http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_sports4
-#EXTINF:-1,Abu Dhabi Sports 1
-http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_Sports1
-#EXTINF:-1,Abu Dhabi Sports 2
-http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_sports2
-#EXTINF:-1,IPL 2024 Star Sports 1
-http://41.205.93.154/STARSPORTS1/index.m3u8
-#EXTINF:-1,IPL 2024 ATN National
-https://d10rltuy0iweup.cloudfront.net/ATNNAT/myStream/playlist.m3u8
-#EXTINF:-1,Bangla TV
-https://byphdgllyk.gpcdn.net/hls/banglatvbd/index.m3u8
-#EXTINF:-1,Bangla TV Europe
-https://byphdgllyk.gpcdn.net/hls/banglatveurope/index.m3u8
-#EXTINF:-1,Kids Creation
-https://vods1.aynaott.com/kidscreation_test/tracks-v1a1/mono.m3u8
-#EXTINF:-1,Enter 10 Bangla
-https://live-bangla.akamaized.net/liveabr/pub-iobanglakp3sff/live_720p/chunks.m3u8
-#EXTINF:-1,Jalsha Movies HD
-http://tv.cloudcdn.me/live.ts?channelId=117&uid=himelhimu&deviceMac=00:1A:79:A8:9C:32
-#EXTINF:-1,Sony TV HD
-http://103.120.172.74:5000
-#EXTINF:-1,Sony Sab
-http://103.120.172.74:4400
-#EXTINF:-1,The Movie Club
-https://cc-jytb1qhmgqh5a.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-jytb1qhmgqh5a/playlist.m3u8
-#EXTINF:-1,South Station
-https://cc-tke03xaj1wszc.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-tke03xaj1wszc/South_Station_IN/playlist.m3u8
-#EXTINF:-1,Star Sports 1 HD
-http://103.120.172.74:4600
-#EXTINF:-1,Star Sports Select 1
-http://103.120.172.74:1030
-#EXTINF:-1,Star Sports Select 2
-http://103.120.172.74:4700
-#EXTINF:-1,Sports 18 1 HD
-http://tv.cloudcdn.me/live.ts?channelId=102479&uid=4944&deviceMac=00:1A:79:94:98:FE
-#EXTINF:-1,Sports 18 1 HD
-http://103.120.172.74:5500
-#EXTINF:-1,Food Food
-https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/foodfood/master.m3u8?ads.rnd=__CmBanglaavel__&ads.env_i=__env.i_
-#EXTINF:-1,Zoo Moo
-https://amg01553-blueantmediaasi-zoomoonz-samsungnz-rdufn.amagi.tv/playlist/amg01553-blueantmediaasi-zoomoonz-samsungnz/playlist.m3u8
-#EXTINF:-1,Action Hollywood Movies
-https://amg01076-lightningintern-actionhollywood-samsungnz-82rry.amagi.tv/playlist/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8
-#EXTINF:-1,Sony Pix
-http://tv.cloudcdn.me/live.ts?channelId=189&uid=himelhimu&deviceMac=00:1A:79:A8:9C:32
-#EXTINF:-1,Hindi Hits HD
-http://146.59.253.52:8080/hindihitshd/index.m3u8
-#EXTINF:-1,Bollywood Hungama
-https://yuppmedtaorire.akamaized.net/v1/master/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/bollywoodhungama_live_https/master.m3u8
-#EXTINF:-1,Zoom
-https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Zoom/default/zoom.m3u8
-#EXTINF:-1,Fox News Now
-https://fox-foxnewsnow-samsungus.amagi.tv/playlist.m3u8
-#EXTINF:-1,Sport Ext
-https://marine2.miplay.cl/sportext/playlist.m3u8
-#EXTINF:-1,Star sports1
-http://103.120.172.74:4100
-#EXTINF:-1,Arena Sport 1 HD
-http://80.252.37.194:5000/udp/233.233.233.3:12000
-#EXTINF:-1,Arena Sport 2 HD
-http://80.252.37.194:5000/udp/233.233.233.4:12000
-#EXTINF:-1,Arena Sport 3 HD
-http://80.252.37.194:5000/udp/233.233.233.5:12000
-#EXTINF:-1,Arena Sport 4 HD
-http://80.252.37.194:5000/udp/233.233.233.6:12000
-#EXTINF:-1,Arena Sport 5 HD
-http://80.252.37.194:5000/udp/233.233.233.7:12000
-#EXTINF:-1,Arena Sport 6 HD
-http://80.252.37.194:5000/udp/233.233.233.8:12000
-`;
+        // --- DADDYLIVE DATA (Placeholder - truncated for size) ---
+        // You can paste your full dlChannels list back here if needed.
+        const dlChannels = [
+    { id: 51, name: "ABC USA" }, { id: 206, name: "AHC USA" }, { id: 283, name: "Antenna TV" }, { id: 302, name: "A&E USA" }, { id: 303, name: "AMC USA" }, { id: 304, name: "Animal Planet" }, 
+    { id: 123, name: "Astro SuperSport 1" }, { id: 124, name: "Astro SuperSport 2" }, { id: 125, name: "Astro SuperSport 3" }, { id: 126, name: "Astro SuperSport 4" },
+    { id: 134, name: "Arena Sport 1 Premium" }, { id: 135, name: "Arena Sport 2 Premium" }, { id: 139, name: "Arena Sport 3 Premium" }, 
+    { id: 429, name: "Arena Sport 1 Serbia" }, { id: 430, name: "Arena Sport 2 Serbia" }, { id: 431, name: "Arena Sport 3 Serbia" }, { id: 581, name: "Arena Sport 4 Serbia" }, 
+    { id: 940, name: "Arena Sport 5 Serbia" }, { id: 941, name: "Arena Sport 6 Serbia" }, { id: 942, name: "Arena Sport 7 Serbia" }, { id: 943, name: "Arena Sport 8 Serbia" }, { id: 944, name: "Arena Sport 9 Serbia" }, { id: 945, name: "Arena Sport 10 Serbia" },
+    { id: 432, name: "Arena Sport 1 Croatia" }, { id: 433, name: "Arena Sport 2 Croatia" }, { id: 434, name: "Arena Sport 3 Croatia" }, { id: 580, name: "Arena Sport 4 Croatia" }, 
+    { id: 579, name: "Arena Sport 1 BiH" }, { id: 612, name: "Arena Sports Tenis" },
+    { id: 781, name: "Alkass One" }, { id: 782, name: "Alkass Two" }, { id: 783, name: "Alkass Three" }, { id: 784, name: "Alkass Four" }, 
+    { id: 600, name: "Abu Dhabi Sports 1 UAE" }, { id: 601, name: "Abu Dhabi Sports 2 UAE" }, { id: 609, name: "Abu Dhabi Sports 1 Premium" }, { id: 610, name: "Abu Dhabi Sports 2 Premium" }, 
+    { id: 370, name: "Astro Cricket" }, { id: 531, name: "Antena 3 Spain" }, { id: 664, name: "ACC Network" }, { id: 295, name: "Adult Swim" }, { id: 269, name: "A Sport PK" }, 
+    { id: 717, name: "AXN Movies" }, { id: 725, name: "Arte DE" }, { id: 958, name: "Arte France" }, { id: 742, name: "AXS TV USA" }, { id: 766, name: "ABC NY" }, 
+    { id: 844, name: "Azteca 7" }, { id: 934, name: "Azteca Uno" }, { id: 923, name: "Altitude Sports" }, { id: 961, name: "Automoto" }, { id: 1000, name: "ATV Turkey" }, { id: 1011, name: "A Spor Turkey" }, 
+    { id: 61, name: "beIN Sports MENA 1 Eng" }, { id: 90, name: "beIN Sports MENA 2 Eng" }, 
+    { id: 91, name: "beIN Sports 1 Arabic" }, { id: 92, name: "beIN Sports 2 Arabic" }, { id: 93, name: "beIN Sports 3 Arabic" }, { id: 94, name: "beIN Sports 4 Arabic" }, { id: 95, name: "beIN Sports 5 Arabic" }, { id: 96, name: "beIN Sports 6 Arabic" }, { id: 97, name: "beIN Sports 7 Arabic" }, { id: 98, name: "beIN Sports 8 Arabic" }, { id: 99, name: "beIN Sports 9 Arabic" }, { id: 100, name: "beIN SPORTS XTRA 1" }, 
+    { id: 494, name: "beIN Sports MAX 4" }, { id: 495, name: "beIN Sports MAX 5" }, { id: 496, name: "beIN Sports MAX 6" }, { id: 497, name: "beIN Sports MAX 7" }, { id: 498, name: "beIN Sports MAX 8" }, { id: 499, name: "beIN Sports MAX 9" }, { id: 500, name: "beIN Sports MAX 10" }, { id: 597, name: "beIN SPORTS MAX AR" },
+    { id: 116, name: "beIN SPORTS 1 FR" }, { id: 117, name: "beIN SPORTS 2 FR" }, { id: 118, name: "beIN SPORTS 3 FR" }, 
+    { id: 62, name: "beIN SPORTS 1 TR" }, { id: 63, name: "beIN SPORTS 2 TR" }, { id: 64, name: "beIN SPORTS 3 TR" }, { id: 67, name: "beIN SPORTS 4 TR" }, { id: 1010, name: "bein Sports 5 TR" },
+    { id: 712, name: "beIN Sports 1 MY" }, { id: 713, name: "beIN Sports 2 MY" }, { id: 714, name: "beIN Sports 3 MY" },
+    { id: 578, name: "BeIN Sports HD Qatar" }, { id: 425, name: "BeIN SPORTS USA" }, { id: 372, name: "beIN Español" }, 
+    { id: 491, name: "beIN Australia 1" }, { id: 492, name: "beIN Australia 2" }, { id: 493, name: "beIN Australia 3" }, 
+    { id: 522, name: "Barca TV" }, { id: 380, name: "Benfica TV" }, { id: 648, name: "Boomerang" }, 
+    { id: 476, name: "BNT 1" }, { id: 477, name: "BNT 2" }, { id: 478, name: "BNT 3" }, 
+    { id: 737, name: "BR Fernsehen" }, { id: 479, name: "bTV" }, { id: 481, name: "bTV Action" }, { id: 484, name: "bTV Lady" }, 
+    { id: 305, name: "BBC America" }, { id: 306, name: "BET USA" }, { id: 307, name: "Bravo USA" }, { id: 349, name: "BBC News" }, 
+    { id: 356, name: "BBC One" }, { id: 357, name: "BBC Two" }, { id: 358, name: "BBC Three" }, { id: 359, name: "BBC Four" }, 
+    { id: 397, name: "BIG TEN Network" }, { id: 275, name: "Bandsports" }, { id: 957, name: "BFM TV" },
+    { id: 271, name: "Canal+ MotoGP" }, { id: 273, name: "Canal+ Formula 1" }, { id: 280, name: "CW PIX 11" }, { id: 52, name: "CBS USA" }, { id: 281, name: "Court TV" }, { id: 300, name: "CW USA" }, { id: 309, name: "CNBC" }, { id: 310, name: "Comedy Central" }, { id: 339, name: "Cartoon Network" }, { id: 345, name: "CNN USA" }, { id: 374, name: "Cinemax" }, 
+    { id: 535, name: "Cuatro Spain" }, { id: 354, name: "Channel 4 UK" }, { id: 355, name: "Channel 5 UK" }, { id: 308, name: "CBS Sports Network" }, { id: 910, name: "CBS Sports Golazo" },
+    { id: 121, name: "Canal+ FR" }, { id: 122, name: "Canal+ Sport FR" }, { id: 463, name: "Canal+ Foot" }, { id: 464, name: "Canal+ Sport360" }, { id: 540, name: "Canal 11" }, 
+    { id: 48, name: "Canal+ Sport PL" }, { id: 73, name: "Canal+ Sport 2 PL" }, { id: 259, name: "Canal+ Sport 3 PL" }, { id: 75, name: "Canal+ Sport 5 PL" }, { id: 566, name: "Canal+ Premium" }, { id: 567, name: "Canal+ Family" }, { id: 570, name: "Canal+ Seriale" }, 
+    { id: 983, name: "Canal+ Extra 1 PL" }, { id: 984, name: "Canal+ Extra 2 PL" }, { id: 985, name: "Canal+ Extra 3 PL" }, { id: 986, name: "Canal+ Extra 4 PL" }, { id: 987, name: "Canal+ Extra 5 PL" }, { id: 988, name: "Canal+ Extra 6 PL" }, { id: 989, name: "Canal+ Extra 7 PL" },
+    { id: 486, name: "Canal+ Sport 1 Afr" }, { id: 487, name: "Canal+ Sport 2 Afr" }, { id: 488, name: "Canal+ Sport 3 Afr" }, { id: 489, name: "Canal+ Sport 4 Afr" }, { id: 490, name: "Canal+ Sport 5 Afr" }, 
+    { id: 805, name: "CANAL 9 DK" }, { id: 89, name: "Combate" }, 
+    { id: 622, name: "Cosmote Sport 1" }, { id: 623, name: "Cosmote Sport 2" }, { id: 624, name: "Cosmote Sport 3" }, { id: 625, name: "Cosmote Sport 4" }, { id: 626, name: "Cosmote Sport 5" }, { id: 627, name: "Cosmote Sport 6" }, { id: 628, name: "Cosmote Sport 7" }, { id: 629, name: "Cosmote Sport 8" }, { id: 630, name: "Cosmote Sport 9" }, 
+    { id: 546, name: "Channel 9 IL" }, { id: 547, name: "Channel 10 IL" }, { id: 548, name: "Channel 11 IL" }, { id: 549, name: "Channel 12 IL" }, { id: 551, name: "Channel 13 IL" }, { id: 552, name: "Channel 14 IL" }, 
+    { id: 812, name: "C More First" }, { id: 813, name: "C More Hits" }, { id: 814, name: "C More Series" }, 
+    { id: 748, name: "COZI TV" }, { id: 647, name: "CMT" }, { id: 602, name: "CTV Canada" }, { id: 838, name: "CTV 2 Canada" }, { id: 669, name: "Crime+ Investigation" }, { id: 696, name: "Comet" }, { id: 697, name: "Cooking Channel" }, { id: 715, name: "Cleo TV" }, { id: 750, name: "C SPAN 1" }, { id: 767, name: "CBS NY" }, { id: 776, name: "Chicago Sports" }, { id: 831, name: "Citytv" }, { id: 832, name: "CBC CA" }, 
+    { id: 933, name: "Claro Sports" }, { id: 936, name: "Canal 5 MX" }, { id: 956, name: "C8 France" }, { id: 964, name: "CNews" }, { id: 284, name: "CricLife 1" }, { id: 866, name: "CW Philly" }, { id: 790, name: "CMTV" },
+    { id: 1020, name: "Canal+ Sport CZ" }, { id: 1043, name: "Canal+ Sport 2 CZ" }, { id: 1044, name: "Canal+ Sport 3 CZ" }, { id: 1045, name: "Canal+ Sport 4 CZ" }, { id: 1046, name: "Canal+ Sport 5 CZ" }, { id: 1047, name: "Canal+ Sport 6 CZ" }, { id: 1048, name: "Canal+ Sport 7 CZ" }, { id: 1049, name: "Canal+ Sport 8 CZ" }, { id: 1063, name: "Canal+ Sport SK" }, { id: 1064, name: "Canal+ Sport 2 SK" }, { id: 1065, name: "Canal+ Sport 3 SK" }, { id: 1066, name: "Canal+ Sport 4 SK" }, { id: 1033, name: "CT Sport" }, { id: 1035, name: "CT1 HD" }, { id: 1036, name: "CT2 HD" },
+    { id: 911, name: "Cytavision 1" }, { id: 912, name: "Cytavision 2" }, { id: 913, name: "Cytavision 3" }, { id: 914, name: "Cytavision 4" }, { id: 915, name: "Cytavision 5" }, { id: 916, name: "Cytavision 6" }, { id: 917, name: "Cytavision 7" }, 
+    { id: 230, name: "DAZN 1 UK" }, { id: 426, name: "DAZN 1 Bar DE" }, { id: 427, name: "DAZN 2 Bar DE" }, 
+    { id: 445, name: "DAZN 1 ES" }, { id: 446, name: "DAZN 2 ES" }, { id: 447, name: "DAZN 3 ES" }, { id: 448, name: "DAZN 4 ES" }, { id: 537, name: "DAZN F1 ES" }, { id: 538, name: "DAZN LaLiga" }, 
+    { id: 877, name: "DAZN ZONA IT" }, { id: 960, name: "DAZN Ligue 1 FR" }, { id: 918, name: "DAZN PT FIFA" },
+    { id: 285, name: "Discovery Velocity" }, { id: 311, name: "Discovery Life" }, { id: 313, name: "Discovery Channel" }, { id: 657, name: "Discovery Family" }, { id: 661, name: "Discovery Turbo" },
+    { id: 312, name: "Disney Channel" }, { id: 314, name: "Disney XD" }, { id: 652, name: "Disney JR" }, 
+    { id: 801, name: "DR1 DK" }, { id: 802, name: "DR2 DK" }, 
+    { id: 400, name: "Digi Sport 1" }, { id: 401, name: "Digi Sport 2" }, { id: 402, name: "Digi Sport 3" }, { id: 403, name: "Digi Sport 4" }, 
+    { id: 465, name: "Diema Sport 1" }, { id: 466, name: "Diema Sport 2" }, { id: 467, name: "Diema Sport 3" }, { id: 482, name: "Diema" }, { id: 485, name: "Diema Family" }, 
+    { id: 604, name: "Dubai Sports 1" }, { id: 605, name: "Dubai Sports 2" }, { id: 606, name: "Dubai Sports 3" }, { id: 608, name: "Dubai Racing 2" }, 
+    { id: 786, name: "DSTV Mzansi" }, { id: 827, name: "DSTV M-Net" }, { id: 828, name: "DSTV kykNET" }, 
+    { id: 651, name: "Destination America" }, { id: 348, name: "Dave" }, { id: 1051, name: "Dajto" },
+    { id: 44, name: "ESPN USA" }, { id: 45, name: "ESPN2 USA" }, { id: 316, name: "ESPNU" }, { id: 375, name: "ESPN Deportes" }, { id: 288, name: "ESPNews" }, 
+    { id: 379, name: "ESPN 1 NL" }, { id: 386, name: "ESPN 2 NL" }, { id: 888, name: "ESPN 3 NL" }, 
+    { id: 81, name: "ESPN Brasil" }, { id: 82, name: "ESPN2 Brasil" }, { id: 83, name: "ESPN3 Brasil" }, { id: 85, name: "ESPN4 Brasil" }, 
+    { id: 149, name: "ESPN Argentina" }, { id: 150, name: "ESPN2 Argentina" }, { id: 798, name: "ESPN3 Argentina" },
+    { id: 925, name: "ESPN 1 MX" }, { id: 926, name: "ESPN 2 MX" }, { id: 927, name: "ESPN 3 MX" }, { id: 928, name: "ESPN 4 MX" },
+    { id: 71, name: "Eleven Sports 1 PL" }, { id: 72, name: "Eleven Sports 2 PL" }, { id: 428, name: "Eleven Sports 3 PL" }, { id: 999, name: "Eleven Sports 4 PL" },
+    { id: 455, name: "Eleven Sports 1 PT" }, { id: 456, name: "Eleven Sports 2 PT" }, { id: 457, name: "Eleven Sports 3 PT" }, { id: 458, name: "Eleven Sports 4 PT" }, { id: 459, name: "Eleven Sports 5 PT" }, 
+    { id: 41, name: "EuroSport 1 GR" }, { id: 42, name: "EuroSport 2 GR" }, 
+    { id: 57, name: "EuroSport 1 PL" }, { id: 58, name: "EuroSport 2 PL" }, 
+    { id: 231, name: "Eurosport 1 SW" }, { id: 232, name: "Eurosport 2 SW" }, 
+    { id: 233, name: "Eurosport 1 NL" }, { id: 234, name: "Eurosport 2 NL" }, 
+    { id: 524, name: "EuroSport 1 ES" }, { id: 525, name: "EuroSport 2 ES" }, 
+    { id: 878, name: "EuroSport 1 IT" }, { id: 879, name: "EuroSport 2 IT" }, 
+    { id: 772, name: "Eurosport 1 FR" }, { id: 773, name: "Eurosport 2 FR" }, 
+    { id: 387, name: "Eurosport 1 BG" }, 
+    { id: 315, name: "E! Entertainment" }, { id: 363, name: "E4 Channel" }, { id: 774, name: "ERT 1" },
+    { id: 279, name: "FUSE TV" }, { id: 39, name: "Fox Sports 1" }, { id: 758, name: "Fox Sports 2" }, { id: 756, name: "FOX Soccer Plus" }, { id: 369, name: "Fox Cricket" }, { id: 643, name: "FOX Deportes" }, { id: 297, name: "Fox Business" }, { id: 54, name: "FOX USA" }, { id: 347, name: "Fox News" }, { id: 768, name: "FOX NY" }, { id: 775, name: "Fox Weather" }, 
+    { id: 820, name: "FOX Sports 502 AU" }, { id: 821, name: "FOX Sports 503 AU" }, { id: 822, name: "FOX Sports 504 AU" }, { id: 823, name: "FOX Sports 505 AU" }, { id: 824, name: "FOX Sports 506 AU" }, { id: 825, name: "FOX Sports 507 AU" }, 
+    { id: 787, name: "Fox Sports AR" }, { id: 788, name: "Fox Sports 2 AR" }, { id: 789, name: "Fox Sports 3 AR" }, 
+    { id: 929, name: "Fox Sports 1 MX" }, { id: 930, name: "Fox Sports 2 MX" }, { id: 931, name: "Fox Sports 3 MX" }, { id: 830, name: "Fox Premium MX" }, 
+    { id: 483, name: "FOX HD BG" }, 
+    { id: 317, name: "FX USA" }, { id: 298, name: "FXX USA" }, { id: 301, name: "Freeform" }, { id: 381, name: "FX Movie Channel" }, 
+    { id: 568, name: "FilmBox Premium" }, { id: 757, name: "Fight Network" }, { id: 665, name: "FYI" }, { id: 688, name: "Film4 UK" }, { id: 744, name: "Fashion TV" }, { id: 751, name: "FETV" }, 
+    { id: 890, name: "FanDuel Arizona" }, { id: 891, name: "FanDuel Detroit" }, { id: 892, name: "FanDuel Florida" }, { id: 893, name: "FanDuel Grt Lakes" }, { id: 894, name: "FanDuel Indiana" }, { id: 895, name: "FanDuel KC" }, { id: 896, name: "FanDuel Midwest" }, { id: 897, name: "FanDuel NOLA" }, { id: 898, name: "FanDuel North" }, { id: 899, name: "FanDuel Ohio" }, { id: 900, name: "FanDuel OK" }, { id: 902, name: "FanDuel SoCal" }, { id: 903, name: "FanDuel South" }, { id: 904, name: "FanDuel Southeast" }, { id: 905, name: "FanDuel Sun" }, { id: 906, name: "FanDuel West" }, { id: 907, name: "FanDuel Wisc" }, 
+    { id: 950, name: "France 2" }, { id: 951, name: "France 3" }, { id: 952, name: "France 4" }, { id: 953, name: "France 5" }, 
+    { id: 530, name: "GOL PLAY" }, { id: 318, name: "GOLF Channel" }, { id: 319, name: "Game Show Net" }, { id: 687, name: "Gold UK" }, { id: 699, name: "GAC Family" }, { id: 743, name: "Galavision" }, { id: 752, name: "Grit" }, { id: 836, name: "Global CA" }, 
+    { id: 760, name: "Globo SP" }, { id: 761, name: "Globo RIO" }, 
+    { id: 320, name: "Hallmark Channel" }, { id: 296, name: "Hallmark M&M" }, { id: 282, name: "Heroes & Icons" }, { id: 322, name: "History" }, { id: 323, name: "HLN" }, { id: 382, name: "HGTV" }, { id: 846, name: "Happy TV" }, { id: 553, name: "HOT3" }, 
+    { id: 321, name: "HBO USA" }, { id: 689, name: "HBO2" }, { id: 690, name: "HBO Comedy" }, { id: 691, name: "HBO Family" }, { id: 692, name: "HBO Latino" }, { id: 693, name: "HBO Signature" }, { id: 694, name: "HBO Zone" }, { id: 569, name: "HBO Poland" }, 
+    { id: 350, name: "ITV 1" }, { id: 351, name: "ITV 2" }, { id: 352, name: "ITV 3" }, { id: 353, name: "ITV 4" }, { id: 876, name: "ITV Quiz" }, 
+    { id: 854, name: "Italia 1" }, { id: 324, name: "Invest. Discovery" }, { id: 325, name: "ION" }, { id: 656, name: "IFC TV" }, 
+    { id: 803, name: "Kanal 4 DK" }, { id: 804, name: "Kanal 5 DK" }, { id: 731, name: "Kabel Eins" }, { id: 1001, name: "Kanal D" }, 
+    { id: 276, name: "LaLigaTV UK" }, { id: 539, name: "LaLiga SmartBank" }, { id: 278, name: "Law & Crime" }, { id: 645, name: "L'Equipe" }, { id: 534, name: "La Sexta" }, { id: 826, name: "LFC TV" }, { id: 849, name: "Logo TV" }, { id: 924, name: "Las Estrellas" }, { id: 962, name: "LCI" }, { id: 326, name: "Lifetime" }, { id: 389, name: "Lifetime Movies" }, { id: 855, name: "La7" }, { id: 856, name: "LA7d" }, 
+    { id: 136, name: "Match Football 1" }, { id: 137, name: "Match Football 2" }, { id: 138, name: "Match Football 3" }, { id: 573, name: "Match Premier" }, { id: 127, name: "Match TV" }, { id: 395, name: "Match Boets" }, 
+    { id: 84, name: "Movistar Laliga" }, { id: 435, name: "Movistar Liga" }, { id: 437, name: "Movistar Supercopa" }, { id: 436, name: "Movistar Deportes" }, { id: 438, name: "Movistar Deportes 2" }, { id: 526, name: "Movistar Deportes 3" }, { id: 527, name: "Movistar Deportes 4" }, { id: 528, name: "Movistar Golf" }, 
+    { id: 563, name: "Motowizja" }, { id: 765, name: "MSG" }, { id: 327, name: "MSNBC" }, { id: 299, name: "Magnolia Network" }, { id: 265, name: "M4 Sports" }, { id: 470, name: "M6 France" }, { id: 646, name: "Racer TV" }, { id: 770, name: "Marquee Sports" }, { id: 399, name: "MLB Network" }, { id: 829, name: "MASN" }, { id: 654, name: "MY9TV" }, { id: 661, name: "Discovery Turbo" }, { id: 662, name: "METV" }, { id: 733, name: "MDR DE" }, { id: 749, name: "Mundotoro TV" }, { id: 778, name: "Monumental Sports" }, { id: 806, name: "MTV Denmark" }, { id: 791, name: "MGM+ / Epix" }, { id: 990, name: "MTV Poland" }, { id: 367, name: "MTV UK" }, { id: 371, name: "MTV USA" }, { id: 377, name: "MUTV" }, 
+    { id: 779, name: "Max Sport 1" }, { id: 780, name: "Max Sport 2" }, { id: 472, name: "Max Sport 1 BG" }, { id: 473, name: "Max Sport 2 BG" }, { id: 474, name: "Max Sport 3 BG" }, { id: 475, name: "Max Sport 4 BG" }, 
+    { id: 53, name: "NBC USA" }, { id: 404, name: "NBA TV" }, { id: 405, name: "NFL Network" }, { id: 663, name: "NHL Network" }, { id: 667, name: "NFL RedZone" }, { id: 277, name: "NBC10 Philly" }, { id: 777, name: "NBC Philadelphia" }, { id: 753, name: "NBC Boston" }, { id: 754, name: "NBC Bay Area" }, { id: 755, name: "NBC California" }, { id: 769, name: "NBC NY" }, { id: 845, name: "NBC Universo" }, { id: 762, name: "NESN" }, 
+    { id: 468, name: "Nova Sport BG" }, { id: 480, name: "Nova TV BG" }, { id: 582, name: "Nova Sport SRB" }, { id: 847, name: "Nova S" }, 
+    { id: 631, name: "Nova Sports 1" }, { id: 632, name: "Nova Sports 2" }, { id: 633, name: "Nova Sports 3" }, { id: 634, name: "Nova Sports 4" }, { id: 635, name: "Nova Sports 5" }, { id: 636, name: "Nova Sports 6" }, { id: 599, name: "Nova Premier" }, { id: 637, name: "Nova Start" }, { id: 638, name: "Nova Prime" }, { id: 639, name: "Nova News" }, 
+    { id: 1021, name: "Nova Sport 1 CZ" }, { id: 1022, name: "Nova Sport 2 CZ" }, { id: 1023, name: "Nova Sport 3 CZ" }, { id: 1024, name: "Nova Sport 4 CZ" }, { id: 1025, name: "Nova Sport 5 CZ" }, { id: 1026, name: "Nova Sport 6 CZ" }, { id: 1060, name: "Nova Sport 3 SK" }, { id: 1061, name: "Nova Sport 4 SK" }, { id: 1062, name: "Nova Sport 5 SK" }, { id: 1034, name: "Nova HD" }, { id: 1003, name: "NOW TV" }, 
+    { id: 328, name: "Nat Geo" }, { id: 745, name: "Nat Geo Wild" }, { id: 329, name: "NICK JR" }, { id: 330, name: "NICK" }, { id: 649, name: "Nicktoons" }, { id: 666, name: "Nick Music" }, { id: 650, name: "TeenNick" }, 
+    { id: 736, name: "NDR" }, { id: 292, name: "NewsNation" }, { id: 613, name: "Newsmax" }, { id: 835, name: "Noovo" }, 
+    { id: 611, name: "OnTime Sports" }, { id: 541, name: "ONE 1" }, { id: 542, name: "ONE 2" }, 
+    { id: 439, name: "Orange Sport 1" }, { id: 440, name: "Orange Sport 2" }, { id: 441, name: "Orange Sport 3" }, { id: 442, name: "Orange Sport 4" }, 
+    { id: 1027, name: "Oneplay Sport 1" }, { id: 1028, name: "Oneplay Sport 2" }, { id: 1029, name: "Oneplay Sport 3" }, { id: 1038, name: "OnePlay Sport 4" }, { id: 1039, name: "OnePlay MD2" }, { id: 1040, name: "OnePlay MD3" }, { id: 1041, name: "OnePlay MD4" }, 
+    { id: 331, name: "OWN" }, { id: 332, name: "Oxygen" }, { id: 848, name: "Outdoor Channel" }, 
+    { id: 562, name: "Polsat" }, { id: 47, name: "Polsat Sport 1" }, { id: 50, name: "Polsat Sport 2" }, { id: 129, name: "Polsat Sport 3" }, { id: 443, name: "Polsat News" }, { id: 564, name: "Polsat Film" }, { id: 991, name: "Polsat Premium 1" }, { id: 992, name: "Polsat Premium 2" }, { id: 993, name: "Polsat Extra 1" }, { id: 994, name: "Polsat Extra 2" }, { id: 995, name: "Polsat Extra 3" }, { id: 996, name: "Polsat Extra 4" }, { id: 997, name: "Polsat Fight" }, { id: 998, name: "Polsat News HD" }, 
+    { id: 771, name: "Premier Sports 1" }, { id: 799, name: "Premier Sports 2" }, { id: 88, name: "Premier Brasil" }, { id: 1030, name: "Premier Sport 1" }, { id: 1031, name: "Premier Sport 2" }, { id: 1032, name: "Premier Sport 3" }, 
+    { id: 583, name: "Prima Sport 1" }, { id: 584, name: "Prima Sport 2" }, { id: 585, name: "Prima Sport 3" }, { id: 586, name: "Prima Sport 4" }, { id: 843, name: "Prima TV" }, 
+    { id: 718, name: "Porto Canal" }, { id: 730, name: "ProSieben" }, { id: 450, name: "PTV Sports" }, { id: 43, name: "PDC TV" }, { id: 334, name: "Paramount" }, { id: 653, name: "POP TV" }, { id: 287, name: "Pac-12 Network" }, { id: 210, name: "PBS" }, 
+    { id: 293, name: "Reelz" }, { id: 364, name: "RTE 1" }, { id: 365, name: "RTE 2" }, { id: 119, name: "RMC Sport 1" }, { id: 120, name: "RMC Sport 2" }, { id: 954, name: "RMC Story" }, 
+    { id: 719, name: "RTP 1" }, { id: 720, name: "RTP 2" }, { id: 721, name: "RTP 3" }, 
+    { id: 850, name: "Rai 1" }, { id: 851, name: "Rai 2" }, { id: 852, name: "Rai 3" }, { id: 853, name: "Rai 4" }, { id: 882, name: "Rai Sport" }, { id: 858, name: "Rai Premium" }, 
+    { id: 523, name: "Real Madrid TV" }, { id: 740, name: "RTL DE" }, { id: 390, name: "RTL7 NL" }, { id: 839, name: "RDS" }, { id: 840, name: "RDS 2" }, { id: 841, name: "RDS Info" }, 
+    { id: 471, name: "Ring BG" }, { id: 555, name: "Racing TV" }, { id: 607, name: "Rally TV" }, { id: 920, name: "Root Sports" }, 
+    { id: 31, name: "TNT Sports 1" }, { id: 32, name: "TNT Sports 2" }, { id: 33, name: "TNT Sports 3" }, { id: 34, name: "TNT Sports 4" }, 
+    { id: 35, name: "Sky Sports Football" }, { id: 36, name: "Sky Sports+" }, { id: 37, name: "Sky Sports Action" }, { id: 38, name: "Sky Sports Main Event" }, { id: 46, name: "Sky Sports Tennis" }, { id: 130, name: "Sky Sports PL" }, { id: 60, name: "Sky Sports F1" }, { id: 65, name: "Sky Sports Cricket" }, { id: 70, name: "Sky Sports Golf" }, { id: 366, name: "Sky Sports News" }, { id: 449, name: "Sky Sports MIX" }, { id: 554, name: "Sky Sports Racing" }, 
+    { id: 240, name: "Sky Sports 1 DE" }, { id: 241, name: "Sky Sports 2 DE" }, { id: 556, name: "Sky Top Event DE" }, { id: 557, name: "Sky Mix DE" }, { id: 785, name: "Sky Golf DE" }, { id: 274, name: "Sky F1 DE" }, { id: 884, name: "Sky Tennis DE" }, { id: 558, name: "Sky Bundesliga 1" }, { id: 946, name: "Sky Bundesliga 2" }, { id: 947, name: "Sky Bundesliga 3" }, { id: 948, name: "Sky Bundesliga 4" }, { id: 949, name: "Sky Bundesliga 5" }, { id: 559, name: "Sky Sport Austria 1" }, 
+    { id: 574, name: "Sky Sports Golf IT" }, { id: 575, name: "Sky Sport MotoGP" }, { id: 576, name: "Sky Sport Tennis IT" }, { id: 577, name: "Sky Sport F1 IT" }, { id: 460, name: "Sky Sport MAX IT" }, { id: 461, name: "Sky Sport UNO" }, { id: 462, name: "Sky Sport Arena" }, { id: 881, name: "Sky UNO" }, { id: 869, name: "Sky Sport 24" }, { id: 870, name: "Sky Sport Calcio" }, { id: 875, name: "Sky Sport Basket" }, { id: 880, name: "Sky Serie" }, 
+    { id: 871, name: "Sky Calcio 1" }, { id: 872, name: "Sky Calcio 2" }, { id: 873, name: "Sky Calcio 3" }, { id: 874, name: "Sky Calcio 4" }, 
+    { id: 588, name: "Sky Sport 1 NZ" }, { id: 589, name: "Sky Sport 2 NZ" }, { id: 590, name: "Sky Sport 3 NZ" }, { id: 591, name: "Sky Sport 4 NZ" }, { id: 592, name: "Sky Sport 5 NZ" }, { id: 593, name: "Sky Sport 6 NZ" }, { id: 594, name: "Sky Sport 7 NZ" }, { id: 595, name: "Sky Sport 8 NZ" }, { id: 596, name: "Sky Sport 9 NZ" }, { id: 587, name: "Sky Sport Select NZ" }, 
+    { id: 671, name: "Sky Cinema Premiere" }, { id: 672, name: "Sky Cinema Select" }, { id: 673, name: "Sky Cinema Hits" }, { id: 674, name: "Sky Cinema Greats" }, { id: 675, name: "Sky Cinema Animation" }, { id: 676, name: "Sky Cinema Family" }, { id: 677, name: "Sky Cinema Action" }, { id: 678, name: "Sky Cinema Comedy" }, { id: 679, name: "Sky Cinema Thriller" }, { id: 680, name: "Sky Cinema Drama" }, { id: 681, name: "Sky Cinema Sci-Fi" }, 
+    { id: 859, name: "Sky Cinema Collection" }, { id: 860, name: "Sky Cinema Uno" }, { id: 861, name: "Sky Cinema Action IT" }, { id: 862, name: "Sky Cinema Comedy IT" }, { id: 863, name: "Sky Cinema Uno +24" }, { id: 864, name: "Sky Cinema Romance" }, { id: 865, name: "Sky Cinema Family IT" }, { id: 867, name: "Sky Cinema Drama IT" }, { id: 868, name: "Sky Cinema Suspense" }, 
+    { id: 682, name: "Sky Showcase" }, { id: 683, name: "Sky Arts" }, { id: 684, name: "Sky Comedy" }, { id: 685, name: "Sky Crime" }, { id: 686, name: "Sky History" }, { id: 708, name: "Sky MAX" }, { id: 361, name: "Sky Witness" }, { id: 362, name: "Sky Atlantic" }, 
+    { id: 885, name: "SONY TEN 1" }, { id: 886, name: "SONY TEN 2" }, { id: 887, name: "SONY TEN 3" }, 
+    { id: 759, name: "SNY" }, { id: 965, name: "Sport en France" }, { id: 982, name: "Spectrum SportsNet" }, { id: 921, name: "Space City Home" }, { id: 922, name: "SportsNet Pitt" }, { id: 764, name: "Spectrum Sportsnet" }, 
+    { id: 970, name: "Starz Cinema" }, { id: 971, name: "Starz Comedy" }, { id: 972, name: "Starz Edge" }, { id: 973, name: "Starz In Black" }, { id: 974, name: "Starz Kids & Family" }, { id: 975, name: "Starz Encore" }, { id: 976, name: "Starz Encore Action" }, { id: 977, name: "Starz Encore Black" }, { id: 978, name: "Starz Encore Classic" }, { id: 979, name: "Starz Encore Family" }, { id: 980, name: "Starz Encore Suspense" }, { id: 981, name: "Starz Encore Westerns" }, { id: 335, name: "Starz" }, 
+    { id: 614, name: "SSC Sport 1" }, { id: 615, name: "SSC Sport 2" }, { id: 616, name: "SSC Sport 3" }, { id: 617, name: "SSC Sport 4" }, { id: 618, name: "SSC Sport 5" }, { id: 619, name: "SSC Extra 1" }, { id: 620, name: "SSC Extra 2" }, { id: 621, name: "SSC Extra 3" }, 
+    { id: 140, name: "Sport 1 IL" }, { id: 141, name: "Sport 2 IL" }, { id: 142, name: "Sport 3 IL" }, { id: 143, name: "Sport 4 IL" }, { id: 144, name: "Sport 5 IL" }, { id: 145, name: "Sport 5 PLUS" }, { id: 146, name: "Sport 5 Live" }, { id: 147, name: "Sport 5 Star" }, { id: 148, name: "Sport 5 Gold" }, 
+    { id: 333, name: "Showtime" }, { id: 792, name: "Showtime 2" }, { id: 793, name: "Showtime Showcase" }, { id: 794, name: "Showtime Extreme" }, { id: 795, name: "Showtime Family" }, { id: 796, name: "Showtime Next" }, { id: 797, name: "Showtime Women" }, { id: 695, name: "SHOxBET" }, 
+    { id: 267, name: "Star Sports 1" }, { id: 268, name: "Star Sports Hindi" }, 
+    { id: 49, name: "Sport TV1" }, { id: 74, name: "Sport TV2" }, { id: 454, name: "Sport TV3" }, { id: 289, name: "Sport TV4" }, { id: 290, name: "Sport TV5" }, { id: 291, name: "Sport TV6" }, 
+    { id: 78, name: "SporTV" }, { id: 79, name: "SporTV 2" }, { id: 80, name: "SporTV 3" }, 
+    { id: 101, name: "Sport Klub 1" }, { id: 102, name: "Sport Klub 2" }, { id: 103, name: "Sport Klub 3" }, { id: 104, name: "Sport Klub 4" }, { id: 453, name: "Sport Klub HD" }, { id: 710, name: "Sport Klub Golf" }, 
+    { id: 406, name: "Sportsnet Ontario" }, { id: 411, name: "Sportsnet One" }, { id: 407, name: "Sportsnet West" }, { id: 408, name: "Sportsnet East" }, { id: 409, name: "Sportsnet 360" }, { id: 410, name: "Sportsnet World" }, 
+    { id: 412, name: "SuperSport Grandstand" }, { id: 413, name: "SuperSport PSL" }, { id: 414, name: "SuperSport PL" }, { id: 415, name: "SuperSport LaLiga" }, { id: 416, name: "SuperSport Variety 1" }, { id: 417, name: "SuperSport Variety 2" }, { id: 418, name: "SuperSport Variety 3" }, { id: 419, name: "SuperSport Variety 4" }, { id: 420, name: "SuperSport Action" }, { id: 421, name: "SuperSport Rugby" }, { id: 422, name: "SuperSport Golf" }, { id: 423, name: "SuperSport Tennis" }, { id: 424, name: "SuperSport Motorsport" }, { id: 56, name: "Supersport Football" }, { id: 368, name: "SuperSport Cricket" }, { id: 572, name: "SuperSport MaXimo 1" }, 
+    { id: 716, name: "Sporting TV" }, { id: 571, name: "SportDigital" }, { id: 640, name: "Sportdigital 1+" }, { id: 641, name: "Sport1 DE" }, { id: 294, name: "Science Channel" }, { id: 732, name: "Sixx" }, { id: 373, name: "SYFY" }, { id: 658, name: "Sundance TV" }, { id: 735, name: "SWR" }, { id: 738, name: "SUPER RTL" }, { id: 739, name: "SR Fernsehen" }, { id: 603, name: "Smithsonian" }, { id: 883, name: "SBS6" }, { id: 811, name: "SEE DK" }, { id: 1002, name: "Show TV" }, { id: 1004, name: "Star TV" }, { id: 385, name: "SEC Network" }, { id: 722, name: "SIC" }, { id: 670, name: "S4C" }, { id: 729, name: "SAT.1" },
+    { id: 111, name: "TSN1" }, { id: 112, name: "TSN2" }, { id: 113, name: "TSN3" }, { id: 114, name: "TSN4" }, { id: 115, name: "TSN5" }, 
+    { id: 565, name: "TVN HD" }, { id: 444, name: "TVN24" }, { id: 560, name: "TVP1" }, { id: 561, name: "TVP2" }, { id: 128, name: "TVP Sport" }, { id: 452, name: "TVP INFO" }, 
+    { id: 532, name: "Telecinco" }, { id: 533, name: "TVE La 1" }, { id: 536, name: "TVE La 2" }, { id: 529, name: "Teledeporte" }, 
+    { id: 723, name: "TVI" }, { id: 724, name: "TVI Reality" }, 
+    { id: 746, name: "TYC Sports" }, { id: 87, name: "TNT Brasil" }, { id: 388, name: "TNT Sports AR" }, { id: 642, name: "TNT Sports Chile" }, 
+    { id: 40, name: "Tennis Channel" }, { id: 741, name: "Ten Sports" }, { id: 66, name: "TUDN USA" }, { id: 935, name: "TUDN MX" }, { id: 131, name: "Telemundo" }, { id: 336, name: "TBS" }, { id: 337, name: "TLC" }, { id: 338, name: "TNT USA" }, { id: 469, name: "TF1" }, { id: 955, name: "TMC" }, { id: 698, name: "TMC USA" }, 
+    { id: 833, name: "TVA Sports" }, { id: 834, name: "TVA Sports 2" }, { id: 932, name: "TVC Deportes" }, 
+    { id: 340, name: "Travel Channel" }, { id: 341, name: "TruTV" }, { id: 342, name: "TVLAND" }, { id: 644, name: "TCM" }, { id: 384, name: "Food Network" }, { id: 394, name: "Weather Channel" }, { id: 650, name: "TeenNick" }, { id: 660, name: "TV ONE" }, 
+    { id: 807, name: "TV2 Bornholm" }, { id: 808, name: "TV2 Sport X" }, { id: 809, name: "TV3 Sport" }, { id: 810, name: "TV2 Sport" }, { id: 817, name: "TV2 DK" }, { id: 818, name: "TV2 Zulu" }, { id: 819, name: "TV3+ DK" }, { id: 223, name: "TV3 Max" }, 
+    { id: 842, name: "TVO CA" }, { id: 1005, name: "TV8 Turkey" }, { id: 270, name: "T Sports" }, { id: 889, name: "TRT Spor" }, 
+    { id: 700, name: "TV4 Hockey" }, { id: 701, name: "TV4 Tennis" }, { id: 702, name: "TV4 Motor" }, { id: 703, name: "TV4 Live 1" }, { id: 704, name: "TV4 Live 2" }, { id: 705, name: "TV4 Live 3" }, { id: 706, name: "TV4 Live 4" }, { id: 707, name: "TV4 Sportkanalen" }, { id: 747, name: "TV4 Football" }, 
+    { id: 709, name: "Tennis+ 10" }, { id: 711, name: "Tennis+ 12" }, 
+    { id: 343, name: "USA Network" }, { id: 668, name: "Universal Kids" }, { id: 132, name: "Univision" }, { id: 133, name: "Unimas" }, 
+    { id: 451, name: "Viaplay Sports 1" }, { id: 550, name: "Viaplay Sports 2" }, { id: 521, name: "#Vamos" }, 
+    { id: 815, name: "V Film Premiere" }, { id: 816, name: "V Film Family" }, { id: 272, name: "V Sport Motor" }, { id: 260, name: "Vodafone Sport" }, 
+    { id: 344, name: "VH1" }, { id: 378, name: "Veronica" }, { id: 391, name: "VTV+ Uruguay" }, { id: 659, name: "VICE TV" }, 
+    { id: 346, name: "Willow Cricket" }, { id: 598, name: "Willow 2" }, { id: 376, name: "WWE Network" }, { id: 392, name: "Win Sports+" }, { id: 655, name: "WETV" }, { id: 734, name: "WDR" }, { id: 959, name: "W9" }, 
+    { id: 286, name: "YTV" }, { id: 763, name: "YES Network" }, { id: 543, name: "Yes Action" }, { id: 544, name: "Yes Kids" }, { id: 545, name: "Yes Comedy" }, { id: 837, name: "Yes TV" }, 
+    { id: 393, name: "Ziggo Sport" }, { id: 398, name: "Ziggo Sport 2" }, { id: 919, name: "Ziggo Sport 3" }, { id: 396, name: "Ziggo Sport 4" }, { id: 383, name: "Ziggo Sport 5" }, { id: 901, name: "Ziggo Sport 6" }, 
+    { id: 727, name: "ZDF" }, { id: 728, name: "ZDF Info" }, { id: 726, name: "3sat" }, { id: 963, name: "6ter" }, { id: 857, name: "20 Mediaset" }, { id: 800, name: "6'eren" }, { id: 360, name: "5 USA" }
+];
 
         // --- UI UTILS ---
         function toggleForm(id) {
@@ -1158,64 +624,68 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
             }
         }
 
-        // --- STALKER LOGIC ---
+        // --- STALKER PORTAL LOGIC (MODIFIED FOR PROXY) ---
         async function connectStalker() {
-            const portal = document.getElementById('stPortal').value.trim();
-            const mac = document.getElementById('stMac').value.trim();
-            const sn = document.getElementById('stSn').value.trim();
-            const devId = document.getElementById('stDevId').value.trim();
-            const devId2 = document.getElementById('stDevId2').value.trim();
+    const portal = document.getElementById('stPortal').value.trim();
+    const mac = document.getElementById('stMac').value.trim();
+    const sn = document.getElementById('stSn').value.trim();
+    // Capture the new IDs
+    const devId = document.getElementById('stDevId').value.trim();
+    const devId2 = document.getElementById('stDevId2').value.trim();
 
-            if (!portal || !mac) return alert("Portal Address and MAC are required.");
+    if (!portal || !mac) return alert("Portal Address and MAC are required.");
 
-            const btn = document.querySelector('#stalkerForm .btn-action');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
-            
-            const proxyBase = "proxy.php"; 
+    const btn = document.querySelector('#stalkerForm .btn-action');
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
+    
+    const proxyBase = "proxy.php"; 
 
-            try {
-                logStatus("Authenticating with Stalker Middleware...", 'info');
+    try {
+        logStatus("Authenticating with Stalker Middleware...", 'info');
 
-                const fetchUrl = `${proxyBase}?action=get_channels` +
-                                 `&portal=${encodeURIComponent(portal)}` +
-                                 `&mac=${encodeURIComponent(mac)}` +
-                                 `&sn=${encodeURIComponent(sn)}` +
-                                 `&device_id=${encodeURIComponent(devId)}` +
-                                 `&device_id2=${encodeURIComponent(devId2)}`;
-                
-                const response = await fetch(fetchUrl);
-                if(!response.ok) throw new Error("Proxy connection failed.");
-                const data = await response.json();
+        // Pass all IDs to the backend
+        const fetchUrl = `${proxyBase}?action=get_channels` +
+                         `&portal=${encodeURIComponent(portal)}` +
+                         `&mac=${encodeURIComponent(mac)}` +
+                         `&sn=${encodeURIComponent(sn)}` +
+                         `&device_id=${encodeURIComponent(devId)}` +
+                         `&device_id2=${encodeURIComponent(devId2)}`;
+        
+        const response = await fetch(fetchUrl);
+        if(!response.ok) throw new Error("Proxy connection failed.");
+        const data = await response.json();
 
-                const channels = data.js ? data.js.data : (data.items ? data.items : []);
+        const channels = data.js ? data.js.data : (data.items ? data.items : []);
 
-                if (!channels || channels.length === 0) {
-                    throw new Error("Authentication failed or no channels found.");
-                }
-
-                allChannels = channels.map(ch => ({
-                    name: ch.name,
-                    group: "STALKER TV",
-                    source: "MAG",
-                    logo: ch.logo, 
-                    cmd: ch.cmd,        
-                    portal_url: portal, 
-                    mac_address: mac,
-                    isStalker: true
-                }));
-
-                logStatus(`Stalker Connected! Loaded ${allChannels.length} channels`, 'success');
-                toggleForm('stalkerForm');
-                switchToListView();
-
-            } catch (e) {
-                console.error(e);
-                logStatus(`Stalker Error: ${e.message}`, 'error');
-                alert("Connection Failed. Check credentials or proxy.");
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-plug"></i> CONNECT PORTAL';
-            }
+        if (!channels || channels.length === 0) {
+            throw new Error("Authentication failed or no channels found.");
         }
+
+        allChannels = channels.map(ch => ({
+            name: ch.name,
+            group: "STALKER TV",
+            source: "MAG",
+            logo: ch.logo, 
+            cmd: ch.cmd,        
+            portal_url: portal, 
+            mac_address: mac,
+            // We don't strictly need to save devId here for the link generation, 
+            // but the proxy handles it via session/cookies usually.
+            isStalker: true
+        }));
+
+        logStatus(`Stalker Connected! Loaded ${allChannels.length} channels`, 'success');
+        toggleForm('stalkerForm');
+        switchToListView();
+
+    } catch (e) {
+        console.error(e);
+        logStatus(`Stalker Error: ${e.message}`, 'error');
+        alert("Connection Failed. Check credentials or proxy.");
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-plug"></i> CONNECT PORTAL';
+    }
+}
 
         function switchToListView() {
             if(allChannels.length > 0) {
@@ -1246,54 +716,48 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
             reader.readAsText(file);
         }
 
-        // --- FOX / DADDY (PLACEHOLDER) ---
+        // --- DADDYLIVE LOGIC ---
         function loadDaddyLive() {
-             alert("DaddyLive is a placeholder in this demo. Please use Ultra Premium or File Upload.");
+            allChannels = dlChannels.map((item) => ({
+                name: item.name,
+                group: "DADDYLIVE",
+                source: "DLHD",
+                url: `https://dlhd.link/stream/stream-${item.id}.php`,
+                isIframe: true,
+                isDaddy: true
+            }));
+            switchToListView();
         }
+
+        // --- FOX TV LOGIC ---
         function loadFoxTV() {
             document.getElementById('loadScreen').style.display = 'none';
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
             playIframe("https://dlhd.link/stream/stream-54.php", "FOX LIVE", "fox");
         }
+
+        // --- PREMIUM LOAD LOGIC ---
         async function loadPremium() {
-            alert("Premium is a placeholder. Loading Ultra Premium instead...");
-            loadUltraPremium();
-        }
+            logStatus("Fetching latest WORKING Indian channels...", 'info');
+            const staticChannels = [
+                { name: "Aaj Tak HD", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://i.imgur.com/RpIdCB3.png", group: "News" },
+                { name: "India TV", url: "https://d7d3gu3ex55r8.cloudfront.net/out/v1/70e7a2b9703643799863c03cb7923720/index.m3u8", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
+                { name: "9XM Music", url: "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8", logo: "https://www.medianews4u.com/wp-content/uploads/2020/10/Republic-Media-Network-forays-into-Hindi-Digital-News-space-launches-R-Bharat-digital-platform.jpg", group: "Music" },
+                { name: "Mastiii", url: "https://g7.g-mana.live/media/6929f673-5126-48f8-8210-d5d0599b378d/master.m3u8", logo: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/xbhpwb.png", group: "Music" }
+            ];
 
-        // --- ULTRA PREMIUM LOGIC (WITH GROUPING & FAILOVER) ---
-        function loadUltraPremium() {
-            logStatus("Parsing Ultra Premium M3U...", 'info');
-            
-            // 1. Parse Raw M3U
-            const rawChannels = parseM3U(rawUltraData, "ULTRA");
-            
-            // 2. Group by Name (The Smart Logic)
-            const groupedMap = new Map();
-            
-            rawChannels.forEach(ch => {
-                const normName = ch.name.trim(); // We could normalize case/spaces here if needed
-                if (!groupedMap.has(normName)) {
-                    // First time seeing this channel
-                    groupedMap.set(normName, {
-                        ...ch,
-                        urls: [ch.url], // Start array of URLs
-                        source: "ULTRA"
-                    });
-                } else {
-                    // Duplicate found, add URL to existing entry
-                    const existing = groupedMap.get(normName);
-                    if (!existing.urls.includes(ch.url)) {
-                        existing.urls.push(ch.url);
-                    }
-                }
-            });
-
-            // 3. Convert Map back to Array
-            allChannels = Array.from(groupedMap.values());
-            
-            logStatus(`Loaded ${allChannels.length} unique Ultra channels (merged duplicates)`, 'success');
-            switchToListView();
+            try {
+                const response = await fetchSmart('https://iptv-org.github.io/iptv/countries/in.m3u');
+                const dynamicChannels = parseM3U(response, "PREMIUM");
+                allChannels = [...staticChannels, ...dynamicChannels];
+                logStatus(`Loaded ${allChannels.length} Premium Channels`, 'success');
+                switchToListView();
+            } catch (e) {
+                logStatus("Failed to fetch dynamic list, loading static only...", 'error');
+                allChannels = staticChannels;
+                switchToListView();
+            }
         }
 
         // --- UTILS ---
@@ -1383,8 +847,6 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
                     current.url = line;
                     current.source = sourceLabel;
                     current.isIframe = false;
-                    // For parsed files, URLs starts as single array, will be merged later if needed
-                    current.urls = [line]; 
                     if(current.name) channels.push(current);
                     current = {};
                 }
@@ -1402,22 +864,18 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
             subset.forEach(ch => {
                 const card = document.createElement('div');
                 card.className = 'channel-card';
-                card.onclick = () => decidePlayer(ch);
+                // IMPORTANT: Pass the entire 'ch' object now
+                card.onclick = () => decidePlayer(ch.url || ch.cmd, ch.isIframe, ch.isDaddy, ch.name, ch);
                 
                 let badgeClass = 'bg-cyan';
                 if(ch.group === 'DADDYLIVE') badgeClass = 'bg-purple';
                 if(ch.group === 'XTREAM LIVE') badgeClass = 'bg-green';
                 if(ch.source === 'MAG') badgeClass = 'bg-orange';
-                if(ch.source === 'ULTRA') badgeClass = 'bg-ultra';
+                if(ch.source === 'PREMIUM') badgeClass = 'bg-gold';
                 
                 const logoHtml = ch.logo 
                     ? `<img src="${ch.logo}" onerror="this.style.display='none'">` 
                     : `${ch.name.substring(0,2)}`;
-                
-                // Show how many sources if merged
-                const sourceCountHtml = (ch.urls && ch.urls.length > 1) 
-                    ? `<span class="source-count">${ch.urls.length} SRC</span>` 
-                    : '';
 
                 card.innerHTML = `
                     <div class="card-logo">${logoHtml}</div>
@@ -1426,7 +884,6 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
                         <div class="card-meta">
                             <span class="badge ${badgeClass}">${ch.source || 'LIVE'}</span>
                             <span class="badge bg-gray">${ch.group || 'CH'}</span>
-                            ${sourceCountHtml}
                         </div>
                     </div>
                     <i class="fa-solid fa-play play-icon"></i>
@@ -1457,50 +914,52 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
             }, 300);
         }
 
-        // --- PLAYER LOGIC (WITH FAILOVER) ---
-        async function decidePlayer(ch) {
+        // --- PLAYER LOGIC (UPDATED FOR STALKER) ---
+        async function decidePlayer(urlOrCmd, isIframe, isDaddy, name, channelObj) {
             document.getElementById('listView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
             
-            const titleHtml = ch.name ? `${ch.name} <span>LIVE</span>` : `LIVE STREAM <span>ON AIR</span>`;
+            const titleHtml = name ? `${name} <span>LIVE</span>` : `LIVE STREAM <span>ON AIR</span>`;
             document.getElementById('channelTitle').innerHTML = titleHtml;
 
             // --- STALKER LOGIC ---
-            if (ch.isStalker) {
-                // ... (Existing Stalker logic remains same) ...
+            if (channelObj && channelObj.isStalker) {
                 resBadge.innerText = "GENERATING LINK...";
+                resBadge.style.color = "var(--accent-orange)";
+                resBadge.style.borderColor = "var(--accent-orange)";
+                
                 try {
                     const proxyBase = "proxy.php";
-                    const genUrl = `${proxyBase}?action=create_link&cmd=${encodeURIComponent(ch.cmd)}&portal=${encodeURIComponent(ch.portal_url)}&mac=${encodeURIComponent(ch.mac_address)}`;
+                    // Ask backend to create a temp stream link
+                    const genUrl = `${proxyBase}?action=create_link&cmd=${encodeURIComponent(channelObj.cmd)}&portal=${encodeURIComponent(channelObj.portal_url)}&mac=${encodeURIComponent(channelObj.mac_address)}`;
+                    
                     const response = await fetch(genUrl);
                     const data = await response.json();
+                    
+                    // Stalker response usually puts the link in js.cmd
                     let streamUrl = data.js ? data.js.cmd : null;
+                    
                     if(streamUrl) {
+                        // Clean up ffmpeg prefixes if present
                         streamUrl = streamUrl.replace('ffmpeg ', '').replace('auto ', '');
                         logStatus(`Generated Link: ${streamUrl}`, 'success');
-                        // Treat single stalker link as a 1-item array for consistency
-                        currentChannelUrls = [streamUrl];
-                        currentUrlIndex = 0;
                         playHLS(streamUrl);
                     } else {
                         throw new Error("Server returned no stream link.");
                     }
                 } catch(e) {
+                    console.error(e);
                     alert("Error playing channel: Link expired or server blocked IP.");
                     goBack();
                 }
                 return;
             }
 
-            // --- STANDARD / ULTRA LOGIC ---
-            if(ch.isIframe) {
-                playIframe(ch.url, ch.isDaddy ? "DADDY LIVE" : "LIVE STREAM", ch.isDaddy ? "daddy" : "iframe");
+            // --- NORMAL LOGIC ---
+            if(isIframe) {
+                playIframe(urlOrCmd, isDaddy ? "DADDY LIVE" : "LIVE STREAM", isDaddy ? "daddy" : "iframe");
             } else {
-                // Prepare failover system
-                currentChannelUrls = ch.urls || [ch.url]; // Use array if exists, else single
-                currentUrlIndex = 0;
-                
-                playHLS(currentChannelUrls[0]);
+                playHLS(urlOrCmd);
             }
         }
 
@@ -1526,74 +985,19 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
             daddyContainer.style.display = 'none';
             
             video.style.display = 'block';
-            
-            // UI Update: Show which source we are on if multiple exist
-            if(currentChannelUrls.length > 1) {
-                resBadge.innerText = `SRC ${currentUrlIndex + 1}/${currentChannelUrls.length}`;
-                resBadge.style.color = "var(--accent-ultra)";
-                resBadge.style.borderColor = "var(--accent-ultra)";
-            } else {
-                resBadge.innerText = "HLS STREAM";
-                resBadge.style.color = "var(--accent-yellow)";
-                resBadge.style.borderColor = "var(--accent-yellow)";
-            }
+            resBadge.innerText = "HLS STREAM";
+            resBadge.style.color = "var(--accent-yellow)";
+            resBadge.style.borderColor = "var(--accent-yellow)";
 
             if(Hls.isSupported()) {
                 if(hls) hls.destroy();
-                hls = new Hls({
-                    maxBufferLength: 30,
-                    manifestLoadingTimeOut: 15000 // 15s timeout before switching
-                });
-                
+                hls = new Hls({maxBufferLength: 30});
                 hls.loadSource(url);
                 hls.attachMedia(video);
-                
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-                
-                // ERROR HANDLING FOR FAILOVER
-                hls.on(Hls.Events.ERROR, function (event, data) {
-                    if (data.fatal) {
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.log("Network error on source " + currentUrlIndex);
-                                tryNextSource(); // Try next URL
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                tryNextSource();
-                                break;
-                        }
-                    }
-                });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
                 video.play();
-                // Native HLS fallback error listener
-                video.onerror = () => tryNextSource();
-            }
-        }
-
-        function tryNextSource() {
-            if (currentUrlIndex < currentChannelUrls.length - 1) {
-                currentUrlIndex++;
-                console.log("Switching to Source " + (currentUrlIndex + 1));
-                
-                // Visual feedback
-                resBadge.innerText = "SWITCHING...";
-                resBadge.style.color = "#fff";
-                resBadge.style.background = "var(--accent-red)";
-                
-                setTimeout(() => {
-                     playHLS(currentChannelUrls[currentUrlIndex]);
-                }, 500); // Slight delay to prevent rapid-fire loops
-            } else {
-                console.log("All sources failed.");
-                resBadge.innerText = "OFFLINE";
-                resBadge.style.color = "gray";
-                resBadge.style.borderColor = "gray";
-                resBadge.style.background = "transparent";
             }
         }
 
@@ -1608,7 +1012,6 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
         }
 
         function reloadStream() {
-            // Manual reload acts as "Next Source" if available
             const isIframe = (foxContainer.style.display === 'block' || daddyContainer.style.display === 'block');
             if(isIframe) {
                const target = (daddyContainer.style.display === 'block') ? daddyContainer : foxContainer;
@@ -1621,12 +1024,7 @@ http://80.252.37.194:5000/udp/233.233.233.8:12000
                    }, 100);
                }
             } else {
-                // If manual click, try next source if available, otherwise just reload current
-                if (currentUrlIndex < currentChannelUrls.length - 1) {
-                    tryNextSource();
-                } else {
-                    if(hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
-                }
+                if(hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
             }
         }
 
