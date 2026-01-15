@@ -315,17 +315,20 @@
             </button>
 
             <div id="stalkerForm" class="login-form">
-                <div style="text-align: left; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent-orange);">
-                    <i class="fa-solid fa-info-circle"></i> Requires proxy.php in same folder
-                </div>
-                <input type="text" id="stPortal" class="form-input stalker-input" placeholder="Portal Address (e.g. http://mag.portal.com/c/)">
-                <input type="text" id="stMac" class="form-input stalker-input" placeholder="MAC Address (00:1A:79:...)" onkeyup="formatMac(this)" maxlength="17">
-                <input type="text" id="stSn" class="form-input stalker-input" placeholder="Serial Number (Optional/If Required)">
-                
-                <button class="btn-action btn-orange" onclick="connectStalker()">
-                    <i class="fa-solid fa-plug"></i> CONNECT PORTAL
-                </button>
-            </div>
+    <div style="text-align: left; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent-orange);">
+        <i class="fa-solid fa-info-circle"></i> Requires proxy.php in same folder
+    </div>
+    <input type="text" id="stPortal" class="form-input stalker-input" placeholder="Portal Address (e.g. http://mag.portal.com/c/)">
+    <input type="text" id="stMac" class="form-input stalker-input" placeholder="MAC Address (00:1A:79:...)" onkeyup="formatMac(this)" maxlength="17">
+    <input type="text" id="stSn" class="form-input stalker-input" placeholder="Serial Number (sn)">
+    
+    <input type="text" id="stDevId" class="form-input stalker-input" placeholder="Device ID">
+    <input type="text" id="stDevId2" class="form-input stalker-input" placeholder="Device ID 2 (Optional/Same as ID 1)">
+    
+    <button class="btn-action btn-orange" onclick="connectStalker()">
+        <i class="fa-solid fa-plug"></i> CONNECT PORTAL
+    </button>
+</div>
 
             <input type="file" id="fileInput" accept=".m3u,.m3u8" style="display:none;" onchange="handleFileUpload(this)">
             <button class="btn-action btn-green" onclick="document.getElementById('fileInput').click()">
