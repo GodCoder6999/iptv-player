@@ -479,58 +479,66 @@
 
         // --- STALKER PORTAL LOGIC (MODIFIED FOR PROXY) ---
         async function connectStalker() {
-            const portal = document.getElementById('stPortal').value.trim();
-            const mac = document.getElementById('stMac').value.trim();
-            const sn = document.getElementById('stSn').value.trim();
+    const portal = document.getElementById('stPortal').value.trim();
+    const mac = document.getElementById('stMac').value.trim();
+    const sn = document.getElementById('stSn').value.trim();
+    // Capture the new IDs
+    const devId = document.getElementById('stDevId').value.trim();
+    const devId2 = document.getElementById('stDevId2').value.trim();
 
-            if (!portal || !mac) return alert("Portal Address and MAC are required.");
+    if (!portal || !mac) return alert("Portal Address and MAC are required.");
 
-            const btn = document.querySelector('#stalkerForm .btn-action');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
-            
-            // WE USE THE LOCAL PROXY PHP
-            const proxyBase = "proxy.php"; 
+    const btn = document.querySelector('#stalkerForm .btn-action');
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
+    
+    const proxyBase = "proxy.php"; 
 
-            try {
-                logStatus("Authenticating with Stalker Middleware...", 'info');
+    try {
+        logStatus("Authenticating with Stalker Middleware...", 'info');
 
-                // Pass Portal, MAC, and SN to backend
-                const fetchUrl = `${proxyBase}?action=get_channels&portal=${encodeURIComponent(portal)}&mac=${encodeURIComponent(mac)}&sn=${encodeURIComponent(sn)}`;
-                
-                const response = await fetch(fetchUrl);
-                if(!response.ok) throw new Error("Proxy connection failed. Is proxy.php present?");
-                const data = await response.json();
+        // Pass all IDs to the backend
+        const fetchUrl = `${proxyBase}?action=get_channels` +
+                         `&portal=${encodeURIComponent(portal)}` +
+                         `&mac=${encodeURIComponent(mac)}` +
+                         `&sn=${encodeURIComponent(sn)}` +
+                         `&device_id=${encodeURIComponent(devId)}` +
+                         `&device_id2=${encodeURIComponent(devId2)}`;
+        
+        const response = await fetch(fetchUrl);
+        if(!response.ok) throw new Error("Proxy connection failed.");
+        const data = await response.json();
 
-                // Stalker API sometimes wraps data in js.data, or returns items directly
-                const channels = data.js ? data.js.data : (data.items ? data.items : []);
+        const channels = data.js ? data.js.data : (data.items ? data.items : []);
 
-                if (!channels || channels.length === 0) {
-                    throw new Error("Authentication failed or no channels found.");
-                }
-
-                allChannels = channels.map(ch => ({
-                    name: ch.name,
-                    group: "STALKER TV",
-                    source: "MAG",
-                    logo: ch.logo, 
-                    cmd: ch.cmd,        // We save the command, not the URL yet
-                    portal_url: portal, // Save credentials for generating link later
-                    mac_address: mac,
-                    isStalker: true
-                }));
-
-                logStatus(`Stalker Connected! Loaded ${allChannels.length} channels`, 'success');
-                toggleForm('stalkerForm');
-                switchToListView();
-
-            } catch (e) {
-                console.error(e);
-                logStatus(`Stalker Error: ${e.message}`, 'error');
-                alert("Connection Failed. \n1. Check if 'proxy.php' is in the same folder.\n2. Ensure you are running this on a Local Server (XAMPP/WAMP).\n3. Credentials might be expired.");
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-plug"></i> CONNECT PORTAL';
-            }
+        if (!channels || channels.length === 0) {
+            throw new Error("Authentication failed or no channels found.");
         }
+
+        allChannels = channels.map(ch => ({
+            name: ch.name,
+            group: "STALKER TV",
+            source: "MAG",
+            logo: ch.logo, 
+            cmd: ch.cmd,        
+            portal_url: portal, 
+            mac_address: mac,
+            // We don't strictly need to save devId here for the link generation, 
+            // but the proxy handles it via session/cookies usually.
+            isStalker: true
+        }));
+
+        logStatus(`Stalker Connected! Loaded ${allChannels.length} channels`, 'success');
+        toggleForm('stalkerForm');
+        switchToListView();
+
+    } catch (e) {
+        console.error(e);
+        logStatus(`Stalker Error: ${e.message}`, 'error');
+        alert("Connection Failed. Check credentials or proxy.");
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-plug"></i> CONNECT PORTAL';
+    }
+}
 
         function switchToListView() {
             if(allChannels.length > 0) {
