@@ -15,18 +15,19 @@
     <style>
         :root {
             --bg-deep: #050505;
-            --bg-glass: rgba(20, 20, 30, 0.98);
-            --bg-card: #1a1a20;
-            --bg-card-hover: #252530;
-            
+            --bg-glass: rgba(20, 20, 30, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.15);
             --accent-yellow: #ffd700;
             --accent-purple: #b983ff;
             --accent-red: #ff4757;
             --accent-cyan: #00e5ff;
-            --accent-green: #00b894;
-            --accent-gold: #d4af37; /* New for Premium */
-            
+            --accent-green: #00b894; 
+            --accent-orange: #ff9f43;
+            --accent-gold: #e58e26;
+            --accent-ultra: #ff00cc; /* Ultra Pink */
             --text-main: #ffffff;
+            --text-dim: #aaaaaa;
             --tv-bezel: #151515;
             --font-ui: 'Segoe UI', system-ui, sans-serif;
         }
@@ -37,7 +38,7 @@
             margin: 0; padding: 0;
             font-family: var(--font-ui);
             background-color: var(--bg-deep);
-            background-image: radial-gradient(circle at 50% 0%, #111 0%, #000 90%);
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 80%);
             color: var(--text-main);
             height: 100vh;
             display: flex; flex-direction: column; overflow: hidden;
@@ -48,175 +49,247 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #000;
+            background: rgba(5,5,5,0.98);
             padding: 20px;
+            transition: opacity 0.5s;
         }
 
         .load-box {
-            background: #111;
-            padding: 40px; border-radius: 20px;
+            background: var(--bg-glass);
+            padding: 40px; border-radius: 24px;
             width: 100%; max-width: 650px;
-            border: 1px solid #333;
+            box-shadow: 0 0 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.08);
             text-align: center;
             max-height: 90vh; overflow-y: auto;
         }
 
-        h2 { font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; font-size: 2rem; color: #fff; }
-        h2 span { color: var(--accent-yellow); }
+        h2 { font-weight: 300; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 30px; font-size: 1.8rem; }
+        h2 span { font-weight: 800; color: var(--accent-yellow); text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
         .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .url-input {
-            flex: 1; background: #000; border: 2px solid #444;
-            color: #fff; padding: 15px; border-radius: 8px; font-size: 1rem;
+            flex: 1; background: rgba(0,0,0,0.5); border: 2px solid #333;
+            color: #fff; padding: 15px; border-radius: 12px; font-size: 1rem; transition: 0.3s;
+        }
+        .url-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+
+        /* Login Forms */
+        .login-form {
+            display: none; background: rgba(255, 255, 255, 0.03);
+            padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px; animation: slideDown 0.3s ease;
         }
         
-        .btn-action {
-            width: 100%; padding: 18px; border-radius: 10px; border: none;
-            font-weight: 800; font-size: 1.1rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 15px; text-transform: uppercase;
-            transition: transform 0.1s;
+        #xtreamForm { border-color: rgba(0, 229, 255, 0.2); background: rgba(0, 229, 255, 0.05); }
+        #stalkerForm { border-color: rgba(255, 159, 67, 0.2); background: rgba(255, 159, 67, 0.05); }
+
+        @keyframes slideDown { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
+
+        .form-input {
+            width: 100%; background: #000; border: 1px solid #444;
+            color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px;
+            font-size: 0.95rem; font-family: monospace;
         }
-        .btn-action:active { transform: scale(0.98); }
+        .form-input:focus { border-color: var(--accent-cyan); }
+        .stalker-input:focus { border-color: var(--accent-orange); }
+
+        .btn-action {
+            width: 100%; padding: 16px; border-radius: 12px; border: none;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
         
         .btn-yellow { background: var(--accent-yellow); color: #000; }
-        .btn-purple { background: var(--accent-purple); color: #000; }
-        .btn-red { background: var(--accent-red); color: #fff; }
-        .btn-green { background: var(--accent-green); color: #000; }
-        .btn-cyan { background: var(--accent-cyan); color: #000; }
-        .btn-gold { background: linear-gradient(135deg, #d4af37, #aa8c2c); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
-        .btn-dark { background: #333; color: #fff; border: 1px solid #555; }
-
-        #xtreamForm {
-            display: none; background: #1a1a1a;
-            padding: 15px; border-radius: 10px; border: 1px solid #333;
-            margin-bottom: 20px;
+        .btn-purple { background: linear-gradient(135deg, #a55eea, #8854d0); color: #fff; }
+        .btn-red { background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; }
+        .btn-cyan { background: linear-gradient(135deg, #00e5ff, #00a8ff); color: #000; }
+        .btn-green { background: linear-gradient(135deg, #00b894, #00cec9); color: #000; }
+        .btn-orange { background: linear-gradient(135deg, #ff9f43, #ee5253); color: #000; }
+        .btn-gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; }
+        .btn-dark { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        /* ULTRA BUTTON STYLE */
+        .btn-ultra { 
+            background: linear-gradient(135deg, #ff00cc, #333399); 
+            color: #fff; 
+            border: 1px solid rgba(255, 0, 204, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 204, 0.3);
         }
-        .xtream-input {
-            width: 100%; background: #000; border: 1px solid #444;
-            color: #fff; padding: 12px; border-radius: 6px; margin-bottom: 10px;
+        .btn-ultra:hover { box-shadow: 0 0 25px rgba(255, 0, 204, 0.6); }
+        
+        .section-divider { 
+            display: flex; align-items: center; margin: 30px 0; color: var(--text-dim); font-size: 0.8rem; letter-spacing: 2px;
+        }
+        .section-divider::before, .section-divider::after {
+            content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.1); margin: 0 10px;
         }
 
         /* --- LIST VIEW --- */
         #listView {
-            padding: 20px; height: 100%; width: 100%; max-width: 1600px; margin: 0 auto;
+            padding: 30px; height: 100%; width: 100%; max-width: 1400px; margin: 0 auto;
             display: none; flex-direction: column;
         }
 
-        .search-container { position: relative; margin-bottom: 20px; }
+        .search-container { position: relative; margin-bottom: 25px; }
         .search-input {
-            width: 100%; background: #222; border: 2px solid #444;
-            padding: 15px 20px 15px 50px; border-radius: 10px; color: #fff; 
-            font-size: 1.2rem; font-weight: bold;
+            width: 100%; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 25px 18px 50px; border-radius: 50px; color: #fff; font-size: 1.1rem;
+            backdrop-filter: blur(5px);
         }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
 
         .list-content { 
             flex: 1; overflow-y: auto; 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
             gap: 15px; padding-bottom: 20px;
+            transform: translateZ(0); 
         }
-        .list-content::-webkit-scrollbar { width: 8px; }
+        .list-content::-webkit-scrollbar { width: 6px; }
         .list-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
 
         .channel-card {
-            background: #1e1e24; border: 1px solid #333;
-            border-radius: 10px; padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px; padding: 15px;
             display: flex; align-items: center; gap: 15px;
-            cursor: pointer; position: relative; overflow: hidden;
-            transition: all 0.2s;
+            transition: 0.2s; cursor: pointer;
+            position: relative; overflow: hidden;
         }
-        .channel-card:hover { background: #2a2a35; border-color: #fff; transform: scale(1.02); }
+        .channel-card:hover { background: var(--bg-card-hover); border-color: rgba(255,255,255,0.3); transform: scale(1.02); }
 
         .card-logo {
-            width: 60px; height: 60px; border-radius: 8px;
+            width: 50px; height: 50px; border-radius: 10px;
             background: #000; display: flex; align-items: center; justify-content: center;
-            font-weight: 900; color: #fff; font-size: 1.2rem; border: 1px solid #444;
-            flex-shrink: 0;
+            font-weight: bold; color: #555; overflow: hidden; flex-shrink: 0;
         }
         .card-logo img { width: 100%; height: 100%; object-fit: contain; }
 
-        .card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-        
+        .card-info { flex: 1; min-width: 0; }
         .card-title { 
-            font-size: 1.2rem; font-weight: 900; color: #ffffff; 
-            margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            text-shadow: 2px 2px 0px #000000;
+            font-weight: 600; font-size: 1rem; margin-bottom: 4px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
+        .card-meta { display: flex; gap: 6px; font-size: 0.75rem; }
         
-        .card-meta { display: flex; gap: 8px; }
-        .badge { 
-            padding: 4px 8px; border-radius: 4px; font-weight: 800; font-size: 0.75rem; 
-            text-transform: uppercase; color: #000;
-        }
-        .bg-cyan { background: #00e5ff; }
-        .bg-purple { background: #b983ff; }
-        .bg-green { background: #00b894; }
-        .bg-gold { background: #d4af37; }
-        .bg-gray { background: #ccc; }
+        .badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; }
+        .bg-cyan { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); }
+        .bg-purple { background: rgba(185, 131, 255, 0.15); color: var(--accent-purple); }
+        .bg-green { background: rgba(0, 184, 148, 0.15); color: var(--accent-green); }
+        .bg-orange { background: rgba(255, 159, 67, 0.15); color: var(--accent-orange); }
+        .bg-gold { background: rgba(255, 215, 0, 0.15); color: var(--accent-yellow); border: 1px solid rgba(255,215,0,0.3); }
+        .bg-ultra { background: rgba(255, 0, 204, 0.15); color: var(--accent-ultra); border: 1px solid rgba(255,0,204,0.3); }
+        .bg-gray { background: rgba(255,255,255,0.1); color: #aaa; }
+        .source-count { background: #333; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; margin-left: auto; }
 
         /* --- PLAYER VIEW --- */
-        #playerView { display: none; height: 100vh; flex-direction: column; background: #000; }
+        #playerView { display: none; height: 100vh; flex-direction: column; }
         
         .player-header {
-            height: 70px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 20px; background: #111; border-bottom: 1px solid #333;
+            height: 80px; display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 40px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            z-index: 10;
         }
         .btn-back {
-            background: #333; border: 1px solid #555; color: #fff;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-weight: bold; display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            padding: 10px 25px; border-radius: 30px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; font-weight: 600;
+            transition: 0.2s; backdrop-filter: blur(5px);
         }
-        .btn-back:hover { background: #555; }
+        .btn-back:hover { background: rgba(255,255,255,0.25); }
 
         #channelTitle {
-            font-size: 1.4rem; font-weight: 800; color: #fff;
+            font-size: 1.5rem; font-weight: 800; letter-spacing: 1px;
+            color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8);
             display: flex; align-items: center; gap: 10px;
         }
         #channelTitle span {
-            font-size: 0.8rem; background: var(--accent-red); color: #fff;
-            padding: 2px 6px; border-radius: 4px;
+            font-size: 0.8rem; background: var(--accent-yellow); color: #000;
+            padding: 2px 6px; border-radius: 4px; vertical-align: middle;
         }
 
-        .player-body { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .player-body { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 
-        .tv-frame { width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; }
-        .screen-glass { width: 100%; height: 100%; position: relative; }
-
-        video, iframe { width: 100%; height: 100%; border: none; display: block; }
-        #foxContainer, #daddyContainer { display: none; width: 100%; height: 100%; background: #000; }
-
-        .res-badge {
-            position: absolute; top: 20px; left: 20px; z-index: 20;
-            background: rgba(0,0,0,0.8); color: #00ff00; padding: 5px 10px; border-radius: 4px; font-weight: bold;
-            pointer-events: none; border: 1px solid #00ff00;
+        .tv-frame {
+            background: var(--tv-bezel);
+            padding: 15px; border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            position: relative; transition: all 0.5s ease;
+            width: 90%; max-width: 1200px;
+            transform: translateZ(0);
+            background-image: radial-gradient(#222 15%, transparent 16%), radial-gradient(#222 15%, transparent 16%);
+            background-size: 4px 4px;
         }
         
-        /* Auto-Switch Notification */
-        #switchNotify {
-            position: absolute; top: 60px; left: 20px; z-index: 20;
-            background: rgba(255, 71, 87, 0.9); color: #fff; padding: 8px 15px; border-radius: 4px; font-weight: bold;
-            display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        .screen-glass {
+            background: #000; border-radius: 8px; overflow: hidden;
+            border: 2px solid #000; position: relative;
+            width: 100%; aspect-ratio: 16/9;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* Scanlines */
+        .screen-glass::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px; pointer-events: none; opacity: 0.1; z-index: 5;
+        }
+
+        video, iframe { width: 100%; height: 100%; border: none; display: block; }
+        
+        #foxContainer, #daddyContainer { 
+            display: none; width: 100%; height: 100%; background: #000; 
+        }
+
+        .res-badge {
+            position: absolute; top: 15px; left: 15px; z-index: 20;
+            background: rgba(0,0,0,0.7); color: #00ff00; 
+            padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.8rem;
+            pointer-events: none; border: 1px solid rgba(0,255,0,0.3);
+            transition: 0.3s;
         }
         
         .screen-controls {
-            position: absolute; top: 20px; right: 20px; z-index: 20; display: flex; gap: 10px;
+            position: absolute; top: 15px; right: 15px; z-index: 20; display: flex; gap: 10px;
         }
         .ctl-btn {
-            background: rgba(0,0,0,0.8); border: 1px solid #fff;
-            color: #fff; width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; width: 36px; height: 36px; border-radius: 50%;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; backdrop-filter: blur(4px);
         }
-        .ctl-btn:hover { background: #fff; color: #000; }
-
-        .player-body.is-fullscreen .player-header { display: none; }
-        .player-body.is-fullscreen { height: 100vh; width: 100vw; }
+        .ctl-btn:hover { background: #fff; color: #000; transform: scale(1.1); }
+        
+        /* Decorations */
+        .tv-speaker {
+            position: absolute; bottom: 15px; left: 35px; width: 120px; height: 15px;
+            background-image: linear-gradient(to right, #050505 50%, transparent 50%);
+            background-size: 4px 100%; opacity: 0.5;
+        }
+        .tv-knob {
+            width: 20px; height: 20px; background: #111; border-radius: 50%;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 5px #000;
+            position: absolute; bottom: 15px; right: 35px;
+        }
+        
+        .player-body.is-fullscreen .tv-frame {
+            padding: 0; border-radius: 0; background: none; box-shadow: none; width: 100%; height: 100%; max-width: none;
+        }
+        .player-body.is-fullscreen .screen-glass { border-radius: 0; border: none; width: 100%; height: 100%; }
+        .player-body.is-fullscreen .tv-speaker, .player-body.is-fullscreen .tv-knob { display: none; }
 
         @media (max-width: 768px) {
-            .list-content { grid-template-columns: 1fr; }
-            .card-title { font-size: 1.1rem; }
-            h2 { font-size: 1.5rem; }
+            .load-box { padding: 20px; width: 95%; }
+            #listView { padding: 10px; }
+            .list-content { grid-template-columns: 1fr; gap: 10px; }
+            .player-header { padding: 0 15px; height: 60px; }
+            #channelTitle { font-size: 1.1rem; }
+            .tv-frame { padding: 0; width: 100%; border-radius: 0; }
+            .screen-glass { border-radius: 0; }
+            .tv-speaker, .tv-knob { display: none; }
         }
     </style>
 </head>
@@ -224,33 +297,53 @@
 
     <div id="loadScreen">
         <div class="load-box">
-            <h2>IPTV <span>ULTRA</span></h2>
+            <h2>IPTV <span>MASTER</span></h2>
             
             <div id="inputContainer">
                 <div class="input-row">
                     <input type="text" class="url-input" value="https://iptv-org.github.io/iptv/index.m3u" placeholder="Playlist URL...">
-                    <button class="btn-action btn-red" onclick="removeRow(this)" style="width:60px; margin:0;"><i class="fa-solid fa-times"></i></button>
+                    <button class="btn-action btn-red" onclick="removeRow(this)" style="width:50px; margin:0;"><i class="fa-solid fa-times"></i></button>
                 </div>
             </div>
             
             <button class="btn-action btn-dark" onclick="addInputRow()">
-                <i class="fa-solid fa-plus"></i> Add URL
+                <i class="fa-solid fa-plus"></i> Add M3U URL
             </button>
 
-            <button class="btn-action btn-cyan" onclick="toggleXtreamForm()">
-                <i class="fa-solid fa-server"></i> Xtream Codes Login
+            <button class="btn-action btn-cyan" onclick="toggleForm('xtreamForm')">
+                <i class="fa-solid fa-server"></i> Connect via Xtream Codes
             </button>
 
-            <div id="xtreamForm">
-                <input type="text" id="xcUrl" class="xtream-input" placeholder="http://url:port">
-                <input type="text" id="xcUser" class="xtream-input" placeholder="Username">
-                <input type="text" id="xcPass" class="xtream-input" placeholder="Password">
-                <button class="btn-action btn-yellow" onclick="connectXtream()">CONNECT</button>
+            <div id="xtreamForm" class="login-form">
+                <input type="text" id="xcUrl" class="form-input" placeholder="URL (e.g. http://server.com:8080)">
+                <input type="text" id="xcUser" class="form-input" placeholder="Username">
+                <input type="text" id="xcPass" class="form-input" placeholder="Password">
+                <button class="btn-action btn-yellow" onclick="connectXtream()">LOGIN & LOAD</button>
+            </div>
+
+            <button class="btn-action btn-orange" onclick="toggleForm('stalkerForm')">
+                <i class="fa-solid fa-microchip"></i> Connect Stalker / MAG
+            </button>
+
+            <div id="stalkerForm" class="login-form">
+                <div style="text-align: left; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent-orange);">
+                    <i class="fa-solid fa-info-circle"></i> Requires proxy.php in same folder
+                </div>
+                <input type="text" id="stPortal" class="form-input stalker-input" placeholder="Portal Address (e.g. http://mag.portal.com/c/)">
+                <input type="text" id="stMac" class="form-input stalker-input" placeholder="MAC Address (00:1A:79:...)" onkeyup="formatMac(this)" maxlength="17">
+                <input type="text" id="stSn" class="form-input stalker-input" placeholder="Serial Number (sn)">
+                
+                <input type="text" id="stDevId" class="form-input stalker-input" placeholder="Device ID">
+                <input type="text" id="stDevId2" class="form-input stalker-input" placeholder="Device ID 2 (Optional/Same as ID 1)">
+                
+                <button class="btn-action btn-orange" onclick="connectStalker()">
+                    <i class="fa-solid fa-plug"></i> CONNECT PORTAL
+                </button>
             </div>
 
             <input type="file" id="fileInput" accept=".m3u,.m3u8" style="display:none;" onchange="handleFileUpload(this)">
             <button class="btn-action btn-green" onclick="document.getElementById('fileInput').click()">
-                <i class="fa-solid fa-file-arrow-up"></i> Upload M3U File
+                <i class="fa-solid fa-file-arrow-up"></i> Upload .M3U File
             </button>
 
             <button class="btn-action btn-yellow" onclick="loadAllPlaylists()">
@@ -259,26 +352,30 @@
 
             <div class="section-divider">PREMIUM LIBRARIES</div>
 
-            <button class="btn-action btn-gold" onclick="loadUltraPremium()">
-                <i class="fa-solid fa-crown"></i> ULTRA PREMIUM IPTV (AUTO-SWITCH)
+            <button class="btn-action btn-ultra" onclick="loadUltraPremium()">
+                <i class="fa-solid fa-gem"></i> ULTRA PREMIUM IPTV
             </button>
 
             <button class="btn-action btn-purple" onclick="loadDaddyLive()">
-                <i class="fa-solid fa-satellite-dish"></i> DADDY LIVE (750+)
+                <i class="fa-solid fa-satellite-dish"></i> DADDY LIVE (ULTIMATE)
             </button>
 
             <button class="btn-action btn-red" onclick="loadFoxTV()">
                 <i class="fa-solid fa-tv"></i> FOX TV LIVE
             </button>
 
-            <div id="statusLog" style="margin-top:20px; text-align:left; color:#888; font-size:0.9rem; font-family:monospace;"></div>
+            <button class="btn-action btn-gold" onclick="loadPremium()">
+                <i class="fa-solid fa-crown"></i> IPTV PREMIUM (WORKING)
+            </button>
+
+            <div id="statusLog" style="margin-top:20px; text-align:left; color:var(--text-dim); font-size:0.8rem; font-family:monospace;"></div>
         </div>
     </div>
 
     <div id="listView">
         <div class="search-container">
             <i class="fa-solid fa-search search-icon"></i>
-            <input type="text" id="channelSearch" class="search-input" placeholder="Search channels..." oninput="handleSearch()">
+            <input type="text" id="channelSearch" class="search-input" placeholder="Find a channel..." oninput="handleSearch()">
         </div>
         <div id="listContent" class="list-content"></div>
     </div>
@@ -288,25 +385,28 @@
             <button class="btn-back" onclick="goBack()">
                 <i class="fa-solid fa-arrow-left"></i> Back
             </button>
-            <div id="channelTitle">CHANNEL <span>LIVE</span></div>
-            <div style="width:80px;"></div>
+            
+            <div id="channelTitle">
+                CHANNEL NAME <span>LIVE</span>
+            </div>
         </div>
 
         <div class="player-body" id="playerBody">
             <div class="tv-frame">
                 <div class="screen-glass">
                     <div id="resBadge" class="res-badge">Ready</div>
-                    <div id="switchNotify">Switching Source...</div>
-                    
                     <div class="screen-controls">
-                        <button class="ctl-btn" onclick="reloadStream()"><i class="fa-solid fa-rotate-right"></i></button>
-                        <button class="ctl-btn" onclick="toggleCustomFullscreen()"><i class="fa-solid fa-expand"></i></button>
+                        <button class="ctl-btn" onclick="reloadStream()" title="Reload/Next Source"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button class="ctl-btn" onclick="toggleCustomFullscreen()" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
                     </div>
 
                     <video id="videoPlayer" controls></video>
                     <div id="foxContainer"></div>
                     <div id="daddyContainer"></div>
                 </div>
+                
+                <div class="tv-speaker"></div>
+                <div class="tv-knob"></div>
             </div>
         </div>
     </div>
@@ -319,17 +419,18 @@
         const daddyContainer = document.getElementById('daddyContainer');
         const playerBody = document.getElementById('playerBody');
         const resBadge = document.getElementById('resBadge');
-        const switchNotify = document.getElementById('switchNotify');
         let hls;
         let searchTimer;
-        
-        // Auto-Switch State
-        let activeChannel = null;
+        const RENDER_LIMIT = 200;
+
+        // Auto-switch variables
+        let currentChannelUrls = [];
         let currentUrlIndex = 0;
 
-        // --- ULTRA PREMIUM DATA (Raw M3U Content) ---
-        // This variable holds the raw text you provided.
-        const ultraRawM3U = `#EXTINF:-1,EKUSHEY TV HD
+        // --- RAW ULTRA M3U DATA ---
+        // I've pasted the raw data provided into this variable.
+        const rawUltraData = `
+#EXTINF:-1,EKUSHEY TV HD
 http://210.4.72.204/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8
 #EXTINF:-1,Bloomberg Asia
 https://liveprodapnortheast.global.ssl.fastly.net/ap1/Channel-APTVqvs-AWS-tokyo-1/Source-APTVqvs-1000-1_live.m3u8
@@ -363,270 +464,1188 @@ https://streamcdn.amarujala.com/live/smil:stream1.smil/playlist.m3u8?@amarnettv.
 http://imob.dunyanews.tv/live/_definst_/dunyalive_1/FluxusTV.m3u8?@amarnettv.live
 #EXTINF:-1,NDTV 24x7
 https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/ndtv24x7master.m3u8?@IPTVSolution
+#EXTINF:-1,Al Istiqama TV
+http://jmc-live.ercdn.net/alistiqama/alistiqama_576p.m3u8
+#EXTINF:-1,Peace TV
+http://82.114.67.178:8081/hls/PeaceTV.m3u8
+#EXTINF:-1,Shubhsandesh
+http://6284rn2xr7xv-hls-live.wmncdn.net/shubhsandeshtv1/live123.stream/index.m3u8
+#EXTINF:-1,NASA TV
+https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master_2000.m3u8
+#EXTINF:-1,Groovy
+http://web.onair-radio.eu:1935/groovytv/groovytv/playlist.m3u8
+#EXTINF:-1,TV Cinec
+http://tv01.logicahost.com.br:1935/tvcinec/tvcinec/live.m3u8
+#EXTINF:-1,3ABN Kids
+https://moiptvhls-i.akamaihd.net/hls/live/652318/secure/master.m3u8
+#EXTINF:-1,Kabillion
+https://dai2.xumo.com/amagi_hls_data_xumo1212A-redboxkabillion/CDN/playlist.m3u8
+#EXTINF:-1,Spacetoon
+https://streams.spacetoon.com/live/stchannel/smil:livesmil.smil/playlist.m3u8
+#EXTINF:-1,Ócko
+http://ocko-live.ssl.cdn.cra.cz/channels/ocko/playlist/cze/live_lq.m3u8
+#EXTINF:-1,Ócko Expres
+http://ocko-live.ssl.cdn.cra.cz/channels/ocko_expres/playlist/cze/live_lq.m3u8
+#EXTINF:-1,Ócko Gold
+https://ocko-live-dash.ssl.cdn.cra.cz/cra_live2/ocko_gold.stream.1.smil/playlist.m3u8
+#EXTINF:-1,Ócko STAR
+http://ocko-live.ssl.cdn.cra.cz/channels/ocko_gold/playlist/cze/live_lq.m3u8
+#EXTINF:-1,RETRO MUSIC TV
+http://stream.mediawork.cz/retrotv//retrotvHQ1/playlist.m3u8
+#EXTINF:-1,Afrobeats
+https://stream.ecable.tv/afrobeats/index.m3u8
+#EXTINF:-1,Arabica Music
+http://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8
+#EXTINF:-1,DBM
+https://dbmtv.vedge.infomaniak.com/livecast/smil:dbmtv.smil/manifest.m3u8
+#EXTINF:-1,Kronehit HD
+https://bitcdn-kronehit.bitmovin.com/v2/hls/playlist.m3u8
+#EXTINF:-1,Magic TV
+https://itv.streams.ovh/magictv/magictv/playlist.m3u8
 #EXTINF:-1,Play TV
 http://connectiktv.ddns.net:5000/playtv/@playtv/chunklist.m3u8
 #EXTINF:-1,Play TV
-http://web.onair-radio.eu:1935/Alpha-Host/Alpha-Host/playlist.m3u8`; 
-        // Note: For brevity in this response, I included the start. 
-        // In the real file, you would paste the entire massive list string here inside the backticks.
+http://web.onair-radio.eu:1935/Alpha-Host/Alpha-Host/playlist.m3u8
+#EXTINF:-1,Public Music
+http://103.199.161.254/Content/publicmusic/Live/Channel(PublicMusic)/index.m3u8
+#EXTINF:-1,Qmusic
+https://dpp-qmusicnl-live.akamaized.net/streamx/QmusicNL.m3u8
+#EXTINF:-1,Radio Piter Pan TV
+https://58d921499d3d3.streamlock.net/RadioPiterpanTV/livestream/playlist.m3u8
+#EXTINF:-1,V2Beat TV
+https://abr.de1se01.v2beat.live/playlist.m3u8
+#EXTINF:-1,V2BEAT TV
+https://de1se01.v2beat.live/playlist.m3u8
+#EXTINF:-1,Óčko
+https://ocko-live.ssl.cdn.cra.cz/channels/ocko/playlist/cze/live_hq.m3u8
+#EXTINF:-1,Óčko Expres
+https://ocko-live.ssl.cdn.cra.cz/channels/ocko_expres/playlist/cze/live_hq.m3u8
+#EXTINF:-1,Óčko STAR
+https://ocko-live.ssl.cdn.cra.cz/channels/ocko_gold/playlist/cze/live_hq.m3u8
+#EXTINF:-1,Жар Птица
+http://streamer.rtcommufa.ru:1935/ptica/ptica1/playlist.m3u8
+#EXTINF:-1,М2
+https://live.m2.tv/hls3/stream.m3u8
+#EXTINF:-1,Матур ТВ HD
+https://public.streaming.matur-tv.ru/hls/h264_aac/stream.m3u8
+#EXTINF:-1,Новое
+https://hls-video01.cdnvideo.ru/video01/smil:video01.smil/playlist.m3u8
+#EXTINF:-1,Первый Музыкальный BY
+http://rtmp.one.by:1200
+#EXTINF:-1,Первый Музыкальный BY [FHD]
+http://rtmp.one.by:1300
+#EXTINF:-1,Первый Музыкальный RU BY
+http://rtmp.one.by:2200
+#EXTINF:-1,Первый Музыкальный RU HD BY
+http://rtmp.one.by:2300
+#EXTINF:-1,Страна FM
+http://live.stranafm.cdnvideo.ru/stranafm/stranafm_hd.sdp/playlist.m3u8
+#EXTINF:-1,Шансон-TB
+http://hls.shansontv.cdnvideo.ru/shansontv/smil:shansontv.smil/playlist.m3u8
+#EXTINF:-1,Шансон-TB
+https://hls-shansontv.cdnvideo.ru/shansontv/smil:shansontv.smil/playlist.m3u8
+#EXTINF:-1,Washington D.C. - USA
+https://video2archives.earthcam.com/archives/_definst_/MP4:permanent/7132/2019/09/25/1301.mp4/media_w993546773_9.ts
+#EXTINF:-1,Euro Sports 4K
+http://zabava-htlive.cdn.ngenix.net/hls/CH_EUROSPORT4K_HLS/bw6000000/variant.m3u8?version=2&offset=-3600&checkedby
+#EXTINF:-1,Red Bull TV
+https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_3360.m3u8
+#EXTINF:-1,Edge Sports
+https://imgedge.akamaized.net/amagi_hls_data_imgAAA2AA-edgesports/CDN/playlist.m3u8
+#EXTINF:-1,Euro Sports 4K
+http://zabava-htlive.cdn.ngenix.net/hls/CH_EUROSPORT4K_HLS/bw6000000/variant.m3u8?version=2&offset=-3600
+#EXTINF:-1,Red Bull TV
+http://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_928.m3u8?@amarnettv.live
+#EXTINF:-1,SaRaHa
+http://node-30.zeno.fm/5hx71hbuqhruv?listening-from-radio-garden=1601016201300&rj-tok=AAABdMQJqSIA6Gf4cI6DZUMhdA&rj-ttl=5
+#EXTINF:-1,Big FM
+http://sc-bb.1.fm:8017/;?listening-from-radio-garden=1601016386228
+#EXTINF:-1,Awaj FM
+http://streamasiacdn.atc-labs.com/radioawaj.aac?listening-from-radio-garden=1601016488674
+#EXTINF:-1,Suno FM 102.
+http://51.255.235.165:5476/;stream.mp3?listening-from-radio-garden=1601020600078
+#EXTINF:-1,2B! Radio Sangam Devi Maa
+http://ibadat.out.airtime.pro:8000/ibadat_a
+#EXTINF:-1,2B! Radio Sangam Ganesha
+http://radio2bindia.out.airtime.pro:8000/radio2bindia_a
+#EXTINF:-1,2B! Radio Sangam Gurbani
+http://gurbani.out.airtime.pro:8000/gurbani_a
+#EXTINF:-1,2B! Radio Sangam Guruvar
+http://iskon2b.out.airtime.pro:8000/iskon2b_a
+#EXTINF:-1,2B! Radio Sangam Krishna
+http://millenniumhits.out.airtime.pro:8000/millenniumhits_a
+#EXTINF:-1,2B! Radio Sangam Shiva
+http://hot.out.airtime.pro:8000/hot_a
+#EXTINF:-1,2B! Radio Sangam Shri Ram
+http://dard.out.airtime.pro:8000/dard_a
+#EXTINF:-1,Bollywood Punjabi Radio
+http://stream.zeno.fm/1k0y9f0cm0quv
+#EXTINF:-1,Harman Radio Australia
+http://harmanradio.net:8000/main_48.mp3
+#EXTINF:-1,Jesus Alive Radio
+http://stream.zenolive.com/qyb8s75nsceuv
+#EXTINF:-1,Radio BollyFm
+http://stream.radiobollyfm.in:8201/hd?t=1526570335
+#EXTINF:-1,Radio Sai Global Harmony Bhajan
+http://stream.radiosai.net:8000
+#EXTINF:-1,Radio Schizoid - Chillout / Ambient
+http://94.130.113.214:8000/chill
+#EXTINF:-1,Radio Schizoid - Dub Techno
+http://94.130.113.214:8000/dubtechno
+#EXTINF:-1,Radio Schizoid - Progressive Psychedelic Trance
+http://94.130.113.214:8000/prog
+#EXTINF:-1,Ujala Radio
+http://stream2.ujala.nl/stream/2/listen.mp3
+#EXTINF:-1,IIPC TV
+https://uni10rtmp.tulix.tv/iipctv/iipctv.smil/chunklist_w1550531622_b864000.m3u8?fluxusfaith.m3u8
+#EXTINF:-1,Asianet News
+http://103.199.161.254/Content/asianetnews/Live/Channel(Asianetnews)/index.m3u8
+#EXTINF:-1,Ayush TV
+http://95eryw39dwn4-hls-live.wmncdn.net/Ayushu/271ddf829afeece44d8732757fba1a66.sdp/index.m3u8
+#EXTINF:-1,DD Sports
+http://103.199.161.254/Content/ddsports/Live/Channel(DDSPORTS)/index.m3u8
+#EXTINF:-1,DD Sports
+http://103.199.161.254/Content/ddsports/Live/Channel(DDSPORTS)/Stream(02)/index.m3u8
+#EXTINF:-1,Desi Channel
+http://live.wmncdn.net/desichannel/7e2dd0aed46b70a5c77f4affdb702e4b.sdp/mono.m3u8
+#EXTINF:-1,Fashion TV
+http://fash1043.cloudycdn.services/slive/_definst_/ftv_pg16_adaptive.smil/playlist.m3u8
+#EXTINF:-1,Flowers TV
+http://103.199.161.254/Content/flowers/Live/Channel(Flowers)/index.m3u8
+#EXTINF:-1,Gaunda Punjab TV
+http://start.agmediachandigarh.com/gaundapunjab/tv/playlist.m3u8
+#EXTINF:-1,Harvest TV USA
+http://live.wmncdn.net/harvestusa/d57ffba6564caea2fee3f4085f19a098.sdp/playlist.m3u8
+#EXTINF:-1,Jaihind TV
+http://103.199.161.254/Content/jaihind/Live/Channel(Jaihind)/index.m3u8
+#EXTINF:-1,Janta TV
+http://live.wmncdn.net/jantatv/live.stream/index.m3u8
+#EXTINF:-1,Jeevan TV
+http://103.199.161.254/Content/jeevan/Live/Channel(Jeevan)/index.m3u8
+#EXTINF:-1,Kairali
+http://103.199.161.254/Content/kairali/Live/Channel(Kairali)/Stream(01)/index.m3u8
+#EXTINF:-1,Kairali News
+http://103.199.161.254/Content/people/Live/Channel(People)/index.m3u8
+#EXTINF:-1,Kairali TV
+http://103.199.161.254/Content/kairali/Live/Channel(Kairali)/index.m3u8
+#EXTINF:-1,Kairali We
+http://103.199.161.254/Content/we/Live/Channel(We)/index.m3u8
+#EXTINF:-1,Kappa TV
+http://103.199.161.254/Content/kappa/Live/Channel(Kappa)/index.m3u8
+#EXTINF:-1,Manorama News
+http://103.199.161.254/Content/manoramanews/Live/Channel(ManoramaNews)/index.m3u8
+#EXTINF:-1,Mathrubhumi News
+http://103.199.161.254/Content/mathrubhuminews/Live/Channel(Mathrubhuminews)/index.m3u8
+#EXTINF:-1,Media One
+http://103.199.161.254/Content/mediaone/Live/Channel(MediaOne)/index.m3u8
+#EXTINF:-1,Punjabi TV
+http://cdn9.live247stream.com/punjabitvcanada/tv/playlist.m3u8
+#EXTINF:-1,Reporter TV
+http://103.199.161.254/Content/reporter/Live/Channel(Reporter)/index.m3u8
+#EXTINF:-1,The Q India
+https://amg1-i.akamaihd.net/hls/live/784034/Q001/playlist.m3u8?__nn__=5606168722001&hdnea=st=1566232200~exp=1566235800~acl=/hls/live/784034/Q001/*~hmac=4de929fdc0ee53199a11237ee75a695383a82a42623fa92c1376493e5fc91d7b
+#EXTINF:-1,92 News
+http://92news.vdn.dstreamone.net/92newshd/92hd/playlist.m3u8
+#EXTINF:-1,Dunya News
+http://imob.dunyanews.tv/live/_definst_/dunyalive_1/chunklist_w1239250459.m3u8
+#EXTINF:-1,Zindagi TV
+https://5ad386ff92705.streamlock.net/live_transcoder/ngrp:zindagitv.stream_all/chunklist.m3u8
+#EXTINF:-1,ABC News
+https://content.uplynk.com/channel/3324f2467c414329b3b0cc5cd987b6be.m3u8
+#EXTINF:-1,Arirang
+http://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8
+#EXTINF:-1,TMZ
+https://dai2.xumo.com/xumocdn/p=roku/amagi_hls_data_xumo1234A-tmz/CDN/1280x720_5000000/index.m3u8
+#EXTINF:-1,Filmrise Classics
+https://dai2.xumo.com/amagi_hls_data_xumo1212A-filmriseclassictv/CDN/648x432_5000000/index.m3u8
+#EXTINF:-1,Filmrise Crime
+https://dai2.xumo.com/xumocdn/p=roku/amagi_hls_data_xumo1212A-filmrisecrime/CDN/640x432_2500000/index.m3u8
+#EXTINF:-1,CGTN Documentary
+https://livedoc.cgtn.com/1000d/prog_index.m3u8
+#EXTINF:-1,Channel NewsAsia
+https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_5.m3u8
+#EXTINF:-1,AMGTV
+https://2-fss-2.streamhoster.com/pl_138/201660-1270634-1/chunklist.m3u8
+#EXTINF:-1,Hulchul TV
+http://cdn12.henico.net:8080/live/jbani/index.m3u8
+#EXTINF:-1,Channel Y
+http://cdn19.live247stream.com/channely/tv/playlist.m3u8
+#EXTINF:-1,92 News
+http://92news.vdn.dstreamone.net/92newshd/92hd/playlist.m3u8?checkedby:iptvcat.com
+#EXTINF:-1,Dunya News
+http://imob.dunyanews.tv/live/_definst_/dunyalive_1/chunklist_w1239250459.m3u8?checkedby:iptvcat.com
+#EXTINF:-1,Eye 95 America (US)
+http://cdn20.liveonlineservices.com/hls/eye95tv.m3u8?checkedby:iptvcat.com
+#EXTINF:-1,Zindagi TV
+https://5ad386ff92705.streamlock.net/live_transcoder/ngrp:zindagitv.stream_all/chunklist.m3u8?checkedby:iptvcat.com
+#EXTINF:-1,NBC News
+https://nbcnewshls-i.akamaihd.net/hls/live/1005170/nnn_live1/index.m3u8
+#EXTINF:-1,Sky News
+https://skynewsau-live.akamaized.net/hls/live/2002689/skynewsau-extra1/master.m3u8
+#EXTINF:-1,Bloomberg Europe
+https://liveprodeuwest.akamaized.net/eu1/Channel-EUTVqvs-AWS-ireland-1/Source-EUTVqvs-1000-1_live.m3u8
+#EXTINF:-1,News Max
+https://nmxlive.akamaized.net/hls/live/529965/Live_1/index.m3u8
+#EXTINF:-1,AXN
+http://210.210.155.35/uq2663/h/h141/01.m3u8
+#EXTINF:-1,#EXTINF:-1 59.Channel TT
+https://2-fss-2.themediacdn.com/pl_118/amlst:201982-1318992/playlist.m3u8
+#EXTINF:-1,#EXTINF:-1 100.Zee Bioskop
+http://210.210.155.35/qwr9ew/s/s32/01.m3u8
+#EXTINF:-1,226.Tag TV 2
+https://cdn30.liveonlineservices.com/hls/tagtv.m3u8
+#EXTINF:-1,#EXTINF:-1 302.Food 52
+https://dai2.xumo.com/amagi_hls_data_xumo1212A-food52/CDN/1280x720_5000000/index.m3u8
+#EXTINF:-1,30A Music
+https://30a-tv.com/music.m3u8
+#EXTINF:-1,ANIMAL PLANET
+https://food-dlvr-ott.akamaized.net/primary/3/def27b3dd6854290bc7f42daa93c65ea/index_15.m3u8
+#EXTINF:-1,005. 42 - Extra TV 42
+http://45.5.117.182:8000/play/a0e0/index.m3u8
+#EXTINF:-1,007. A&E
+http://45.5.117.182:8000/play/a0hr/index.m3u8
+#EXTINF:-1,009. AMC
+http://45.5.117.182:8000/play/a0f5/index.m3u8
+#EXTINF:-1,MOVIES RUSSIAN
+http://myott.top/stream/DEKA6YA5JRN/107.m3u8
+#EXTINF:-1,9XM
+https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8?checkedby:iptvcat.com
+#EXTINF:-1,MU TV
+https://bcovlive-a.akamaihd.net/r2d2c4ca5bf57456fb1d16255c1a535c8/eu-west-1/eu-west-1/6058004203001/profile_2/chunklist.m3u8
+#EXTINF:-1,Aaj Tak HD
+https://aajtakhdlive-amd.akamaized.net/hls/live/2014415/aajtakhd/aajtakhdlive/live_720p/chunks.m3u8
+#EXTINF:-1,Good News Today
+https://tezlive-amd.akamaized.net/hls/live/2016145/gnt/gntlive/live_720p/chunks.m3u8
+#EXTINF:-1,Azstar TV
+http://live.livestreamtv.ca/azstar/smil:azstar.smil/playlist.m3u8
+#EXTINF:-1,Zindagi TV
+https://5ad386ff92705.streamlock.net/live_transcoder/ngrp:zindagitv.stream_all/chunklist.m3u
+#EXTINF:-1,Wild EARTH
+https://wildearth-roku.amagi.tv/masterR720P.m3u8
+#EXTINF:-1,SONY
+http://45.5.117.182:8000/play/a0ho/index.m3u8
+#EXTINF:-1,79.Discovery Investigation
+http://168.205.87.198:8555/live/adriana/123456/36.m3u8
+#EXTINF:-1,Horse and Country
+https://hncfree-samsungau.amagi.tv/playlist.m3u8
+#EXTINF:-1,Hindi TV
+https://drive.google.com/uc?export=download&id=1fJ46hqkJXL-lJbYegEfuG5XLOU8aEk1b
+#EXTINF:-1,IB Tv Usa
+http://208.86.19.13:81/509.stream/index.m3u8
+#EXTINF:-1,Canada One
+http://cdn8.live247stream.com/canadaone/tv/playlist.m3u8
+#EXTINF:-1,Nour TV
+https://cdn.bestream.io:19360/elfaro4/elfaro4.m3u8
+#EXTINF:-1,NPL TV
+https://d1k6kax80wecy5.cloudfront.net/WFqZJc/index.m3u8
+#EXTINF:-1,Raj TV
+http://103.199.161.254/Content/rajtv/Live/Channel(RajTV)/Stream(02)/index.m3u8
+#EXTINF:-1,9XM (480p)
+https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8
+#EXTINF:-1,Aaj Tak (404p)
+https://aajtaklive-amd.akamaized.net/hls/live/2014416/aajtak/aajtaklive/live_404p/chunks.m3u8
+#EXTINF:-1,ABP Ganga (1080p)
+https://abplivetv.akamaized.net/hls/live/2043013/ganga/master.m3u8
+#EXTINF:-1,ABP Majha (720p)
+https://abplivetv.akamaized.net/hls/live/2043011/manjha/master.m3u8
+#EXTINF:-1,ABP News (720p)
+https://abplivetv.akamaized.net/hls/live/2043010/hindi/master.m3u8
+#EXTINF:-1,ABP Sanjha (720p)
+https://d316coox0if60r.cloudfront.net/out/v1/7723f2221c3449c3910aaa8f91592bf0/index.m3u8
+#EXTINF:-1,Amrita TV (720p)
+https://dr1zhpsuem5f4.cloudfront.net/master.m3u8
+#EXTINF:-1,Balle Balle (720p)
+https://mcncdndigital.com/balleballetv/index.m3u8
+#EXTINF:-1,ET Now
+https://pubads.g.doubleclick.net/ssai/event/pJrzNyDoT_K_GwYQsijTsQ/master.m3u8
+#EXTINF:-1,ET Now Swadesh (720p)
+https://d32gxr3r1ksq2p.cloudfront.net/master.m3u8
+#EXTINF:-1,Global Punjab (1080p)
+https://server.livelegitpro.in/globalpunjab/globalpunjab/index.m3u8
+#EXTINF:-1,Hope Channel India (1080p)
+https://videodelivery.net/98334a974d26e45759c6baa8bceabbcf/manifest/video.m3u8
+#EXTINF:-1,India Today (720p) [Not 24/7]
+https://indiatodaylive.akamaized.net/hls/live/2014320/indiatoday/indiatodaylive/playlist.m3u8
+#EXTINF:-1,Isai Aruvi (576p)
+http://103.199.161.254/Content/isaiaruvi/Live/Channel(IsaiAruvi)/index.m3u8
+#EXTINF:-1,Kairali We
+https://yuppmedtaorire.akamaized.net/v1/master/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/wetv_nim_https/050522/wetv/playlist.m3u8
+#EXTINF:-1,Madha TV (600p)
+https://60e68b19dd194.streamlock.net:55/madhatv/madhatv.stream_HDp/playlist.m3u8
+#EXTINF:-1,Mazhavil Manorama
+https://yuppmedtaorire.akamaized.net/v1/master/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/mazhavilmanorama_nim_https/050522/mazhavilmanorama/playlist.m3u8
+#EXTINF:-1,Mercy TV (1080p)
+https://5dd3981940faa.streamlock.net/mercytv/mercytv/playlist.m3u8
+#EXTINF:-1,Mirror Now
+https://pubads.g.doubleclick.net/ssai/event/DXkHhH2QSnma-HnE3QJqlA/master.m3u8
+#EXTINF:-1,Naxatra News (720p)
+https://wearelive.livebox.co.in/naxatratvhls/naxatratv.m3u8
+#EXTINF:-1,NDTV 24X7 (480p) [Not 24/7]
+https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/master.m3u8
+#EXTINF:-1,NDTV India (480p) [Not 24/7]
+https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8
+#EXTINF:-1,NDTV Profit (480p)
+https://ndtvprofitelemarchana.akamaized.net/hls/live/2003680-b/ndtvprofit/master.m3u8
+#EXTINF:-1,NDTV Profit (480p) [Not 24/7]
+https://ndtvprofitelemarchana.akamaized.net/hls/live/2003680/ndtvprofit/master.m3u8
+#EXTINF:-1,Sanskar TV (1080p)
+https://d26idhjf0y1p2g.cloudfront.net/out/v1/cd66dd25b9774cb29943bab54bbf3e2f/index.m3u8
+#EXTINF:-1,Sanskar UK (1080p)
+https://d34z4embz0hjf6.cloudfront.net/out/v1/7ac2789ff9a544a49337d1ffc54ce61c/index.m3u8
+#EXTINF:-1,Sanskar USA (1080p)
+https://d2netiedy8cz3x.cloudfront.net/out/v1/9bf6fa4ac8d6432cb98da13b121ba3c2/index.m3u8
+#EXTINF:-1,Sanskar Web TV (1080p)
+https://deatfcv3xdvi3.cloudfront.net/out/v1/7a43dd2f64e34ec28da1b4bd6923251a/index.m3u8
+#EXTINF:-1,Satsang TV (1080p)
+https://d2vfwvjxwtwq1t.cloudfront.net/out/v1/6b24239d5517495b986e7705490c6e65/index.m3u8
+#EXTINF:-1,Satsang Web TV (1080p)
+https://d1ji7e9jbzm5g8.cloudfront.net/out/v1/769f22f64d80442889306b9c4abea63c/index.m3u8
+#EXTINF:-1,Shubh TV (1080p)
+https://d2g1vdc6ozl2o8.cloudfront.net/out/v1/0a0dc7d7911b4fddbb4dfc963fdd4b9e/index.m3u8
+#EXTINF:-1,Sudarshan News (720p)
+https://ott.livelegitpro.in/pusa/sudarshantv/index.m3u8
+#EXTINF:-1,Times Now [Geo-blocked]
+https://pubads.g.doubleclick.net/ssai/event/1mR1QUQ3Tg-VuKfiyjwNuA/master.m3u8
+#EXTINF:-1,Total Bhakti (1080p)
+https://d34z4embz0hjf6.cloudfront.net/out/v1/d55b3323a9f142638f897378f0b526fe/index.m3u8
+#EXTINF:-1,Tribe TV (720p)
+https://server.livelegitpro.in:9899/tribetv/tribetv/index.m3u8
+#EXTINF:-1,Gospel TV India (720p)
+http://live.adostream.com:1935/gospeltv/gospeltv/playlist.m3u8
+#EXTINF:-1,Star Cinema (576p)
+http://c0.cdn.trinity-tv.net/stream/nh9u54a7sfnc2hwzxr2zwykwkqm43bgyyzsm68ybbbnjei8kytwcgs3zm5gnw5c6efa5gr3fadzqe686w8gj2eaehrj89wvujvqza3kez78dtknwbbmnqf79yygmqqg7e9pnc3i3bpywjkiqrwke94yf.m3u8
+#EXTINF:-1,Star Family (576p)
+http://c0.cdn.trinity-tv.net/stream/zfmjgma9zn46fa797ez9fgkw7msh9mj4tppspg23gey6mmx5fqiy7ky3jqx4uhgsfsrd8r76si8ykb2anw9442g4qkq5fzpdvwdqf5te24ixu9zrx3aesm9fzt59q5y2s8qwgbqhvf6d3z5bjy3qb2t4.m3u8
+#EXTINF:-1,One Golf
+http://162.250.201.58:6211/pk/ONEGOLF/index.m3u8
+#EXTINF:-1,Freecatv Euro.Sports 2
+http://175.107.244.52:4457/play/a06w/index.m3u8
+#EXTINF:-1,Bein Sports 5 Arabic 🇶🇦
+http://175.107.244.52:4457/play/a06y/index.m3u8
+#EXTINF:-1,Time tv
+http://208.86.19.13:81/506.stream/index.m3u8
+#EXTINF:-1,Iqra Bangla freecatv
+http://208.86.19.13:81/507.stream/index.m3u8
+#EXTINF:-1,Deshi TV
+http://208.86.19.13:81/514.stream/index.m3u8
+#EXTINF:-1,Turkmenistan Sport 🇹🇲
+http://217.174.225.146/hls/ch004_720/index.m3u8
+#EXTINF:-1,Movie Bangla
+http://alvetv.com/moviebanglatv/8080/index.m3u8
+#EXTINF:-1,Bangla Jago
+http://banglajagotv.livebox.co.in:80/banglajagohls/24x7.m3u8
+#EXTINF:-1,RTV SPORT 🇸🇲
+http://d2hrvno5bw6tg2.cloudfront.net/smrtv-ch02/_definst_/ch-02/chunklist.m3u8
+#EXTINF:-1,Khushboo Bangla(BD2)
+http://idvd.multitvsolution.com/idvo/khushboo.m3u8
+#EXTINF:-1,Khusboo Bangla
+http://idvd.multitvsolution.com/idvo/khushboo_540p.m3u8
+#EXTINF:-1,R Plus Gold(BD2)
+http://idvd.multitvsolution.com/idvo/rplusgold.m3u8
+#EXTINF:-1,X SPORT
+http://iptv.prosto.tv:7000/ch110/video.m3u8
+#EXTINF:-1,X SPORT PLUS
+http://iptv.prosto.tv:7000/ch117/video.m3u8
+#EXTINF:-1,FIGHT BOX HD
+http://iptv.prosto.tv:7000/ch118/video.m3u8
+#EXTINF:-1,SPORT 5 GOLD HD
+http://mwy2tky6.akciatv.ru/iptv/ZP6CPSLL6GVWT2/12254/index.m3u8
+#EXTINF:-1,SPORT 5 PLUS HD
+http://mwy2tky6.akciatv.ru/iptv/ZP6CPSLL6GVWT2/12256/index.m3u8
+#EXTINF:-1,Red Bull TV Sports
+http://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_928.m3u8
+#EXTINF:-1,ABP ananda
+https://abplivetv.akamaized.net/hls/live/2043012/ananda/master.m3u8
+#EXTINF:-1,Turkmenistan Sport 🇹🇲
+https://alpha.tv.online.tm/legacyhls/ch004_720/index.m3u8
+#EXTINF:-1,Channel S (1080p)
+https://amigofx.com:1936/channelsreporter/channelsreporter/playlist.m3u8
+#EXTINF:-1,Colors Bangla(Yupp TV)
+https://catchup.yuppcdn.net/amazonv2/36/preview/colorsbanglahd/master/chunklist.m3u8
+#EXTINF:-1,Colors Bangla HD
+https://catchup.yuppcdn.net:443/amazonv2/36/preview/colorsbanglahd/master/chunklist.m3u8
+#EXTINF:-1,DESHI TV
+https://deshitv.deshitv24.net/live/myStream/playlist.m3u8
+#EXTINF:-1,Ekushay TV
+https://ekusheyserver.com/etvlivesn.m3u8
+#EXTINF:-1,Tennis Channel
+https://tennischannel-int-samsunguk.amagi.tv/playlist.m3u8
+#EXTINF:-1,Trace Sports Stars
+https://trace-sportstars-samsungnz.amagi.tv/playlist.m3u8
+#EXTINF:-1,[Jago] Dubai Sports 2
+http://dmitwlvvll.cdn.mangomolo.com/dubaisportshd/smil:dubaisportshd.smil/chunklist.m3u8
+#EXTINF:-1,[Jago] Dubai Sports 3
+http://dmitwlvvll.cdn.mangomolo.com/dubaisportshd5/smil:dubaisportshd5.smil/index.m3u8
+#EXTINF:-1,HIGH NEWS
+http://highmedia.livebox.co.in:80/HIGHNEWShls/LIVE.m3u8
+#EXTINF:-1,Times TV পাকিস্তান
+http://208.86.19.13:81/513.stream/index.m3u8
+#EXTINF:-1,AB Ananda Barta
+http://5dd3981940faa.streamlock.net:1935/abnews/abnews/chunklist_w644394347.m3u8
+#EXTINF:-1,GaziTV
+http://103.102.27.173/live/tvfeed1001/index.m3u8
+#EXTINF:-1,Zee Bangla (30min Left)
+https://catchup.yuppcdn.net/amazonv2/36/preview/zeebangla/master/chunklist.m3u8
+#EXTINF:-1,Star Jalsha HD (30min Left)
+https://catchup.yuppcdn.net/amazonv2/36/preview/starjalsha/master/chunklist.m3u8
+#EXTINF:-1,R Plus News
+https://thelegitpro.in/pntv/rplusnews24x7/index.m3u8
+#EXTINF:-1,Zee 24 Ghanta
+https://d75dqofg5kmfk.cloudfront.net/bpk-tv/24ghanta/default/index.m3u8
+#EXTINF:-1,Brat TV (1080p)
+https://brat-rakuten.amagi.tv/playlist.m3u8
+#EXTINF:-1,TV9 Bangla (720p)
+https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9banaen8yq/liveabr/playlist.m3u8
+#EXTINF:-1,Qatar TV 2 (720p)
+https://qatartv.akamaized.net/hls/live/2026574/qtv2/master.m3u8
+#EXTINF:-1,food
+https://dai2.xumo.com:443/amagi_hls_data_xumo1212A-food52/CDN/1280x720_5000000/index.m3u8
+#EXTINF:-1,CGTN
+http://iptv.prosto.tv:7000/ch84/video.m3u8
+#EXTINF:-1,ABP Ananda (akamai)
+https://abp-i.akamaihd.net:443/hls/live/765530/abpananda/master.m3u8
+#EXTINF:-1,Sony Aath
+http://isstnjz4.megogo.xyz/iptv/SNZC9Z4RPEYGA3/6641/index.m3u8
+#EXTINF:-1,ANNANDA BARTA
+http://5dd3981940faa.streamlock.net:1935/abnews/abnews/chunklist_w1725375788.m3u8
+#EXTINF:-1,HBTV
+http://hoabinhtvlive.746b3ddb.cdnviet.com/hoabinhtv/chunklist.m3u8
+#EXTINF:-1,ABP Ananda
+https://abp-i.akamaihd.net/hls/live/765530/abpananda/master.m3u8
+#EXTINF:-1,CHANNEL I
+http://208.86.19.13:81/510.stream/index.m3u8?
+#EXTINF:-1,Sports 4
+http://103.102.27.173/live/tvfeed1005/index.m3u8
+#EXTINF:-1,Sports 5
+http://103.102.27.173/live/tvfeed1006/index.m3u8
+#EXTINF:-1,Music India
+https://food-dlvr-ott.akamaized.net/primary/1/d9c0812d4aaf40599540a35be89fb629/index_9_0.m3u8
+#EXTINF:-1,14. Ntv HD
+http://tv.cloudcdn.me/live.ts?channelId=109&uid=5060&deviceMac=00:1A:79:73:9C:A1
+#EXTINF:-1,34. Biswa-Bangla HD
+http://176.119.29.52/live.ts?channelId=90253&uid=5060&deviceMac=00:1A:79:73:9C:A1
+#EXTINF:-1,39. Atn News Bangla
+http://176.119.29.52/live.ts?channelId=83&uid=5060&deviceMac=00:1A:79:73:9C:A1
+#EXTINF:-1,Zee Marathi
+http://103.120.172.74:1040
+#EXTINF:-1,Sony Sports Ten 1 HD(BD)
+http://103.2.153.38/trans1sd/smil:tensports1.smil/chunklist.m3u8
+#EXTINF:-1,Sony Sports Ten 2(BD)
+http://103.2.153.38/trans1sd/smil:tensports2.smil/chunklist.m3u8
+#EXTINF:-1,Sony Sports Ten 5 HD(BD)
+http://103.2.153.38/trans1sd/smil:tensports5.smil/chunklist.m3u8
+#EXTINF:-1,NTV(BD)
+http://103.230.105.252:1935/live/ntv/manifest.m3u8
+#EXTINF:-1,Star Bharat(BD)
+http://195.26.87.217/live.ts?channelId=12364&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,B4U Movies IN(BD)
+http://195.26.87.217/live.ts?channelId=152&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,Colors UK(BD)
+http://195.26.87.217/live.ts?channelId=161&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,Star Bharat HD(BD)
+http://195.26.87.217/live.ts?channelId=195&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,Ustsav Plus HD(BD)
+http://195.26.87.217/live.ts?channelId=201&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,Sony Max 2 UK(BD)
+http://195.26.87.217/live.ts?channelId=40479&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,HBO(BD)
+http://195.26.87.217/live.ts?channelId=49858&uid=7435&deviceMac=00:1A:79:51:4B:3A
+#EXTINF:-1,Bflix(BD)
+http://idvd.multitvsolution.com/idvo/bflixmovies.m3u8
+#EXTINF:-1,Hollywood HD(BD)
+http://iptv.prosto.tv:7000/ch50/video.m3u8
+#EXTINF:-1,Cartoon Network(BD)
+https://amg01448-samsungin-cartoonnw-samsungin-1y8kz.amagi.tv/playlist/amg01448-samsungin-cartoonnw-samsungin/cb553d1e786c648b93d43d63d5ef41a4d3246ad3032e90703dff06c231901d468ca2f9d3f537b63619d714af3f5e2f0e0433db18dd6511b6802eea0e6d287f09cfcceb2ada861317b3c60e383ebb281700ab0941d8380220dcec5759d438b0340446b00a230f338fbe51aa7e55978808821d57b189e5a4fd04706ded294fdfd20ffda8bd0c118d2ff9932372a75e26c7199604e6368ff19702cf69b66cc1168caa08baf212e7868bfa2a50c24d1bb2ccf90b774fb3833797c9936876b879294d1f6fb8c9cbfc4a7292524159fafadfbe37b04a80d165c94c3eb5158014a53e8e79a500a3a11ff3e4fbfe4c452babcd5f590aa5e1a98ba87a62f337b5f39bbd091c93944c2a5fa8718f3a353705d56f1c4b0b9a90d86276/82/640x360_1284800/index.m3u8
+#EXTINF:-1,Pogo(BD)
+https://amg01448-samsungin-pogo-samsungin-dzccl.amagi.tv/playlist/amg01448-samsungin-pogo-samsungin/playlist.m3u8
+#EXTINF:-1,MU TV
+https://bcovlive-a.akamaihd.net/r6b4170ad9e8e4ed49986ecc03bac588b/eu-west-1/6058004203001/playlist.m3u8
+#EXTINF:-1,Action Hollywood Movies(BD)
+https://cdn-apse1-prod.tsv2.amagi.tv/linear/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8
+#EXTINF:-1,SHEEMAROO BOLLYWOOD(BD)
+https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00864-shemarooenterta-shemabollywood-ono/playlist.m3u8
+#EXTINF:-1,Real Madrid TV
+https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01201-cinedigmenterta-realmadrid-cineverse/playlist.m3u8
+#EXTINF:-1,Bollywood HD (BD)
+https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-hd/43e99595-3ab3-4f82-a828-0d32dc308c98/0.m3u8
+#EXTINF:-1,Bollywood Classic(BD)
+https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/manifest.m3u8
+#EXTINF:-1,Food Food(BD)
+https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/foodfood/master.m3u8?ads.rnd=__CACHE_BUSTER__&ads.env_i=__env.i_
+#EXTINF:-1,9XM(BD)
+https://d75dqofg5kmfk.cloudfront.net/bpk-tv/9XM/default/index.m3u8
+#EXTINF:-1,DD National(BD)
+https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Ddnational/default/index.m3u8
+#EXTINF:-1,Music India(BD)
+https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Musicindia/default/index.m3u8
+#EXTINF:-1,Sangeet Bangla(BD)
+https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Sangeetbangla/default/index.m3u8
+#EXTINF:-1,Food Network English(BD)
+https://dplus.gammacdn.workers.dev/videos/112.m3u8
+#EXTINF:-1,Discovery Multi Audio(BD)
+https://dplus.gammacdn.workers.dev/videos/95.m3u8
+#EXTINF:-1,Live Sports Sony Ten 1 HD
+https://edge4-moblive.yuppcdn.net/trans1sd/smil:tensports1.smil/playlist.m3u8
+#EXTINF:-1,Live Sports Sony Ten 2 HD
+https://edge4-moblive.yuppcdn.net/trans1sd/smil:tensports2.smil/playlist.m3u8
+#EXTINF:-1,Live Sports Sony Ten 5 HD
+https://edge4-moblive.yuppcdn.net/trans1sd/smil:tensports5.smil/playlist.m3u8
+#EXTINF:-1,Ekushey TV
+https://ekusheyserver.com/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8
+#EXTINF:-1,DW English
+https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/stream03/streamPlaylist.m3u8
+#EXTINF:-1,SPORTSMAX 1
+https://is.gd/8Xi5qy
+#EXTINF:-1,BEIN SPORT LIVE 🇶🇦
+http://mmn.mypsx.net:1935/live/mmnhdsport/chunklist.m3u8
+#EXTINF:-1,PTV sports
+http://175.107.244.52:4457/play/a08g/index.m3u8
+#EXTINF:-1,Willow Cricket HD
+http://195.26.87.217/live?channelId=302&deviceMac=00:1A:79:33:E9:41
+#EXTINF:-1,Astro 🇲🇾 Cricket HD
+http://195.26.87.217/live?channelId=26034&deviceMac=00:1A:79:33:E9:41
+#EXTINF:-1,FOXSPORTS 3 HD.
+http://45.166.92.22:58001/play/a01j/index.m3u8
+#EXTINF:-1,GOLTV HD.
+http://45.166.92.22:58001/play/a04k/index.m3u8
+#EXTINF:-1,TyCSports HD.
+http://45.166.92.22:58001/play/a04d/index.m3u8
+#EXTINF:-1,STAR SPORTS 1
+http://103.102.27.173/live/tvfeed1003/index.m3u8
+#EXTINF:-1,SPORTSMAX
+https://prod-fastly-eu-central-1.video.pscp.tv/Transcoding/v1/hls/jotm3m_a8wn4PvnOuls_kj01ieR6k1mptTR8SytfsP8kBaL1eEexUbjoBZ3yZVSuP8qyO5Y8f-RwYhL_fDw7Rg/non_transcode/eu-central-1/periscope-replay-direct-prod-eu-central-1-public/tw_master_dynamic_highlatency.m3u8?type=live
+#EXTINF:-1,Setanta Sports 2 HD 🇷🇺
+http://2342512b.ucomist.net/iptv/AACXKHBLQUH7G7/270/index.m3u8
+#EXTINF:-1,TRACE SPORTS
+http://lightning-tracesport-samsungau.amagi.tv/playlist.m3u8
+#EXTINF:-1,Ru Sport
+http://streaming.astrakhan.ru/astrakhanrusporthd/tracks-v5a1/index.m3u8?source:iptvmate.net
+#EXTINF:-1,MAHAR SPORTS
+http://tv.mahar.live/esports/mahar.stream/playlist.m3u8
+#EXTINF:-1,Abu Dhabi Sports 3
+http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_sports3
+#EXTINF:-1,Abu Dhabi Sports 4
+http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_sports4
+#EXTINF:-1,Abu Dhabi Sports 1
+http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_Sports1
+#EXTINF:-1,Abu Dhabi Sports 2
+http://www.elahmad.com/tv/m3u8/adtv.m3u8?id=abudhabi_sports2
+#EXTINF:-1,IPL 2024 Star Sports 1
+http://41.205.93.154/STARSPORTS1/index.m3u8
+#EXTINF:-1,IPL 2024 ATN National
+https://d10rltuy0iweup.cloudfront.net/ATNNAT/myStream/playlist.m3u8
+#EXTINF:-1,Bangla TV
+https://byphdgllyk.gpcdn.net/hls/banglatvbd/index.m3u8
+#EXTINF:-1,Bangla TV Europe
+https://byphdgllyk.gpcdn.net/hls/banglatveurope/index.m3u8
+#EXTINF:-1,Kids Creation
+https://vods1.aynaott.com/kidscreation_test/tracks-v1a1/mono.m3u8
+#EXTINF:-1,Enter 10 Bangla
+https://live-bangla.akamaized.net/liveabr/pub-iobanglakp3sff/live_720p/chunks.m3u8
+#EXTINF:-1,Jalsha Movies HD
+http://tv.cloudcdn.me/live.ts?channelId=117&uid=himelhimu&deviceMac=00:1A:79:A8:9C:32
+#EXTINF:-1,Sony TV HD
+http://103.120.172.74:5000
+#EXTINF:-1,Sony Sab
+http://103.120.172.74:4400
+#EXTINF:-1,The Movie Club
+https://cc-jytb1qhmgqh5a.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-jytb1qhmgqh5a/playlist.m3u8
+#EXTINF:-1,South Station
+https://cc-tke03xaj1wszc.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-tke03xaj1wszc/South_Station_IN/playlist.m3u8
+#EXTINF:-1,Star Sports 1 HD
+http://103.120.172.74:4600
+#EXTINF:-1,Star Sports Select 1
+http://103.120.172.74:1030
+#EXTINF:-1,Star Sports Select 2
+http://103.120.172.74:4700
+#EXTINF:-1,Sports 18 1 HD
+http://tv.cloudcdn.me/live.ts?channelId=102479&uid=4944&deviceMac=00:1A:79:94:98:FE
+#EXTINF:-1,Sports 18 1 HD
+http://103.120.172.74:5500
+#EXTINF:-1,Food Food
+https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/foodfood/master.m3u8?ads.rnd=__CmBanglaavel__&ads.env_i=__env.i_
+#EXTINF:-1,Zoo Moo
+https://amg01553-blueantmediaasi-zoomoonz-samsungnz-rdufn.amagi.tv/playlist/amg01553-blueantmediaasi-zoomoonz-samsungnz/playlist.m3u8
+#EXTINF:-1,Action Hollywood Movies
+https://amg01076-lightningintern-actionhollywood-samsungnz-82rry.amagi.tv/playlist/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8
+#EXTINF:-1,Sony Pix
+http://tv.cloudcdn.me/live.ts?channelId=189&uid=himelhimu&deviceMac=00:1A:79:A8:9C:32
+#EXTINF:-1,Hindi Hits HD
+http://146.59.253.52:8080/hindihitshd/index.m3u8
+#EXTINF:-1,Bollywood Hungama
+https://yuppmedtaorire.akamaized.net/v1/master/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/bollywoodhungama_live_https/master.m3u8
+#EXTINF:-1,Zoom
+https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Zoom/default/zoom.m3u8
+#EXTINF:-1,Fox News Now
+https://fox-foxnewsnow-samsungus.amagi.tv/playlist.m3u8
+#EXTINF:-1,Sport Ext
+https://marine2.miplay.cl/sportext/playlist.m3u8
+#EXTINF:-1,Star sports1
+http://103.120.172.74:4100
+#EXTINF:-1,Arena Sport 1 HD
+http://80.252.37.194:5000/udp/233.233.233.3:12000
+#EXTINF:-1,Arena Sport 2 HD
+http://80.252.37.194:5000/udp/233.233.233.4:12000
+#EXTINF:-1,Arena Sport 3 HD
+http://80.252.37.194:5000/udp/233.233.233.5:12000
+#EXTINF:-1,Arena Sport 4 HD
+http://80.252.37.194:5000/udp/233.233.233.6:12000
+#EXTINF:-1,Arena Sport 5 HD
+http://80.252.37.194:5000/udp/233.233.233.7:12000
+#EXTINF:-1,Arena Sport 6 HD
+http://80.252.37.194:5000/udp/233.233.233.8:12000
+`;
 
-        // --- DADDYLIVE DATA ---
-        const dlChannels = [
-            { id: 51, name: "ABC USA" }, { id: 302, name: "A&E USA" }, { id: 303, name: "AMC USA" },
-            { id: 39, name: "Fox Sports 1" }, { id: 44, name: "ESPN USA" }, { id: 321, name: "HBO USA" }
-            // ... (Use the full list from previous steps)
-        ];
-
-        // --- ULTRA PREMIUM LOGIC (AUTO SWITCH) ---
-        function loadUltraPremium() {
-            // Parse and Merge Duplicates
-            allChannels = parseAndMergeM3U(ultraRawM3U, "PREMIUM");
-            
-            logStatus(`Loaded ${allChannels.length} Unique Channels (with alternatives)`, 'success');
-            renderList(allChannels);
-            
-            document.getElementById('loadScreen').style.display = 'none';
-            document.getElementById('listView').style.display = 'flex';
-        }
-
-        function parseAndMergeM3U(content, sourceLabel) {
-            const lines = content.split('\n');
-            const map = new Map(); // Use Map to merge duplicates
-
-            let currentName = null;
-            let currentLogo = null;
-            let currentGroup = 'General';
-
-            lines.forEach(line => {
-                line = line.trim();
-                if(line.startsWith('#EXTINF:')) {
-                    // Extract Metadata
-                    const logoMatch = line.match(/tvg-logo="([^"]*)"/);
-                    const groupMatch = line.match(/group-title="([^"]*)"/);
-                    
-                    if(logoMatch) currentLogo = logoMatch[1];
-                    if(groupMatch) currentGroup = groupMatch[1];
-                    
-                    // Extract Name (after the last comma)
-                    currentName = line.substring(line.lastIndexOf(',') + 1).trim();
-                    if (!currentName) currentName = "Unknown Channel";
-
-                } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
-                    // It's a URL
-                    if(currentName) {
-                        // Cleanup Name for better matching (remove quality tags etc if needed)
-                        const cleanName = currentName;
-
-                        if (map.has(cleanName)) {
-                            // Duplicate found: Add URL to existing entry
-                            const existing = map.get(cleanName);
-                            existing.urls.push(line);
-                        } else {
-                            // New Entry
-                            map.set(cleanName, {
-                                name: cleanName,
-                                group: currentGroup,
-                                source: sourceLabel,
-                                logo: currentLogo,
-                                urls: [line], // Array of URLs
-                                isIframe: false
-                            });
-                        }
-                    }
-                    // Reset
-                    currentName = null; currentLogo = null; currentGroup = 'General';
-                }
+        // --- UI UTILS ---
+        function toggleForm(id) {
+            ['xtreamForm', 'stalkerForm'].forEach(fid => {
+                if(fid !== id) document.getElementById(fid).style.display = 'none';
             });
-            return Array.from(map.values());
+            const form = document.getElementById(id);
+            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
         }
 
-        // --- PLAYER LOGIC WITH FAILOVER ---
-        function decidePlayer(channelObj) {
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('playerView').style.display = 'flex';
-            
-            // Set Header Title
-            const titleHtml = `${channelObj.name} <span>LIVE</span>`;
-            document.getElementById('channelTitle').innerHTML = titleHtml;
-
-            activeChannel = channelObj;
-            currentUrlIndex = 0; // Reset to first URL
-
-            if(channelObj.isIframe) {
-                playIframe(channelObj.url, channelObj.isDaddy ? "daddy" : "fox");
+        function formatMac(input) {
+            let r = input.value.replace(/[^0-9a-fA-F]/g,"");
+            if(r.length > 2) {
+                let groups = [];
+                for(let i=0; i<r.length; i+=2) groups.push(r.substr(i,2));
+                input.value = groups.join(":").toUpperCase();
             } else {
-                // Start HLS with Failover logic
-                playHLS(channelObj.urls[0]); 
+                input.value = r.toUpperCase();
             }
         }
 
-        function playHLS(url) {
-            // Clear other players
-            foxContainer.style.display = 'none'; foxContainer.innerHTML = '';
-            daddyContainer.style.display = 'none'; daddyContainer.innerHTML = '';
-            video.style.display = 'block';
-            switchNotify.style.display = 'none';
+        // --- XTREAM LOGIC ---
+        async function connectXtream() {
+            const url = document.getElementById('xcUrl').value.trim();
+            const user = document.getElementById('xcUser').value.trim();
+            const pass = document.getElementById('xcPass').value.trim();
 
-            resBadge.innerText = `SOURCE ${currentUrlIndex + 1}`;
-            resBadge.style.color = "var(--accent-yellow)";
-            resBadge.style.borderColor = "var(--accent-yellow)";
+            if(!url || !user || !pass) return alert("Please fill in all Xtream fields.");
+
+            const btn = document.querySelector('#xtreamForm .btn-action');
+            btn.innerText = "CONNECTING...";
+            const apiUrl = `${url}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
+            logStatus("Contacting Xtream Server...", 'info');
+
+            try {
+                // Use a proxy for CORS
+                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
+                const response = await fetch(proxyUrl);
+                if(!response.ok) throw new Error("Server connection failed");
+                const data = await response.json();
+                
+                if(data.length === 0) throw new Error("No channels found or invalid credentials");
+
+                allChannels = data.map(channel => ({
+                    name: channel.name,
+                    group: "XTREAM LIVE",
+                    source: "XC",
+                    logo: channel.stream_icon,
+                    url: `${url}/live/${user}/${pass}/${channel.stream_id}.m3u8`
+                }));
+
+                logStatus(`Xtream Connected! Loaded ${allChannels.length} channels`, 'success');
+                switchToListView();
+
+            } catch (e) {
+                console.error(e);
+                logStatus(`Xtream Error: ${e.message}`, 'error');
+                alert("Connection failed. Check URL/Credentials or CORS restriction.");
+            } finally {
+                btn.innerText = "LOGIN & LOAD";
+            }
+        }
+
+        // --- STALKER LOGIC ---
+        async function connectStalker() {
+            const portal = document.getElementById('stPortal').value.trim();
+            const mac = document.getElementById('stMac').value.trim();
+            const sn = document.getElementById('stSn').value.trim();
+            const devId = document.getElementById('stDevId').value.trim();
+            const devId2 = document.getElementById('stDevId2').value.trim();
+
+            if (!portal || !mac) return alert("Portal Address and MAC are required.");
+
+            const btn = document.querySelector('#stalkerForm .btn-action');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
+            
+            const proxyBase = "proxy.php"; 
+
+            try {
+                logStatus("Authenticating with Stalker Middleware...", 'info');
+
+                const fetchUrl = `${proxyBase}?action=get_channels` +
+                                 `&portal=${encodeURIComponent(portal)}` +
+                                 `&mac=${encodeURIComponent(mac)}` +
+                                 `&sn=${encodeURIComponent(sn)}` +
+                                 `&device_id=${encodeURIComponent(devId)}` +
+                                 `&device_id2=${encodeURIComponent(devId2)}`;
+                
+                const response = await fetch(fetchUrl);
+                if(!response.ok) throw new Error("Proxy connection failed.");
+                const data = await response.json();
+
+                const channels = data.js ? data.js.data : (data.items ? data.items : []);
+
+                if (!channels || channels.length === 0) {
+                    throw new Error("Authentication failed or no channels found.");
+                }
+
+                allChannels = channels.map(ch => ({
+                    name: ch.name,
+                    group: "STALKER TV",
+                    source: "MAG",
+                    logo: ch.logo, 
+                    cmd: ch.cmd,        
+                    portal_url: portal, 
+                    mac_address: mac,
+                    isStalker: true
+                }));
+
+                logStatus(`Stalker Connected! Loaded ${allChannels.length} channels`, 'success');
+                toggleForm('stalkerForm');
+                switchToListView();
+
+            } catch (e) {
+                console.error(e);
+                logStatus(`Stalker Error: ${e.message}`, 'error');
+                alert("Connection Failed. Check credentials or proxy.");
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-plug"></i> CONNECT PORTAL';
+            }
+        }
+
+        function switchToListView() {
+            if(allChannels.length > 0) {
+                renderList(allChannels);
+                document.getElementById('loadScreen').style.display = 'none';
+                document.getElementById('listView').style.display = 'flex';
+            }
+        }
+
+        // --- FILE UPLOAD LOGIC ---
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            logStatus(`Reading file: ${file.name}...`, 'info');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const newChannels = parseM3U(content, "LOCAL FILE");
+                if (newChannels.length > 0) {
+                    allChannels = newChannels;
+                    logStatus(`Loaded ${allChannels.length} channels from file`, 'success');
+                    switchToListView();
+                } else {
+                    logStatus("No channels found in file", 'error');
+                    alert("Invalid M3U file");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- FOX / DADDY (PLACEHOLDER) ---
+        function loadDaddyLive() {
+             alert("DaddyLive is a placeholder in this demo. Please use Ultra Premium or File Upload.");
+        }
+        function loadFoxTV() {
+            document.getElementById('loadScreen').style.display = 'none';
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('playerView').style.display = 'flex';
+            playIframe("https://dlhd.link/stream/stream-54.php", "FOX LIVE", "fox");
+        }
+        async function loadPremium() {
+            alert("Premium is a placeholder. Loading Ultra Premium instead...");
+            loadUltraPremium();
+        }
+
+        // --- ULTRA PREMIUM LOGIC (WITH GROUPING & FAILOVER) ---
+        function loadUltraPremium() {
+            logStatus("Parsing Ultra Premium M3U...", 'info');
+            
+            // 1. Parse Raw M3U
+            const rawChannels = parseM3U(rawUltraData, "ULTRA");
+            
+            // 2. Group by Name (The Smart Logic)
+            const groupedMap = new Map();
+            
+            rawChannels.forEach(ch => {
+                const normName = ch.name.trim(); // We could normalize case/spaces here if needed
+                if (!groupedMap.has(normName)) {
+                    // First time seeing this channel
+                    groupedMap.set(normName, {
+                        ...ch,
+                        urls: [ch.url], // Start array of URLs
+                        source: "ULTRA"
+                    });
+                } else {
+                    // Duplicate found, add URL to existing entry
+                    const existing = groupedMap.get(normName);
+                    if (!existing.urls.includes(ch.url)) {
+                        existing.urls.push(ch.url);
+                    }
+                }
+            });
+
+            // 3. Convert Map back to Array
+            allChannels = Array.from(groupedMap.values());
+            
+            logStatus(`Loaded ${allChannels.length} unique Ultra channels (merged duplicates)`, 'success');
+            switchToListView();
+        }
+
+        // --- UTILS ---
+        function addInputRow() {
+            const container = document.getElementById('inputContainer');
+            const div = document.createElement('div');
+            div.className = 'input-row';
+            div.innerHTML = `
+                <input type="text" class="url-input" placeholder="Another Playlist URL...">
+                <button class="btn-action btn-red" onclick="removeRow(this)" style="width:50px; margin:0;"><i class="fa-solid fa-times"></i></button>
+            `;
+            container.appendChild(div);
+        }
+        function removeRow(btn) { btn.parentElement.remove(); }
+        
+        function logStatus(msg, type='info') {
+            const log = document.getElementById('statusLog');
+            const color = type === 'error' ? 'var(--accent-red)' : (type === 'success' ? 'var(--accent-cyan)' : 'var(--text-dim)');
+            log.innerHTML += `<div style="color:${color}; margin-bottom:4px;">> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function fetchSmart(url) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) return await response.text();
+                throw new Error("Direct failed");
+            } catch (e) {
+                try {
+                    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) return await response.text();
+                    throw new Error("Proxy failed");
+                } catch (e2) {
+                    const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                    const response = await fetch(proxyUrl2);
+                    if (response.ok) return await response.text();
+                    throw new Error("All proxies failed");
+                }
+            }
+        }
+
+        async function loadAllPlaylists() {
+            const inputs = document.querySelectorAll('.url-input');
+            document.getElementById('statusLog').innerHTML = '';
+            let urls = [];
+            inputs.forEach(input => { if(input.value.trim()) urls.push(input.value.trim()); });
+            if(urls.length === 0) return alert("Please enter a URL.");
+
+            allChannels = []; 
+            logStatus("Connecting...", 'info');
+
+            for (let i = 0; i < urls.length; i++) {
+                let url = urls[i];
+                let sourceLabel = 'Source ' + (i+1);
+                try {
+                    const content = await fetchSmart(url);
+                    const newChannels = parseM3U(content, sourceLabel);
+                    if(newChannels.length > 0) {
+                        logStatus(`Loaded ${newChannels.length} channels`, 'success');
+                        allChannels = allChannels.concat(newChannels);
+                    } else {
+                        logStatus(`Empty playlist: ${sourceLabel}`, 'error');
+                    }
+                } catch (e) {
+                    logStatus(`Failed to load: ${sourceLabel}`, 'error');
+                }
+            }
+            if(allChannels.length > 0) switchToListView();
+            else alert("No channels found. Check logs.");
+        }
+
+        function parseM3U(content, sourceLabel) {
+            const lines = content.split('\n');
+            const channels = [];
+            let current = {};
+            lines.forEach(line => {
+                line = line.trim();
+                if(line.startsWith('#EXTINF:')) {
+                    const logo = line.match(/tvg-logo="([^"]*)"/);
+                    const group = line.match(/group-title="([^"]*)"/);
+                    const name = line.substring(line.lastIndexOf(',') + 1).trim();
+                    current.logo = logo ? logo[1] : null;
+                    current.group = group ? group[1] : 'General';
+                    current.name = name || 'Unknown Channel';
+                } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
+                    current.url = line;
+                    current.source = sourceLabel;
+                    current.isIframe = false;
+                    // For parsed files, URLs starts as single array, will be merged later if needed
+                    current.urls = [line]; 
+                    if(current.name) channels.push(current);
+                    current = {};
+                }
+            });
+            return channels;
+        }
+
+        // --- RENDER LOGIC ---
+        function renderList(channels) {
+            const container = document.getElementById('listContent');
+            container.innerHTML = ''; 
+            const subset = channels.slice(0, RENDER_LIMIT);
+            const fragment = document.createDocumentFragment();
+
+            subset.forEach(ch => {
+                const card = document.createElement('div');
+                card.className = 'channel-card';
+                card.onclick = () => decidePlayer(ch);
+                
+                let badgeClass = 'bg-cyan';
+                if(ch.group === 'DADDYLIVE') badgeClass = 'bg-purple';
+                if(ch.group === 'XTREAM LIVE') badgeClass = 'bg-green';
+                if(ch.source === 'MAG') badgeClass = 'bg-orange';
+                if(ch.source === 'ULTRA') badgeClass = 'bg-ultra';
+                
+                const logoHtml = ch.logo 
+                    ? `<img src="${ch.logo}" onerror="this.style.display='none'">` 
+                    : `${ch.name.substring(0,2)}`;
+                
+                // Show how many sources if merged
+                const sourceCountHtml = (ch.urls && ch.urls.length > 1) 
+                    ? `<span class="source-count">${ch.urls.length} SRC</span>` 
+                    : '';
+
+                card.innerHTML = `
+                    <div class="card-logo">${logoHtml}</div>
+                    <div class="card-info">
+                        <div class="card-title">${ch.name}</div>
+                        <div class="card-meta">
+                            <span class="badge ${badgeClass}">${ch.source || 'LIVE'}</span>
+                            <span class="badge bg-gray">${ch.group || 'CH'}</span>
+                            ${sourceCountHtml}
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-play play-icon"></i>
+                `;
+                fragment.appendChild(card);
+            });
+            container.appendChild(fragment);
+
+            if(channels.length > RENDER_LIMIT) {
+                const info = document.createElement('div');
+                info.style.textAlign = 'center';
+                info.style.color = 'var(--text-dim)';
+                info.style.padding = '20px';
+                info.innerText = `Showing top ${RENDER_LIMIT} of ${channels.length} channels...`;
+                container.appendChild(info);
+            }
+        }
+
+        function handleSearch() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                const term = document.getElementById('channelSearch').value.toLowerCase();
+                const filtered = allChannels.filter(ch => 
+                    ch.name.toLowerCase().includes(term) || 
+                    (ch.group && ch.group.toLowerCase().includes(term))
+                );
+                renderList(filtered);
+            }, 300);
+        }
+
+        // --- PLAYER LOGIC (WITH FAILOVER) ---
+        async function decidePlayer(ch) {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('playerView').style.display = 'flex';
+            
+            const titleHtml = ch.name ? `${ch.name} <span>LIVE</span>` : `LIVE STREAM <span>ON AIR</span>`;
+            document.getElementById('channelTitle').innerHTML = titleHtml;
+
+            // --- STALKER LOGIC ---
+            if (ch.isStalker) {
+                // ... (Existing Stalker logic remains same) ...
+                resBadge.innerText = "GENERATING LINK...";
+                try {
+                    const proxyBase = "proxy.php";
+                    const genUrl = `${proxyBase}?action=create_link&cmd=${encodeURIComponent(ch.cmd)}&portal=${encodeURIComponent(ch.portal_url)}&mac=${encodeURIComponent(ch.mac_address)}`;
+                    const response = await fetch(genUrl);
+                    const data = await response.json();
+                    let streamUrl = data.js ? data.js.cmd : null;
+                    if(streamUrl) {
+                        streamUrl = streamUrl.replace('ffmpeg ', '').replace('auto ', '');
+                        logStatus(`Generated Link: ${streamUrl}`, 'success');
+                        // Treat single stalker link as a 1-item array for consistency
+                        currentChannelUrls = [streamUrl];
+                        currentUrlIndex = 0;
+                        playHLS(streamUrl);
+                    } else {
+                        throw new Error("Server returned no stream link.");
+                    }
+                } catch(e) {
+                    alert("Error playing channel: Link expired or server blocked IP.");
+                    goBack();
+                }
+                return;
+            }
+
+            // --- STANDARD / ULTRA LOGIC ---
+            if(ch.isIframe) {
+                playIframe(ch.url, ch.isDaddy ? "DADDY LIVE" : "LIVE STREAM", ch.isDaddy ? "daddy" : "iframe");
+            } else {
+                // Prepare failover system
+                currentChannelUrls = ch.urls || [ch.url]; // Use array if exists, else single
+                currentUrlIndex = 0;
+                
+                playHLS(currentChannelUrls[0]);
+            }
+        }
+
+        function playIframe(url, label, type) {
+            video.style.display = 'none';
+            video.pause();
+            foxContainer.style.display = 'none';
+            daddyContainer.style.display = 'none';
+            
+            let target = (type === 'fox') ? foxContainer : daddyContainer;
+            target.style.display = 'block';
+            target.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" loading="eager" referrerpolicy="no-referrer"></iframe>`;
+            
+            resBadge.innerText = label;
+            resBadge.style.color = "var(--accent-red)";
+            resBadge.style.borderColor = "var(--accent-red)";
+        }
+
+        function playHLS(url) {
+            foxContainer.innerHTML = '';
+            daddyContainer.innerHTML = '';
+            foxContainer.style.display = 'none';
+            daddyContainer.style.display = 'none';
+            
+            video.style.display = 'block';
+            
+            // UI Update: Show which source we are on if multiple exist
+            if(currentChannelUrls.length > 1) {
+                resBadge.innerText = `SRC ${currentUrlIndex + 1}/${currentChannelUrls.length}`;
+                resBadge.style.color = "var(--accent-ultra)";
+                resBadge.style.borderColor = "var(--accent-ultra)";
+            } else {
+                resBadge.innerText = "HLS STREAM";
+                resBadge.style.color = "var(--accent-yellow)";
+                resBadge.style.borderColor = "var(--accent-yellow)";
+            }
 
             if(Hls.isSupported()) {
                 if(hls) hls.destroy();
-                hls = new Hls();
+                hls = new Hls({
+                    maxBufferLength: 30,
+                    manifestLoadingTimeOut: 15000 // 15s timeout before switching
+                });
                 
                 hls.loadSource(url);
                 hls.attachMedia(video);
                 
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
                 
-                // ERROR HANDLING -> TRIGGER SWITCH
+                // ERROR HANDLING FOR FAILOVER
                 hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
-                        console.warn("Stream Error, trying switch...", data.type);
-                        trySwitchSource(); 
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log("Network error on source " + currentUrlIndex);
+                                tryNextSource(); // Try next URL
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                tryNextSource();
+                                break;
+                        }
                     }
                 });
-
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
                 video.play();
-                // Basic HTML5 error listener
-                video.onerror = () => trySwitchSource();
+                // Native HLS fallback error listener
+                video.onerror = () => tryNextSource();
             }
         }
 
-        function trySwitchSource() {
-            if(!activeChannel || !activeChannel.urls) return;
-
-            // Check if there is a next URL
-            if (currentUrlIndex < activeChannel.urls.length - 1) {
+        function tryNextSource() {
+            if (currentUrlIndex < currentChannelUrls.length - 1) {
                 currentUrlIndex++;
+                console.log("Switching to Source " + (currentUrlIndex + 1));
                 
-                // Show Notification
-                switchNotify.style.display = 'block';
-                switchNotify.innerText = `Stream Failed. Switching to Source ${currentUrlIndex + 1}...`;
+                // Visual feedback
+                resBadge.innerText = "SWITCHING...";
+                resBadge.style.color = "#fff";
+                resBadge.style.background = "var(--accent-red)";
                 
-                // Load Next URL
-                console.log(`Switching to URL index ${currentUrlIndex}`);
-                if(hls) hls.destroy();
-                playHLS(activeChannel.urls[currentUrlIndex]);
-                
-                // Hide Notification after 3s
-                setTimeout(() => { switchNotify.style.display = 'none'; }, 3000);
+                setTimeout(() => {
+                     playHLS(currentChannelUrls[currentUrlIndex]);
+                }, 500); // Slight delay to prevent rapid-fire loops
             } else {
-                switchNotify.style.display = 'block';
-                switchNotify.innerText = "All Sources Failed.";
-                switchNotify.style.background = "rgba(255, 0, 0, 0.8)";
+                console.log("All sources failed.");
+                resBadge.innerText = "OFFLINE";
+                resBadge.style.color = "gray";
+                resBadge.style.borderColor = "gray";
+                resBadge.style.background = "transparent";
             }
         }
 
-        // --- Standard Logic (DaddyLive, etc) ---
-        function loadDaddyLive() {
-            allChannels = dlChannels.map((item) => ({
-                name: item.name, group: "DADDYLIVE", source: "DLHD",
-                url: `https://dlhd.link/stream/stream-${item.id}.php`, isIframe: true, isDaddy: true
-            }));
-            renderList(allChannels);
-            document.getElementById('loadScreen').style.display = 'none';
-            document.getElementById('listView').style.display = 'flex';
+        function toggleCustomFullscreen() {
+            if (!document.fullscreenElement) {
+                playerBody.requestFullscreen();
+                playerBody.classList.add('is-fullscreen');
+            } else {
+                document.exitFullscreen();
+                playerBody.classList.remove('is-fullscreen');
+            }
         }
 
-        function loadFoxTV() {
-            document.getElementById('loadScreen').style.display = 'none';
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('playerView').style.display = 'flex';
-            playIframe("https://dlhd.link/stream/stream-54.php", "fox");
-        }
-
-        function playIframe(url, type) {
-            video.style.display = 'none'; video.pause();
-            let target = (type === 'fox') ? foxContainer : daddyContainer;
-            
-            foxContainer.style.display = 'none'; daddyContainer.style.display = 'none';
-            target.style.display = 'block';
-            target.innerHTML = `<iframe src="${url}" allowfullscreen allow="encrypted-media" loading="eager"></iframe>`;
-            
-            resBadge.innerText = "IFRAME LIVE";
-            resBadge.style.color = "var(--accent-red)";
-            resBadge.style.borderColor = "var(--accent-red)";
-        }
-
-        // --- Rendering ---
-        function renderList(channels) {
-            const container = document.getElementById('listContent');
-            container.innerHTML = ''; 
-            const fragment = document.createDocumentFragment();
-
-            // Render first 150 for speed
-            channels.slice(0, 150).forEach(ch => {
-                const card = document.createElement('div');
-                card.className = 'channel-card';
-                // Pass the whole object
-                card.onclick = () => decidePlayer(ch);
-                
-                let badgeClass = 'bg-cyan';
-                if(ch.group === 'DADDYLIVE') badgeClass = 'bg-purple';
-                if(ch.source === 'PREMIUM') badgeClass = 'bg-gold';
-                
-                // Logo or Text
-                const logoHtml = ch.logo 
-                    ? `<img src="${ch.logo}" onerror="this.style.display='none'">` 
-                    : `<div class="card-logo">${ch.name.substring(0,2)}</div>`;
-                
-                const logoDisplay = ch.logo ? 
-                    `<div class="card-logo"><img src="${ch.logo}" onerror="this.parentElement.innerHTML='${ch.name.substring(0,2)}'"></div>` : 
-                    `<div class="card-logo">${ch.name.substring(0,2)}</div>`;
-
-                // Badge Logic: Show how many sources if premium
-                let sourceBadge = `<span class="badge ${badgeClass}">${ch.source}</span>`;
-                if(ch.urls && ch.urls.length > 1) {
-                    sourceBadge = `<span class="badge bg-green">${ch.urls.length} SOURCES</span>`;
+        function reloadStream() {
+            // Manual reload acts as "Next Source" if available
+            const isIframe = (foxContainer.style.display === 'block' || daddyContainer.style.display === 'block');
+            if(isIframe) {
+               const target = (daddyContainer.style.display === 'block') ? daddyContainer : foxContainer;
+               const currentIframe = target.querySelector('iframe');
+               if(currentIframe) {
+                   const src = currentIframe.src;
+                   target.innerHTML = '';
+                   setTimeout(() => {
+                       target.innerHTML = `<iframe src="${src}" allowfullscreen allow="encrypted-media" loading="eager" referrerpolicy="no-referrer"></iframe>`;
+                   }, 100);
+               }
+            } else {
+                // If manual click, try next source if available, otherwise just reload current
+                if (currentUrlIndex < currentChannelUrls.length - 1) {
+                    tryNextSource();
+                } else {
+                    if(hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
                 }
-
-                card.innerHTML = `
-                    ${logoDisplay}
-                    <div class="card-info">
-                        <div class="card-title">${ch.name}</div>
-                        <div class="card-meta">
-                            ${sourceBadge}
-                            <span class="badge bg-gray">${ch.group}</span>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-play" style="color:var(--accent-yellow); font-size:1.5rem;"></i>
-                `;
-                fragment.appendChild(card);
-            });
-            container.appendChild(fragment);
+            }
         }
 
-        // ... (Include Standard Xtream/File Upload/Search Functions Here) ...
-        function toggleXtreamForm() { document.getElementById('xtreamForm').style.display = 'block'; }
-        function addInputRow() { /* Standard Add Row Code */ }
-        function removeRow(btn) { btn.parentElement.parentElement.remove(); }
-        function logStatus(msg, type='info') {
-             const log = document.getElementById('statusLog');
-             log.innerHTML += `<div>> ${msg}</div>`;
-        }
-        function handleSearch() {
-            const term = document.getElementById('channelSearch').value.toLowerCase();
-            const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(term));
-            renderList(filtered);
-        }
+        document.addEventListener('fullscreenchange', () => { 
+            if (!document.fullscreenElement) playerBody.classList.remove('is-fullscreen'); 
+        });
+
         function goBack() {
             video.pause();
-            foxContainer.innerHTML = ''; daddyContainer.innerHTML = '';
+            foxContainer.innerHTML = '';
+            daddyContainer.innerHTML = '';
             if(hls) hls.destroy();
             document.getElementById('playerView').style.display = 'none';
-            if (foxContainer.style.display === 'block') document.getElementById('loadScreen').style.display = 'flex';
-            else document.getElementById('listView').style.display = 'flex';
-        }
-        function reloadStream() {
-            if(activeChannel) decidePlayer(activeChannel); // Re-init
-        }
-        function toggleCustomFullscreen() {
-            if (!document.fullscreenElement) document.getElementById('playerBody').requestFullscreen();
-            else document.exitFullscreen();
+            
+            if (foxContainer.style.display === 'block') {
+                 document.getElementById('loadScreen').style.display = 'flex';
+            } else {
+                document.getElementById('listView').style.display = 'flex';
+            }
         }
     </script>
 </body>
