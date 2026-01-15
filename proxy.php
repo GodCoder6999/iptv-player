@@ -4,7 +4,95 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 $action = $_GET['action'] ?? '';
+$portal = $_GET['portal'] ?? '';<?php
+// proxy.php - Final Version with Device ID Support
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+
+// Capture all inputs
+$action = $_GET['action'] ?? '';
 $portal = $_GET['portal'] ?? '';
+$mac = $_GET['mac'] ?? '';
+$sn = $_GET['sn'] ?? '';
+$deviceId = $_GET['device_id'] ?? '';
+$deviceId2 = $_GET['device_id2'] ?? ''; 
+$token = $_GET['token'] ?? '';
+
+if (!$portal || !$mac) {
+    echo json_encode(["error" => "Missing Portal or MAC"]);
+    exit;
+}
+
+// Ensure Portal ends with /
+if (substr($portal, -1) != '/') $portal .= '/';
+$apiUrl = $portal . "server/load.php";
+
+// Build Cookies including Device IDs
+$cookies = "mac=" . urlencode($mac) . "; stb_lang=en; timezone=Europe/London;";
+if($deviceId) {
+    $cookies .= " stb_sn=" . urlencode($sn) . ";";
+    $cookies .= " device_id=" . urlencode($deviceId) . ";";
+    $cookies .= " device_id2=" . urlencode($deviceId2) . ";";
+}
+
+$headers = [
+    "User-Agent: Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
+    "Cookie: " . $cookies,
+    "Referer: " . $portal . "c/",
+    "Authorization: Bearer " . $token,
+    "X-User-Agent: Model: MAG250; Link: Ethernet"
+];
+
+function makeRequest($url, $headers, $params = []) {
+    $ch = curl_init();
+    $queryString = http_build_query($params);
+    curl_setopt($ch, CURLOPT_URL, $url . "?" . $queryString);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    $response = curl_exec($ch);
+    
+    if(curl_errno($ch)){
+        return ["error" => curl_error($ch)];
+    }
+    
+    curl_close($ch);
+    return json_decode($response, true);
+}
+
+// ACTION 1: Get Channels
+if ($action == 'get_channels') {
+    // 1. Handshake
+    $params = [
+        'type' => 'stb', 
+        'action' => 'handshake', 
+        'token' => '', 
+        'mac' => $mac, 
+        'sn' => $sn,
+        'device_id' => $deviceId,
+        'device_id2' => $deviceId2,
+        'signature' => ''
+    ];
+    makeRequest($apiUrl, $headers, $params);
+
+    // 2. Get Profile
+    $params = ['type' => 'stb', 'action' => 'get_profile'];
+    makeRequest($apiUrl, $headers, $params);
+
+    // 3. Get Channels
+    $params = ['type' => 'itv', 'action' => 'get_all_channels'];
+    $resp = makeRequest($apiUrl, $headers, $params);
+    echo json_encode($resp);
+}
+
+// ACTION 2: Create Stream Link
+if ($action == 'create_link') {
+    $cmd = $_GET['cmd'] ?? '';
+    $params = ['type' => 'itv', 'action' => 'create_link', 'cmd' => $cmd, 'forced_storage' => 'false', 'disable_ad' => 'false'];
+    $resp = makeRequest($apiUrl, $headers, $params);
+    echo json_encode($resp);
+}
+?>
 $mac = $_GET['mac'] ?? '';
 $sn = $_GET['sn'] ?? '';
 $deviceId = $_GET['device_id'] ?? '';
