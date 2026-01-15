@@ -740,7 +740,16 @@
         // --- PREMIUM LOAD LOGIC ---
         async function loadPremium() {
             logStatus("Fetching latest WORKING Indian channels...", 'info');
+            
             const staticChannels = [
+                // --- NEWLY ADDED STAR JALSHA ---
+                { 
+                    name: "Star Jalsha HD", 
+                    url: "https://cdn.stmify.com/embed-free/v1/star-jalsha-hd-in-jw", 
+                    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Star_Jalsha_logo.svg/1200px-Star_Jalsha_logo.svg.png", 
+                    group: "Entertainment",
+                    isIframe: true // IMPORTANT: Uses Iframe mode
+                },
                 { name: "Aaj Tak HD", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://i.imgur.com/RpIdCB3.png", group: "News" },
                 { name: "India TV", url: "https://d7d3gu3ex55r8.cloudfront.net/out/v1/70e7a2b9703643799863c03cb7923720/index.m3u8", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
                 { name: "9XM Music", url: "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8", logo: "https://www.medianews4u.com/wp-content/uploads/2020/10/Republic-Media-Network-forays-into-Hindi-Digital-News-space-launches-R-Bharat-digital-platform.jpg", group: "Music" },
@@ -748,6 +757,7 @@
             ];
 
             try {
+                // Try to load dynamic list, but keep our static ones (including Star Jalsha) at the top
                 const response = await fetchSmart('https://iptv-org.github.io/iptv/countries/in.m3u');
                 const dynamicChannels = parseM3U(response, "PREMIUM");
                 allChannels = [...staticChannels, ...dynamicChannels];
