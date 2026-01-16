@@ -985,9 +985,10 @@
             let target = (type === 'fox') ? foxContainer : daddyContainer;
             target.style.display = 'block';
             
-            // --- UPDATED: REPLICATE HTML EDITOR EXACTLY ---
-            // Removed referrerpolicy="no-referrer" and added exact attributes from your screenshot
-            target.innerHTML = `<iframe src="${url}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media"></iframe>`;
+            // --- UPDATED: RESTORED REFERRERPOLICY="NO-REFERRER" ---
+            // This is critical for DaddyLive/DLHD streams to work.
+            // Also kept the formatting attributes for Star Jalsha/Zee.
+            target.innerHTML = `<iframe src="${url}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media" referrerpolicy="no-referrer"></iframe>`;
             
             resBadge.innerText = label;
             resBadge.style.color = "var(--accent-red)";
@@ -1036,8 +1037,8 @@
                    const src = currentIframe.src;
                    target.innerHTML = '';
                    setTimeout(() => {
-                        // Re-inject with same exact attributes
-                       target.innerHTML = `<iframe src="${src}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media"></iframe>`;
+                        // Re-inject with same exact attributes including referrerPolicy
+                       target.innerHTML = `<iframe src="${src}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media" referrerpolicy="no-referrer"></iframe>`;
                    }, 100);
                }
             } else {
