@@ -408,9 +408,17 @@
         let searchTimer;
         const RENDER_LIMIT = 100;
 
-        // --- DADDYLIVE DATA (Placeholder - truncated for size) ---
-        // You can paste your full dlChannels list back here if needed.
+        // --- DADDYLIVE DATA ---
+        // Added Star Jalsha + 5 Zee Channels to the top
         const dlChannels = [
+    { name: "Star Jalsha HD", customUrl: "https://cdn.stmify.com/embed-free/v1/star-jalsha-hd-in-jw", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Star_Jalsha_logo.svg/1200px-Star_Jalsha_logo.svg.png" },
+    { name: "Zee Bangla", customUrl: "https://softbd24.com/vip/play.php?id=1743848504024" },
+    { name: "Zee Cinema", customUrl: "https://softbd24.com/vip/play.php?id=12" },
+    { name: "Zee Tv", customUrl: "https://softbd24.com/vip/play.php?id=11" },
+    { name: "Zee Cinema 2", customUrl: "https://softbd24.com/vip/play.php?id=1743844111058" },
+    { name: "Zee Bangla Cinema", customUrl: "https://softbd24.com/vip/play.php?id=2" },
+    
+    // Original DaddyLive IDs
     { id: 51, name: "ABC USA" }, { id: 206, name: "AHC USA" }, { id: 283, name: "Antenna TV" }, { id: 302, name: "A&E USA" }, { id: 303, name: "AMC USA" }, { id: 304, name: "Animal Planet" }, 
     { id: 123, name: "Astro SuperSport 1" }, { id: 124, name: "Astro SuperSport 2" }, { id: 125, name: "Astro SuperSport 3" }, { id: 126, name: "Astro SuperSport 4" },
     { id: 134, name: "Arena Sport 1 Premium" }, { id: 135, name: "Arena Sport 2 Premium" }, { id: 139, name: "Arena Sport 3 Premium" }, 
@@ -716,13 +724,15 @@
             reader.readAsText(file);
         }
 
-        // --- DADDYLIVE LOGIC ---
+        // --- DADDYLIVE LOGIC (UPDATED FOR MIXED TYPES) ---
         function loadDaddyLive() {
             allChannels = dlChannels.map((item) => ({
                 name: item.name,
                 group: "DADDYLIVE",
                 source: "DLHD",
-                url: `https://dlhd.link/stream/stream-${item.id}.php`,
+                // Check if it has a custom URL, otherwise build the standard one
+                url: item.customUrl ? item.customUrl : `https://dlhd.link/stream/stream-${item.id}.php`,
+                logo: item.logo ? item.logo : null, // Pass logo if it exists
                 isIframe: true,
                 isDaddy: true
             }));
@@ -742,14 +752,7 @@
             logStatus("Fetching latest WORKING Indian channels...", 'info');
             
             const staticChannels = [
-                // --- NEWLY ADDED STAR JALSHA ---
-                { 
-                    name: "Star Jalsha HD", 
-                    url: "https://cdn.stmify.com/embed-free/v1/star-jalsha-hd-in-jw", 
-                    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Star_Jalsha_logo.svg/1200px-Star_Jalsha_logo.svg.png", 
-                    group: "Entertainment",
-                    isIframe: true // IMPORTANT: Uses Iframe mode
-                },
+                // Star Jalsha MOVED to DaddyLive list above as requested
                 { name: "Aaj Tak HD", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://i.imgur.com/RpIdCB3.png", group: "News" },
                 { name: "India TV", url: "https://d7d3gu3ex55r8.cloudfront.net/out/v1/70e7a2b9703643799863c03cb7923720/index.m3u8", logo: "https://india.mom-gmr.org/uploads/_processed_/f/0/csm_16519-1592_import_82f128ba68.png", group: "News" },
                 { name: "9XM Music", url: "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8", logo: "https://www.medianews4u.com/wp-content/uploads/2020/10/Republic-Media-Network-forays-into-Hindi-Digital-News-space-launches-R-Bharat-digital-platform.jpg", group: "Music" },
@@ -757,7 +760,7 @@
             ];
 
             try {
-                // Try to load dynamic list, but keep our static ones (including Star Jalsha) at the top
+                // Try to load dynamic list, but keep our static ones at the top
                 const response = await fetchSmart('https://iptv-org.github.io/iptv/countries/in.m3u');
                 const dynamicChannels = parseM3U(response, "PREMIUM");
                 allChannels = [...staticChannels, ...dynamicChannels];
