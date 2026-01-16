@@ -409,7 +409,6 @@
         const RENDER_LIMIT = 100;
 
         // --- DADDYLIVE DATA ---
-        // Added Star Jalsha + 5 Zee Channels to the top
         const dlChannels = [
     { name: "Star Jalsha HD", customUrl: "https://cdn.stmify.com/embed-free/v1/star-jalsha-hd-in-jw", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Star_Jalsha_logo.svg/1200px-Star_Jalsha_logo.svg.png" },
     { name: "Zee Bangla", customUrl: "https://softbd24.com/vip/play.php?id=1743848504024" },
@@ -418,7 +417,7 @@
     { name: "Zee Cinema 2", customUrl: "https://softbd24.com/vip/play.php?id=1743844111058" },
     { name: "Zee Bangla Cinema", customUrl: "https://softbd24.com/vip/play.php?id=2" },
     
-    // Original DaddyLive IDs
+    // Original DaddyLive IDs (Truncated list for brevity, keep your full list)
     { id: 51, name: "ABC USA" }, { id: 206, name: "AHC USA" }, { id: 283, name: "Antenna TV" }, { id: 302, name: "A&E USA" }, { id: 303, name: "AMC USA" }, { id: 304, name: "Animal Planet" }, 
     { id: 123, name: "Astro SuperSport 1" }, { id: 124, name: "Astro SuperSport 2" }, { id: 125, name: "Astro SuperSport 3" }, { id: 126, name: "Astro SuperSport 4" },
     { id: 134, name: "Arena Sport 1 Premium" }, { id: 135, name: "Arena Sport 2 Premium" }, { id: 139, name: "Arena Sport 3 Premium" }, 
@@ -976,6 +975,7 @@
             }
         }
 
+        // --- UPDATED PLAY IFRAME FUNCTION ---
         function playIframe(url, label, type) {
             video.style.display = 'none';
             video.pause();
@@ -985,10 +985,13 @@
             let target = (type === 'fox') ? foxContainer : daddyContainer;
             target.style.display = 'block';
             
-            // --- UPDATED: RESTORED REFERRERPOLICY="NO-REFERRER" ---
-            // This is critical for DaddyLive/DLHD streams to work.
-            // Also kept the formatting attributes for Star Jalsha/Zee.
-            target.innerHTML = `<iframe src="${url}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media" referrerpolicy="no-referrer"></iframe>`;
+            // AUTOMATIC DETECTION:
+            // 1. If it's a DaddyLive link (dlhd.link), we MUST add referrer policy "no-referrer"
+            // 2. If it's a StarJalsha link, we MUST NOT add it (to mimic standard browser behavior)
+            const isDaddyLink = url.includes('dlhd.link');
+            const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
+
+            target.innerHTML = `<iframe src="${url}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media" ${referrerAttr}></iframe>`;
             
             resBadge.innerText = label;
             resBadge.style.color = "var(--accent-red)";
@@ -1035,10 +1038,13 @@
                const currentIframe = target.querySelector('iframe');
                if(currentIframe) {
                    const src = currentIframe.src;
+                   // CHECK AGAIN FOR RELOAD
+                   const isDaddyLink = src.includes('dlhd.link');
+                   const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
+
                    target.innerHTML = '';
                    setTimeout(() => {
-                        // Re-inject with same exact attributes including referrerPolicy
-                       target.innerHTML = `<iframe src="${src}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media" referrerpolicy="no-referrer"></iframe>`;
+                       target.innerHTML = `<iframe src="${src}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen allow="encrypted-media" ${referrerAttr}></iframe>`;
                    }, 100);
                }
             } else {
