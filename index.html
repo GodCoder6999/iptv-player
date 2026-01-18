@@ -725,13 +725,18 @@
             reader.readAsText(file);
         }
 
-        // --- DADDYLIVE LOGIC (UPDATED FOR MIXED TYPES) ---
+        // --- DADDYLIVE LOGIC (UPDATED WITH CORS PROXY) ---
         function loadDaddyLive() {
             allChannels = dlChannels.map((item) => {
-                const finalUrl = item.customUrl ? item.customUrl : `https://dlhd.link/stream/stream-${item.id}.php`;
+                let finalUrl = item.customUrl ? item.customUrl : `https://dlhd.link/stream/stream-${item.id}.php`;
                 
                 // DETECT: If the link is .m3u8, we must NOT use an iframe
                 const isHls = finalUrl.includes('.m3u8');
+                
+                // IF it is HLS, route it through a CORS proxy to bypass restrictions
+                if(isHls) {
+                    finalUrl = 'https://corsproxy.io/?' + encodeURIComponent(finalUrl);
+                }
 
                 return {
                     name: item.name,
