@@ -1005,7 +1005,6 @@
                 frameborder="0" 
                 allowfullscreen="true" 
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 ${referrerAttr}></iframe>`;
                 
             resBadge.innerText = label; resBadge.style.color = "var(--accent-secondary)";
@@ -1046,7 +1045,7 @@
                    const ref = src.includes('dlhd.link') ? 'referrerpolicy="no-referrer"' : '';
                    target.innerHTML = '';
                    setTimeout(() => { 
-                       target.innerHTML = `<iframe src="${src}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" ${ref}></iframe>`; 
+                       target.innerHTML = `<iframe src="${src}" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" ${ref}></iframe>`; 
                     }, 100);
                }
             } else {
