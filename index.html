@@ -618,25 +618,387 @@
             { name: "Pluto TV Food", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5877ac8cb791f4eb4a140d81/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d543934-eca6-11ee-b803-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=948c2fcb-3e2a-41a6-b2a0-c01273ab8c9c&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5877ac8cb791f4eb4a140d81/colorLogoPNG.png", group: "Pluto TV" },
         ];
 
-        // --- DADDYLIVE CHANNELS ---
+        // --- DADDYLIVE CHANNELS (New Embed API) ---
+        // URL format: https://daddylive.cv/embed/stream.php?id=CHANNEL_ID&player=1&source=tv
         const dlChannels = [
-            { name: "NFL Live", customUrl: "https://absicka4aicqaaayi4twpsc2ept75.live-cf.cdn.hotstar.com/hls/live/2012609/inallow-nfl-2025-26/eng/1540061229/15mindvrm01829c3eed9ac14308b8c963a6f547074218january2026/master_ap_1080_6.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/National_Football_League_logo.svg/1200px-National_Football_League_logo.svg.png" },
-            { name: "Star Jalsha HD", customUrl: "https://cdn.stmify.com/embed-free/v1/star-jalsha-hd-in-jw", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Star_Jalsha_logo_2023.png" },
-            { id: 51, name: "ABC USA" }, { id: 44, name: "ESPN USA" }, { id: 45, name: "ESPN2 USA" },
-            { id: 39, name: "Fox Sports 1" }, { id: 54, name: "FOX USA" }, { id: 53, name: "NBC USA" },
-            { id: 52, name: "CBS USA" }, { id: 345, name: "CNN USA" }, { id: 347, name: "Fox News" },
-            { id: 327, name: "MSNBC" }, { id: 309, name: "CNBC" }, { id: 349, name: "BBC News" },
-            { id: 31, name: "TNT Sports 1" }, { id: 32, name: "TNT Sports 2" }, { id: 33, name: "TNT Sports 3" }, { id: 34, name: "TNT Sports 4" },
-            { id: 35, name: "Sky Sports Football" }, { id: 36, name: "Sky Sports+" }, { id: 37, name: "Sky Sports Action" }, { id: 38, name: "Sky Sports Main Event" },
-            { id: 61, name: "beIN Sports MENA 1 Eng" }, { id: 90, name: "beIN Sports MENA 2 Eng" },
-            { id: 405, name: "NFL Network" }, { id: 404, name: "NBA TV" }, { id: 663, name: "NHL Network" },
-            { id: 399, name: "MLB Network" }, { id: 318, name: "GOLF Channel" }, { id: 297, name: "Fox Business" },
-            { id: 310, name: "Comedy Central" }, { id: 338, name: "TNT USA" }, { id: 336, name: "TBS" },
-            { id: 312, name: "Disney Channel" }, { id: 330, name: "NICK" }, { id: 339, name: "Cartoon Network" },
-            { id: 328, name: "Nat Geo" }, { id: 313, name: "Discovery Channel" }, { id: 322, name: "History" },
-            { id: 382, name: "HGTV" }, { id: 384, name: "Food Network" }, { id: 340, name: "Travel Channel" },
-            { id: 320, name: "Hallmark Channel" }, { id: 326, name: "Lifetime" }, { id: 321, name: "HBO USA" },
-            { id: 335, name: "Starz" }, { id: 333, name: "Showtime" }, { id: 334, name: "Paramount" }
+            // ── USA BROADCAST ──
+            { id: 51,  name: "ABC USA",           group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ABC-2021-LOGO.svg/220px-ABC-2021-LOGO.svg.png" },
+            { id: 52,  name: "CBS USA",            group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/CBS_logo.svg/220px-CBS_logo.svg.png" },
+            { id: 53,  name: "NBC USA",            group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/NBC_logo.svg/220px-NBC_logo.svg.png" },
+            { id: 54,  name: "FOX USA",            group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/FOX_logo.svg/220px-FOX_logo.svg.png" },
+            { id: 55,  name: "PBS USA",            group: "USA Broadcast" },
+            { id: 56,  name: "The CW",             group: "USA Broadcast" },
+
+            // ── USA SPORTS ──
+            { id: 44,  name: "ESPN",               group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/220px-ESPN_wordmark.svg.png" },
+            { id: 45,  name: "ESPN2",              group: "USA Sports" },
+            { id: 46,  name: "ESPN News",          group: "USA Sports" },
+            { id: 47,  name: "ESPNu",              group: "USA Sports" },
+            { id: 39,  name: "Fox Sports 1",       group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Fox_Sports_1_logo.svg/220px-Fox_Sports_1_logo.svg.png" },
+            { id: 40,  name: "Fox Sports 2",       group: "USA Sports" },
+            { id: 57,  name: "CBS Sports Network", group: "USA Sports" },
+            { id: 58,  name: "NFL Network",        group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/National_Football_League_logo.svg/220px-National_Football_League_logo.svg.png" },
+            { id: 59,  name: "NFL RedZone",        group: "USA Sports" },
+            { id: 60,  name: "NBA TV",             group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/National_Basketball_Association_logo.svg/220px-National_Basketball_Association_logo.svg.png" },
+            { id: 61,  name: "NHL Network",        group: "USA Sports" },
+            { id: 62,  name: "MLB Network",        group: "USA Sports" },
+            { id: 63,  name: "Golf Channel",       group: "USA Sports" },
+            { id: 64,  name: "Tennis Channel",     group: "USA Sports" },
+            { id: 65,  name: "FS1",                group: "USA Sports" },
+            { id: 66,  name: "FS2",                group: "USA Sports" },
+            { id: 67,  name: "Big Ten Network",    group: "USA Sports" },
+            { id: 68,  name: "SEC Network",        group: "USA Sports" },
+            { id: 69,  name: "ACC Network",        group: "USA Sports" },
+            { id: 70,  name: "Pac-12 Network",     group: "USA Sports" },
+            { id: 71,  name: "TUDN",               group: "USA Sports" },
+            { id: 72,  name: "beIN Sports USA",    group: "USA Sports" },
+            { id: 73,  name: "Fight Network",      group: "USA Sports" },
+            { id: 74,  name: "Willow Cricket",     group: "USA Sports" },
+            { id: 75,  name: "CBSSN",              group: "USA Sports" },
+            { id: 76,  name: "Olympic Channel",    group: "USA Sports" },
+
+            // ── USA NEWS ──
+            { id: 345, name: "CNN",                group: "USA News", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/220px-CNN.svg.png" },
+            { id: 347, name: "Fox News",           group: "USA News", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/220px-Fox_News_Channel_logo.svg.png" },
+            { id: 327, name: "MSNBC",              group: "USA News" },
+            { id: 309, name: "CNBC",               group: "USA News" },
+            { id: 77,  name: "HLN",                group: "USA News" },
+            { id: 78,  name: "NewsNation",         group: "USA News" },
+            { id: 79,  name: "OAN",                group: "USA News" },
+            { id: 80,  name: "Newsmax",            group: "USA News" },
+            { id: 81,  name: "Bloomberg TV",       group: "USA News" },
+            { id: 82,  name: "C-SPAN",             group: "USA News" },
+            { id: 83,  name: "C-SPAN 2",           group: "USA News" },
+            { id: 84,  name: "C-SPAN 3",           group: "USA News" },
+
+            // ── USA ENTERTAINMENT ──
+            { id: 85,  name: "TNT",                group: "USA Entertainment" },
+            { id: 86,  name: "TBS",                group: "USA Entertainment" },
+            { id: 87,  name: "USA Network",        group: "USA Entertainment" },
+            { id: 88,  name: "FX",                 group: "USA Entertainment" },
+            { id: 89,  name: "FXX",                group: "USA Entertainment" },
+            { id: 90,  name: "AMC",                group: "USA Entertainment" },
+            { id: 91,  name: "HBO",                group: "USA Entertainment" },
+            { id: 92,  name: "Showtime",           group: "USA Entertainment" },
+            { id: 93,  name: "Starz",              group: "USA Entertainment" },
+            { id: 94,  name: "Cinemax",            group: "USA Entertainment" },
+            { id: 95,  name: "Paramount Network",  group: "USA Entertainment" },
+            { id: 96,  name: "Bravo",              group: "USA Entertainment" },
+            { id: 97,  name: "E! Entertainment",   group: "USA Entertainment" },
+            { id: 98,  name: "Lifetime",           group: "USA Entertainment" },
+            { id: 99,  name: "Oxygen",             group: "USA Entertainment" },
+            { id: 100, name: "SYFY",               group: "USA Entertainment" },
+            { id: 101, name: "Comedy Central",     group: "USA Entertainment" },
+            { id: 102, name: "Adult Swim",         group: "USA Entertainment" },
+            { id: 103, name: "Cartoon Network",    group: "USA Entertainment" },
+            { id: 104, name: "Nickelodeon",        group: "USA Entertainment" },
+            { id: 105, name: "Nick Jr.",           group: "USA Entertainment" },
+            { id: 106, name: "Disney Channel",     group: "USA Entertainment" },
+            { id: 107, name: "Disney XD",          group: "USA Entertainment" },
+            { id: 108, name: "Disney Junior",      group: "USA Entertainment" },
+            { id: 109, name: "Freeform",           group: "USA Entertainment" },
+            { id: 110, name: "IFC",                group: "USA Entertainment" },
+            { id: 111, name: "Sundance TV",        group: "USA Entertainment" },
+            { id: 112, name: "VH1",                group: "USA Entertainment" },
+            { id: 113, name: "MTV",                group: "USA Entertainment" },
+            { id: 114, name: "BET",                group: "USA Entertainment" },
+            { id: 115, name: "OWN",                group: "USA Entertainment" },
+            { id: 116, name: "TLC",                group: "USA Entertainment" },
+            { id: 117, name: "Hallmark Channel",   group: "USA Entertainment" },
+            { id: 118, name: "Hallmark Movies",    group: "USA Entertainment" },
+            { id: 119, name: "TV Land",            group: "USA Entertainment" },
+            { id: 120, name: "TV One",             group: "USA Entertainment" },
+            { id: 121, name: "Bounce TV",          group: "USA Entertainment" },
+
+            // ── USA LIFESTYLE / DOCUMENTARY ──
+            { id: 122, name: "History",            group: "USA Lifestyle" },
+            { id: 123, name: "History 2",          group: "USA Lifestyle" },
+            { id: 124, name: "Nat Geo",            group: "USA Lifestyle" },
+            { id: 125, name: "Nat Geo Wild",       group: "USA Lifestyle" },
+            { id: 126, name: "Discovery",          group: "USA Lifestyle" },
+            { id: 127, name: "Animal Planet",      group: "USA Lifestyle" },
+            { id: 128, name: "Science Channel",    group: "USA Lifestyle" },
+            { id: 129, name: "Discovery Life",     group: "USA Lifestyle" },
+            { id: 130, name: "Destination America",group: "USA Lifestyle" },
+            { id: 131, name: "Travel Channel",     group: "USA Lifestyle" },
+            { id: 132, name: "HGTV",               group: "USA Lifestyle" },
+            { id: 133, name: "Food Network",       group: "USA Lifestyle" },
+            { id: 134, name: "Cooking Channel",    group: "USA Lifestyle" },
+            { id: 135, name: "DIY Network",        group: "USA Lifestyle" },
+            { id: 136, name: "Investigation Discovery", group: "USA Lifestyle" },
+            { id: 137, name: "Crime & Investigation", group: "USA Lifestyle" },
+            { id: 138, name: "True Crime Network", group: "USA Lifestyle" },
+            { id: 139, name: "A&E",                group: "USA Lifestyle" },
+            { id: 140, name: "Lifetime Movies",    group: "USA Lifestyle" },
+
+            // ── UK CHANNELS ──
+            { id: 150, name: "BBC One",            group: "UK", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/BBC_One_logo_%282021%29.svg/220px-BBC_One_logo_%282021%29.svg.png" },
+            { id: 151, name: "BBC Two",            group: "UK" },
+            { id: 152, name: "BBC Three",          group: "UK" },
+            { id: 153, name: "BBC Four",           group: "UK" },
+            { id: 154, name: "BBC News",           group: "UK" },
+            { id: 155, name: "ITV",                group: "UK" },
+            { id: 156, name: "ITV2",               group: "UK" },
+            { id: 157, name: "ITV3",               group: "UK" },
+            { id: 158, name: "ITV4",               group: "UK" },
+            { id: 159, name: "Channel 4",          group: "UK" },
+            { id: 160, name: "Channel 5",          group: "UK" },
+            { id: 161, name: "Sky One",            group: "UK" },
+            { id: 162, name: "Sky Atlantic",       group: "UK" },
+            { id: 163, name: "Sky News",           group: "UK" },
+            { id: 164, name: "Sky Sports Main",    group: "UK Sports" },
+            { id: 165, name: "Sky Sports Football",group: "UK Sports" },
+            { id: 166, name: "Sky Sports Cricket", group: "UK Sports" },
+            { id: 167, name: "Sky Sports F1",      group: "UK Sports" },
+            { id: 168, name: "Sky Sports Golf",    group: "UK Sports" },
+            { id: 169, name: "Sky Sports Action",  group: "UK Sports" },
+            { id: 170, name: "Sky Sports Arena",   group: "UK Sports" },
+            { id: 171, name: "TNT Sports 1",       group: "UK Sports" },
+            { id: 172, name: "TNT Sports 2",       group: "UK Sports" },
+            { id: 173, name: "TNT Sports 3",       group: "UK Sports" },
+            { id: 174, name: "TNT Sports 4",       group: "UK Sports" },
+            { id: 175, name: "Eurosport 1 UK",     group: "UK Sports" },
+            { id: 176, name: "Eurosport 2 UK",     group: "UK Sports" },
+            { id: 177, name: "Dave",               group: "UK" },
+            { id: 178, name: "E4",                 group: "UK" },
+            { id: 179, name: "Gold",               group: "UK" },
+            { id: 180, name: "Film4",              group: "UK" },
+
+            // ── SPORTS: beIN / GULF ──
+            { id: 200, name: "beIN Sports 1 HD",   group: "beIN Sports" },
+            { id: 201, name: "beIN Sports 2 HD",   group: "beIN Sports" },
+            { id: 202, name: "beIN Sports 3 HD",   group: "beIN Sports" },
+            { id: 203, name: "beIN Sports 4 HD",   group: "beIN Sports" },
+            { id: 204, name: "beIN Sports 5 HD",   group: "beIN Sports" },
+            { id: 205, name: "beIN Sports 6 HD",   group: "beIN Sports" },
+            { id: 206, name: "beIN Sports 7 HD",   group: "beIN Sports" },
+            { id: 207, name: "beIN Sports 8 HD",   group: "beIN Sports" },
+            { id: 208, name: "beIN Sports 9 HD",   group: "beIN Sports" },
+            { id: 209, name: "beIN Sports 10 HD",  group: "beIN Sports" },
+            { id: 210, name: "beIN Sports MAX 1",  group: "beIN Sports" },
+            { id: 211, name: "beIN Sports MAX 2",  group: "beIN Sports" },
+            { id: 212, name: "beIN Sports MAX 3",  group: "beIN Sports" },
+            { id: 213, name: "beIN XTRA 1",        group: "beIN Sports" },
+            { id: 214, name: "beIN XTRA 2",        group: "beIN Sports" },
+
+            // ── SPORTS: SKY SPORTS (INT'L) ──
+            { id: 220, name: "Sky Sports PL",      group: "Sky Sports" },
+            { id: 221, name: "Sky Sports Mix",     group: "Sky Sports" },
+            { id: 222, name: "Sky Sports Racing",  group: "Sky Sports" },
+            { id: 223, name: "Sky Sports Ashes",   group: "Sky Sports" },
+
+            // ── SPORTS: DAZN ──
+            { id: 230, name: "DAZN 1",             group: "DAZN" },
+            { id: 231, name: "DAZN 2",             group: "DAZN" },
+            { id: 232, name: "DAZN 3",             group: "DAZN" },
+            { id: 233, name: "DAZN 4",             group: "DAZN" },
+
+            // ── SPORTS: CANAL+ ──
+            { id: 240, name: "Canal+ Sport FR",    group: "Canal+" },
+            { id: 241, name: "Canal+ Sport 2 FR",  group: "Canal+" },
+            { id: 242, name: "Canal+ Sport 3 FR",  group: "Canal+" },
+            { id: 243, name: "Canal+ MotoGP",      group: "Canal+" },
+            { id: 244, name: "Canal+ Formula 1",   group: "Canal+" },
+            { id: 245, name: "Canal+ Football",    group: "Canal+" },
+            { id: 246, name: "Canal+ Sport PL",    group: "Canal+" },
+            { id: 247, name: "Canal+ Sport 2 PL",  group: "Canal+" },
+
+            // ── SPORTS: POLSAT ──
+            { id: 250, name: "Polsat Sport 1",     group: "Polsat" },
+            { id: 251, name: "Polsat Sport 2",     group: "Polsat" },
+            { id: 252, name: "Polsat Sport 3",     group: "Polsat" },
+
+            // ── SPORTS: SPORT TV (PT) ──
+            { id: 260, name: "Sport TV1",          group: "Sport TV" },
+            { id: 261, name: "Sport TV2",          group: "Sport TV" },
+            { id: 262, name: "Sport TV3",          group: "Sport TV" },
+            { id: 263, name: "Sport TV4",          group: "Sport TV" },
+            { id: 264, name: "Sport TV5",          group: "Sport TV" },
+            { id: 265, name: "Sport TV6",          group: "Sport TV" },
+
+            // ── SPORTS: SUPERSPORT (AFRICA) ──
+            { id: 270, name: "SuperSport Grandstand", group: "SuperSport" },
+            { id: 271, name: "SuperSport PSL",     group: "SuperSport" },
+            { id: 272, name: "SuperSport Premier League", group: "SuperSport" },
+            { id: 273, name: "SuperSport LaLiga",  group: "SuperSport" },
+            { id: 274, name: "SuperSport Variety 1", group: "SuperSport" },
+            { id: 275, name: "SuperSport Variety 2", group: "SuperSport" },
+            { id: 276, name: "SuperSport Variety 3", group: "SuperSport" },
+            { id: 277, name: "SuperSport Variety 4", group: "SuperSport" },
+            { id: 278, name: "SuperSport Rugby",   group: "SuperSport" },
+            { id: 279, name: "SuperSport Golf",    group: "SuperSport" },
+            { id: 280, name: "SuperSport Tennis",  group: "SuperSport" },
+            { id: 281, name: "SuperSport Cricket", group: "SuperSport" },
+            { id: 282, name: "SuperSport Motorsport", group: "SuperSport" },
+            { id: 283, name: "SuperSport MaXimo 1", group: "SuperSport" },
+
+            // ── SPORTS: SPORTSNET (CA) ──
+            { id: 290, name: "Sportsnet East",     group: "Sportsnet" },
+            { id: 291, name: "Sportsnet Ontario",  group: "Sportsnet" },
+            { id: 292, name: "Sportsnet West",     group: "Sportsnet" },
+            { id: 293, name: "Sportsnet Pacific",  group: "Sportsnet" },
+            { id: 294, name: "Sportsnet One",      group: "Sportsnet" },
+            { id: 295, name: "Sportsnet 360",      group: "Sportsnet" },
+            { id: 296, name: "TSN 1",              group: "Sportsnet" },
+            { id: 297, name: "TSN 2",              group: "Sportsnet" },
+            { id: 298, name: "TSN 3",              group: "Sportsnet" },
+            { id: 299, name: "TSN 4",              group: "Sportsnet" },
+            { id: 300, name: "TSN 5",              group: "Sportsnet" },
+
+            // ── SPORTS: EUROSPORT ──
+            { id: 310, name: "Eurosport 1",        group: "Eurosport" },
+            { id: 311, name: "Eurosport 2",        group: "Eurosport" },
+
+            // ── SPORTS: ESPN (INT'L) ──
+            { id: 320, name: "ESPN Brasil",        group: "ESPN International" },
+            { id: 321, name: "ESPN2 Brasil",       group: "ESPN International" },
+            { id: 322, name: "ESPN3 Brasil",       group: "ESPN International" },
+            { id: 323, name: "ESPN Argentina",     group: "ESPN International" },
+            { id: 324, name: "ESPN2 Argentina",    group: "ESPN International" },
+
+            // ── SPORTS: FOX SPORTS (AU) ──
+            { id: 330, name: "Fox Sports 501 AU",  group: "Fox Sports AU" },
+            { id: 331, name: "Fox Sports 502 AU",  group: "Fox Sports AU" },
+            { id: 332, name: "Fox Sports 503 AU",  group: "Fox Sports AU" },
+            { id: 333, name: "Fox Sports 504 AU",  group: "Fox Sports AU" },
+            { id: 334, name: "Fox Sports 505 AU",  group: "Fox Sports AU" },
+
+            // ── SPORTS: MISC ──
+            { id: 340, name: "Arena Sport 1",      group: "Sports: Misc" },
+            { id: 341, name: "Arena Sport 2",      group: "Sports: Misc" },
+            { id: 342, name: "Arena Sport 3",      group: "Sports: Misc" },
+            { id: 343, name: "Sport Klub 1",       group: "Sports: Misc" },
+            { id: 344, name: "Sport Klub 2",       group: "Sports: Misc" },
+            { id: 345, name: "Sport Klub 3",       group: "Sports: Misc" },
+            { id: 346, name: "LFC TV",             group: "Sports: Misc" },
+            { id: 347, name: "MUTV",               group: "Sports: Misc" },
+            { id: 348, name: "Real Madrid TV",     group: "Sports: Misc" },
+            { id: 349, name: "Barca TV",           group: "Sports: Misc" },
+            { id: 350, name: "WWE Network",        group: "Sports: Misc" },
+            { id: 351, name: "TNA Wrestling",      group: "Sports: Misc" },
+            { id: 352, name: "Bellator MMA",       group: "Sports: Misc" },
+            { id: 353, name: "PFL MMA",            group: "Sports: Misc" },
+            { id: 354, name: "PDC Darts",          group: "Sports: Misc" },
+            { id: 355, name: "Racing TV",          group: "Sports: Misc" },
+            { id: 356, name: "BT Sport / TNT",     group: "Sports: Misc" },
+            { id: 357, name: "Ziggo Sport",        group: "Sports: Misc" },
+            { id: 358, name: "Eleven Sports 1",    group: "Sports: Misc" },
+            { id: 359, name: "Eleven Sports 2",    group: "Sports: Misc" },
+
+            // ── SPORTS: CRICKET ──
+            { id: 360, name: "Sky Sports Cricket", group: "Cricket" },
+            { id: 361, name: "Star Sports 1",      group: "Cricket" },
+            { id: 362, name: "Star Sports Hindi",  group: "Cricket" },
+            { id: 363, name: "Willow Cricket",     group: "Cricket" },
+            { id: 364, name: "Willow Extra",       group: "Cricket" },
+            { id: 365, name: "SuperSport Cricket", group: "Cricket" },
+            { id: 366, name: "Fox Cricket AU",     group: "Cricket" },
+            { id: 367, name: "Astro Cricket MY",   group: "Cricket" },
+            { id: 368, name: "T Sports BD",        group: "Cricket" },
+            { id: 369, name: "A Sports PK",        group: "Cricket" },
+            { id: 370, name: "Ten Sports PK",      group: "Cricket" },
+
+            // ── INTERNATIONAL GENERAL ──
+            { id: 380, name: "RTL Germany",        group: "Germany" },
+            { id: 381, name: "SAT.1",              group: "Germany" },
+            { id: 382, name: "ProSieben",          group: "Germany" },
+            { id: 383, name: "Kabel Eins",         group: "Germany" },
+            { id: 384, name: "ZDF",                group: "Germany" },
+            { id: 385, name: "ARD",                group: "Germany" },
+            { id: 386, name: "Sport1 DE",          group: "Germany" },
+
+            { id: 390, name: "TF1",                group: "France" },
+            { id: 391, name: "France 2",           group: "France" },
+            { id: 392, name: "France 3",           group: "France" },
+            { id: 393, name: "M6",                 group: "France" },
+            { id: 394, name: "RMC Sport 1",        group: "France" },
+            { id: 395, name: "RMC Sport 2",        group: "France" },
+            { id: 396, name: "L'Équipe TV",        group: "France" },
+
+            { id: 400, name: "La 1 Spain",         group: "Spain" },
+            { id: 401, name: "La 2 Spain",         group: "Spain" },
+            { id: 402, name: "Telecinco",          group: "Spain" },
+            { id: 403, name: "Cuatro",             group: "Spain" },
+            { id: 404, name: "La Sexta",           group: "Spain" },
+            { id: 405, name: "Movistar LaLiga",    group: "Spain" },
+            { id: 406, name: "Movistar Deportes",  group: "Spain" },
+            { id: 407, name: "DAZN LaLiga",        group: "Spain" },
+            { id: 408, name: "DAZN F1 ES",         group: "Spain" },
+
+            { id: 410, name: "Rai 1",              group: "Italy" },
+            { id: 411, name: "Rai 2",              group: "Italy" },
+            { id: 412, name: "Rai 3",              group: "Italy" },
+            { id: 413, name: "Rai Sport",          group: "Italy" },
+            { id: 414, name: "Sky Sport Uno",      group: "Italy" },
+            { id: 415, name: "Sky Sport Calcio",   group: "Italy" },
+            { id: 416, name: "Sky Sport F1 IT",    group: "Italy" },
+            { id: 417, name: "DAZN Italy",         group: "Italy" },
+            { id: 418, name: "Mediaset Italia 1",  group: "Italy" },
+
+            { id: 420, name: "RTP 1",              group: "Portugal" },
+            { id: 421, name: "RTP 2",              group: "Portugal" },
+            { id: 422, name: "TVI",                group: "Portugal" },
+            { id: 423, name: "SIC",                group: "Portugal" },
+            { id: 424, name: "Benfica TV",         group: "Portugal" },
+            { id: 425, name: "Porto Canal",        group: "Portugal" },
+            { id: 426, name: "Eleven Sports PT",   group: "Portugal" },
+
+            { id: 430, name: "RTE One",            group: "Ireland" },
+            { id: 431, name: "RTE Two",            group: "Ireland" },
+            { id: 432, name: "Virgin Media 1",     group: "Ireland" },
+
+            { id: 440, name: "CTV Canada",         group: "Canada" },
+            { id: 441, name: "CBC Canada",         group: "Canada" },
+            { id: 442, name: "Global TV",          group: "Canada" },
+
+            { id: 450, name: "Fox Sports AR",      group: "Latin America" },
+            { id: 451, name: "ESPN Argentina",     group: "Latin America" },
+            { id: 452, name: "TyC Sports AR",      group: "Latin America" },
+            { id: 453, name: "DirecTV Sports AR",  group: "Latin America" },
+            { id: 454, name: "TNT Sports AR",      group: "Latin America" },
+            { id: 455, name: "ESPN Brasil",        group: "Latin America" },
+            { id: 456, name: "SporTV BR",          group: "Latin America" },
+            { id: 457, name: "Globo SP",           group: "Latin America" },
+            { id: 458, name: "Band Sports BR",     group: "Latin America" },
+            { id: 459, name: "Combate BR",         group: "Latin America" },
+
+            { id: 460, name: "Astro SS1 MY",       group: "Asia" },
+            { id: 461, name: "Astro SS2 MY",       group: "Asia" },
+            { id: 462, name: "Astro SS3 MY",       group: "Asia" },
+            { id: 463, name: "One Sports PH",      group: "Asia" },
+
+            { id: 470, name: "Nova Sport 1 GR",    group: "Greece" },
+            { id: 471, name: "Nova Sport 2 GR",    group: "Greece" },
+            { id: 472, name: "Cosmote Sport 1",    group: "Greece" },
+            { id: 473, name: "Cosmote Sport 2",    group: "Greece" },
+            { id: 474, name: "Cosmote Sport 3",    group: "Greece" },
+
+            { id: 480, name: "Digi Sport 1 RO",    group: "Romania" },
+            { id: 481, name: "Digi Sport 2 RO",    group: "Romania" },
+            { id: 482, name: "Digi Sport 3 RO",    group: "Romania" },
+            { id: 483, name: "Prima Sport 1 RO",   group: "Romania" },
+            { id: 484, name: "Prima Sport 2 RO",   group: "Romania" },
+
+            { id: 490, name: "Match TV RU",        group: "Russia" },
+            { id: 491, name: "Match Football 1",   group: "Russia" },
+            { id: 492, name: "Match Football 2",   group: "Russia" },
+            { id: 493, name: "Match Football 3",   group: "Russia" },
+
+            { id: 500, name: "Abu Dhabi Sports 1", group: "Middle East" },
+            { id: 501, name: "Abu Dhabi Sports 2", group: "Middle East" },
+            { id: 502, name: "SSC Sport 1 SA",     group: "Middle East" },
+            { id: 503, name: "SSC Sport 2 SA",     group: "Middle East" },
+            { id: 504, name: "SSC Sport 3 SA",     group: "Middle East" },
+            { id: 505, name: "SSC Sport 4 SA",     group: "Middle East" },
+            { id: 506, name: "SSC Sport 5 SA",     group: "Middle East" },
+            { id: 507, name: "Alkass One QA",      group: "Middle East" },
+            { id: 508, name: "Alkass Two QA",      group: "Middle East" },
+            { id: 509, name: "Alkass Three QA",    group: "Middle East" },
+            { id: 510, name: "Alkass Four QA",     group: "Middle East" },
+            { id: 511, name: "Dubai Sports 1",     group: "Middle East" },
+            { id: 512, name: "Dubai Sports 2",     group: "Middle East" },
+            { id: 513, name: "Dubai Sports 3",     group: "Middle East" },
+            { id: 514, name: "On Time Sports EG",  group: "Middle East" },
         ];
 
         // --- UI UTILS ---
@@ -758,13 +1120,15 @@
 
         function loadDaddyLive() {
             allChannels = dlChannels.map((item) => {
-                let finalUrl = item.customUrl ? item.customUrl : `https://dlstreams.top/casting/stream-${item.id}.php`;
-                const isHls = finalUrl.includes('.m3u8');
-                if(isHls) finalUrl = 'https://corsproxy.io/?' + encodeURIComponent(finalUrl);
+                const embedUrl = `https://daddylive.cv/embed/stream.php?id=${item.id}&player=1&source=tv`;
                 return {
-                    name: item.name, group: "DADDYLIVE", source: "DLHD", url: finalUrl,
-                    logo: item.logo ? item.logo : null,
-                    isIframe: !isHls, isDaddy: !isHls
+                    name: item.name,
+                    group: item.group || "DADDYLIVE",
+                    source: "DLHD",
+                    url: embedUrl,
+                    logo: item.logo || null,
+                    isIframe: true,
+                    isDaddy: true
                 };
             });
             renderList(allChannels);
@@ -942,7 +1306,7 @@
             target.style.display = 'block';
             btnExternal.style.display = 'flex';
             btnExternal.onclick = () => window.open(url, '_blank');
-            const isDaddyLink = url.includes('dlhd.link') || url.includes('dlstreams.top');
+            const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
             const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
             target.innerHTML = `<iframe src="${url}" width="100%" height="100%" style="border:0;" allowfullscreen ${referrerAttr}></iframe>`;
             resBadge.innerText = label; resBadge.style.color = "var(--accent-secondary)";
@@ -979,7 +1343,8 @@
                 const iframe = target.querySelector('iframe');
                 if(iframe) {
                     const src = iframe.src;
-                    const ref = (src.includes('dlhd.link') || src.includes('dlstreams.top')) ? 'referrerpolicy="no-referrer"' : '';
+                    const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
+                    const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
                     target.innerHTML = '';
                     setTimeout(() => { target.innerHTML = `<iframe src="${src}" width="100%" height="100%" style="border:0;" allowfullscreen ${ref}></iframe>`; }, 100);
                 }
