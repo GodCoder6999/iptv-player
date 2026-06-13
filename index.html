@@ -330,6 +330,23 @@ img { display: block; max-width: 100%; }
 .stat-feat .glass { padding:22px; } .stat-feat .fk { color:var(--gold); font-size:11px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; }
 .stat-feat .fv { margin-top:10px; font-weight:700; font-size:16px; }
 
+/* player stats leaderboard */
+.stat-note { margin-bottom:18px; padding:12px 16px; border-radius:var(--r-sm); background:rgba(232,184,75,.08); border:1px solid rgba(232,184,75,.25); color:var(--gold-hi); font-size:13px; line-height:1.5; }
+.stat-note i { margin-right:6px; }
+.ptbl { width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px; }
+.ptbl th { font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-mut); font-weight:700; padding:13px 10px; text-align:center; border-bottom:1px solid var(--stroke); white-space:nowrap; }
+.ptbl th:nth-child(2), .ptbl th:nth-child(3) { text-align:left; }
+.ptbl td { padding:10px; text-align:center; border-top:1px solid var(--stroke); white-space:nowrap; }
+.ptbl td.rk { color:var(--ink-mut); font-family:'Space Grotesk'; width:34px; }
+.ptbl td.pl { text-align:left; font-weight:700; }
+.ptbl td.pl .cell { display:inline-flex; align-items:center; gap:11px; min-width:0; }
+.ptbl td.pl img { width:34px; height:34px; border-radius:50%; object-fit:cover; background:#0d0d14; flex:none; }
+.ptbl td.tm { text-align:left; color:var(--ink-soft); }
+.ptbl td.tm img { width:18px; height:18px; object-fit:contain; vertical-align:-4px; margin-right:7px; }
+.ptbl th.hot, .ptbl td.hot { color:var(--gold); font-weight:800; background:rgba(232,184,75,.06); }
+.ptbl tbody tr:hover td { background:rgba(255,255,255,.03); }
+.ptbl tbody tr:hover td.hot { background:rgba(232,184,75,.1); }
+
 /* players */
 .team-picker { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:26px; }
 .team-pick { display:flex; align-items:center; gap:9px; padding:9px 15px; border-radius:999px; cursor:pointer; font-weight:700; font-size:13.5px; color:var(--ink-soft); background:rgba(255,255,255,.04); border:1px solid var(--stroke); transition:.2s; white-space:nowrap; }
@@ -886,7 +903,7 @@ function renderActiveTab() {
   if (tab === 'matches') panel.innerHTML = renderMatches();
   else if (tab === 'table') panel.innerHTML = renderTable();
   else if (tab === 'knockout') panel.innerHTML = renderKnockout();
-  else if (tab === 'stats') panel.innerHTML = renderStats();
+  else if (tab === 'stats') { panel.innerHTML = renderStats(); loadPlayerStats(); }
   else if (tab === 'players') { panel.innerHTML = renderPlayers(); loadSquad(wcCurrentTeam); }
   applyEffects(panel);
 }
@@ -965,27 +982,75 @@ function renderKnockout() {
 }
 
 // ---- STATS ----
-function renderStats() {
+// Player stats (Goals/Assists/Yellow/Red) come from API-Football. The free plan
+// can't access season 2026, so we fall back to the newest accessible WC season.
+const AF_BASE = 'https://v3.football.api-sports.io';
+const AF_KEY = '107ba013ee19e405cebac23fea3c38ee';
+const AF_WC_LEAGUE = 1;
+const AF_METRICS = [['goals', 'Goals', 'topscorers'], ['assists', 'Assists', 'topassists'], ['yellow', 'Yellow Cards', 'topyellowcards'], ['red', 'Red Cards', 'topredcards']];
+let afCache = {};
+let wcStatMetric = 'goals';
+let wcStatSeason = null;
+
+async function afGet(path) {
+  if (afCache[path]) return afCache[path];
+  const r = await fetch(AF_BASE + path, { headers: { 'x-apisports-key': AF_KEY } });
+  const d = await r.json();
+  afCache[path] = d;
+  return d;
+}
+async function afTop(metric) {
+  const ep = (AF_METRICS.find(m => m[0] === metric) || [])[2];
+  const seasons = wcStatSeason ? [wcStatSeason] : [2026, 2022];
+  for (const s of seasons) {
+    const d = await afGet(`/players/${ep}?league=${AF_WC_LEAGUE}&season=${s}`);
+    if (d && (d.response || []).length) { wcStatSeason = s; return { rows: d.response, season: s }; }
+  }
+  return { rows: [], season: wcStatSeason || 2026 };
+}
+function teamStatStrip() {
   const fin = (wcState.events || []).filter(e => wcMatchStatus(e).fin && e.intHomeScore !== '' && e.intHomeScore != null);
   const tbl = wcState.table || [];
-  let goals = 0, biggest = null;
-  fin.forEach(e => { const h = +e.intHomeScore || 0, a = +e.intAwayScore || 0; goals += h + a; const d = Math.abs(h - a); if (!biggest || d > biggest.d) biggest = { e, d, h, a }; });
+  let goals = 0; fin.forEach(e => { goals += (+e.intHomeScore || 0) + (+e.intAwayScore || 0); });
   const teamCount = new Set([].concat(...(wcState.events || []).map(e => [e.idHomeTeam, e.idAwayTeam]).flat())).size || tbl.length;
-  const topScore = tbl.slice().sort((a, b) => +b.intGoalsFor - +a.intGoalsFor)[0];
-  const bestDef = tbl.slice().filter(r => +r.intPlayed > 0).sort((a, b) => +a.intGoalsAgainst - +b.intGoalsAgainst)[0];
-  const cards = [
-    ['Matches played', fin.length],
-    ['Goals scored', goals],
-    ['Goals / match', fin.length ? (goals / fin.length).toFixed(2) : '—'],
-    ['Teams', teamCount]
-  ];
-  const grid = `<div class="stat-grid">` + cards.map(c => `<div class="glass stat-card"><div class="v">${c[1]}</div><div class="k">${c[0]}</div></div>`).join('') + `</div>`;
-  let feat = '';
-  if (biggest) feat += `<div class="glass"><div class="fk">Biggest win</div><div class="fv">${escapeHtml(biggest.e.strHomeTeam)} ${biggest.h}–${biggest.a} ${escapeHtml(biggest.e.strAwayTeam)}</div></div>`;
-  if (topScore && +topScore.intGoalsFor > 0) feat += `<div class="glass"><div class="fk">Most goals</div><div class="fv">${escapeHtml(topScore.strTeam)} · ${topScore.intGoalsFor} scored</div></div>`;
-  if (bestDef) feat += `<div class="glass"><div class="fk">Best defence</div><div class="fv">${escapeHtml(bestDef.strTeam)} · ${bestDef.intGoalsAgainst} conceded</div></div>`;
-  if (!fin.length) feat += `<div class="glass"><div class="fk">Status</div><div class="fv">Tournament stats build up as matches are played.</div></div>`;
-  return grid + (feat ? `<div class="stat-feat">${feat}</div>` : '');
+  const cards = [['Matches played', fin.length], ['Goals scored', goals], ['Goals / match', fin.length ? (goals / fin.length).toFixed(2) : '—'], ['Teams', teamCount]];
+  return `<div class="stat-grid">` + cards.map(c => `<div class="glass stat-card"><div class="v">${c[1]}</div><div class="k">${c[0]}</div></div>`).join('') + `</div>`;
+}
+function renderStats() {
+  const chips = AF_METRICS.map(m => `<button class="chip ${m[0] === wcStatMetric ? 'active' : ''}" onclick="wcSetStatMetric('${m[0]}')">${m[1]}</button>`).join('');
+  return teamStatStrip() +
+    `<div style="margin-top:34px"><div class="sec-head" style="margin-bottom:18px"><div><div class="eyebrow">Player leaderboard</div></div></div>` +
+    `<div class="chips" id="wcStatChips" style="margin-bottom:20px">${chips}</div>` +
+    `<div id="wcStatBox"><div class="empty-note"><i class="fa-solid fa-circle-notch spin-ring"></i> &nbsp;Loading player stats…</div></div></div>`;
+}
+function wcSetStatMetric(m) {
+  wcStatMetric = m;
+  document.querySelectorAll('#wcStatChips .chip').forEach(c => c.classList.toggle('active', c.getAttribute('onclick').includes(`'${m}'`)));
+  loadPlayerStats();
+}
+function afStatVals(p) {
+  const s = (p.statistics && p.statistics[0]) || {};
+  return { g: (s.goals && s.goals.total) || 0, a: (s.goals && s.goals.assists) || 0, y: (s.cards && s.cards.yellow) || 0, r: (s.cards && s.cards.red) || 0, team: (s.team && s.team.name) || '', logo: (s.team && s.team.logo) || '' };
+}
+function playerStatTableHtml(rows, season, metric) {
+  const note = +season !== 2026 ? `<div class="stat-note"><i class="fa-solid fa-circle-info"></i> Player stats shown for <b>World Cup ${season}</b> — the free API-Football tier doesn't include 2026. Upgrade the plan and these become live 2026 numbers automatically.</div>` : '';
+  const col = { goals: 'g', assists: 'a', yellow: 'y', red: 'r' }[metric];
+  const hot = k => col === k ? ' class="hot"' : '';
+  const head = `<thead><tr><th>#</th><th>Player</th><th>Team</th><th${hot('g')}>G</th><th${hot('a')}>A</th><th${hot('y')}>Y</th><th${hot('r')}>R</th></tr></thead>`;
+  const body = rows.map((p, i) => { const v = afStatVals(p); return `<tr><td class="rk">${i + 1}</td><td class="pl"><span class="cell"><img src="${escapeAttr(p.player.photo)}" loading="lazy" onerror="this.style.visibility='hidden'"><span>${escapeHtml(p.player.name)}</span></span></td><td class="tm">${v.logo ? `<img src="${escapeAttr(v.logo)}" onerror="this.style.display='none'">` : ''}${escapeHtml(v.team)}</td><td${hot('g')}>${v.g}</td><td${hot('a')}>${v.a}</td><td${hot('y')}>${v.y}</td><td${hot('r')}>${v.r}</td></tr>`; }).join('');
+  return note + `<div class="glass" style="overflow-x:auto"><table class="ptbl">${head}<tbody>${body}</tbody></table></div>`;
+}
+async function loadPlayerStats() {
+  const box = document.getElementById('wcStatBox'); if (!box) return;
+  const want = wcStatMetric;
+  box.innerHTML = '<div class="empty-note"><i class="fa-solid fa-circle-notch spin-ring"></i> &nbsp;Loading…</div>';
+  try {
+    const { rows, season } = await afTop(want);
+    if (wcStatMetric !== want) return;
+    if (!rows.length) { box.innerHTML = emptyPanel('Player stats are not available for this metric yet.'); return; }
+    box.innerHTML = playerStatTableHtml(rows, season, want);
+    applyEffects(box);
+  } catch (e) { box.innerHTML = emptyPanel('Failed to load player stats. ' + (e.message || '')); }
 }
 
 // ---- PLAYERS ----
