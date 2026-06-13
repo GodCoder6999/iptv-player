@@ -1463,7 +1463,13 @@
             btnExternal.onclick = () => window.open(url, '_blank');
             const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
             const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
-            target.innerHTML = `<iframe src="${url}" width="100%" height="100%" style="border:0;" allowfullscreen ${referrerAttr}></iframe>`;
+            // dami-tv embed gates playback behind a popunder-ad test: if window.open is blocked
+            // it shows "Sandbox Error" and kills the video. Grant allow-popups so its test passes.
+            const isDami = url.includes('dami-tv.pro');
+            const damiAttrs = isDami
+                ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"'
+                : '';
+            target.innerHTML = `<iframe src="${url}" width="100%" height="100%" style="border:0;" allowfullscreen ${referrerAttr} ${damiAttrs}></iframe>`;
             resBadge.innerText = label; resBadge.style.color = "var(--accent-secondary)";
         }
 
@@ -1500,8 +1506,11 @@
                     const src = iframe.src;
                     const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
                     const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
+                    const dami = src.includes('dami-tv.pro')
+                        ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"'
+                        : '';
                     target.innerHTML = '';
-                    setTimeout(() => { target.innerHTML = `<iframe src="${src}" width="100%" height="100%" style="border:0;" allowfullscreen ${ref}></iframe>`; }, 100);
+                    setTimeout(() => { target.innerHTML = `<iframe src="${src}" width="100%" height="100%" style="border:0;" allowfullscreen ${ref} ${dami}></iframe>`; }, 100);
                 }
             } else {
                 if(hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
