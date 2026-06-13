@@ -373,7 +373,8 @@ img { display: block; max-width: 100%; }
 .ptbl td.rk { color:var(--ink-mut); font-family:'Space Grotesk'; width:34px; }
 .ptbl td.pl { text-align:left; font-weight:700; }
 .ptbl td.pl .cell { display:inline-flex; align-items:center; gap:11px; min-width:0; }
-.ptbl td.pl img { width:34px; height:34px; border-radius:50%; object-fit:cover; background:#0d0d14; flex:none; }
+.ptbl td.pl img { width:34px; height:34px; border-radius:50%; object-fit:cover; object-position:top center; background:#0d0d14; flex:none; }
+.ptbl td.pl .ph-blank { width:34px; height:34px; border-radius:50%; flex:none; background:radial-gradient(120% 90% at 50% 0%,#23233a,#0d0d14); border:1px solid var(--stroke); }
 .ptbl td.tm { text-align:left; color:var(--ink-soft); }
 .ptbl td.tm img { width:18px; height:18px; object-fit:contain; vertical-align:-4px; margin-right:7px; }
 .ptbl th.hot, .ptbl td.hot { color:var(--gold); font-weight:800; background:rgba(232,184,75,.06); }
@@ -1103,6 +1104,14 @@ async function espnLeaders() {
   }
   espnLeadersData = { categories: [] }; return espnLeadersData;
 }
+// Player photos come from TheSportsDB (same source as the Players tab), matched by name.
+let wcPhotoCache = {};
+async function tsdbPhoto(name) {
+  if (name in wcPhotoCache) return wcPhotoCache[name];
+  let url = null;
+  try { const d = await tsdb(`/searchplayers.php?p=${encodeURIComponent(name)}`); const p = (d.player || [])[0]; if (p) url = tsImg(p.strThumb || p.strCutout); } catch { }
+  wcPhotoCache[name] = url; return url;
+}
 async function espnTop(metric, limit) {
   const cat = (ESPN_METRICS.find(m => m[0] === metric) || [])[2];
   const d = await espnLeaders();
@@ -1113,7 +1122,9 @@ async function espnTop(metric, limit) {
       l.athlete && l.athlete.$ref ? espnGet(l.athlete.$ref).catch(() => null) : null,
       l.team && l.team.$ref ? espnGet(l.team.$ref).catch(() => null) : null
     ]);
-    return { value: l.value, name: (a && a.displayName) || '—', pos: (a && a.position && a.position.abbreviation) || '', team: (t && (t.displayName || t.name)) || '', logo: (t && t.logos && t.logos[0] && t.logos[0].href) || '' };
+    const name = (a && a.displayName) || '—';
+    const photo = await tsdbPhoto(name);
+    return { value: l.value, name, photo, pos: (a && a.position && a.position.abbreviation) || '', team: (t && (t.displayName || t.name)) || '', logo: (t && t.logos && t.logos[0] && t.logos[0].href) || '' };
   }));
 }
 function teamStatStrip() {
@@ -1139,7 +1150,7 @@ function wcSetStatMetric(m) {
 function playerStatTableHtml(rows, metric) {
   const label = (ESPN_METRICS.find(m => m[0] === metric) || ['', 'Stat'])[1];
   const head = `<thead><tr><th>#</th><th>Player</th><th>Country</th><th class="hot">${escapeHtml(label)}</th></tr></thead>`;
-  const body = rows.map((r, i) => `<tr><td class="rk">${i + 1}</td><td class="pl"><span class="cell"><span>${escapeHtml(r.name)}</span>${r.pos ? ` <span style="color:var(--ink-mut);font-size:11px;font-weight:600">${escapeHtml(r.pos)}</span>` : ''}</span></td><td class="tm">${r.logo ? `<img src="${escapeAttr(httpsify(r.logo))}" onerror="this.style.display='none'">` : ''}${escapeHtml(r.team)}</td><td class="hot" style="font-family:'Space Grotesk';font-size:16px">${r.value}</td></tr>`).join('');
+  const body = rows.map((r, i) => `<tr><td class="rk">${i + 1}</td><td class="pl"><span class="cell">${r.photo ? `<img src="${escapeAttr(r.photo)}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<span class="ph-blank"></span>'}<span>${escapeHtml(r.name)}</span>${r.pos ? ` <span style="color:var(--ink-mut);font-size:11px;font-weight:600">${escapeHtml(r.pos)}</span>` : ''}</span></td><td class="tm">${r.logo ? `<img src="${escapeAttr(httpsify(r.logo))}" onerror="this.style.display='none'">` : ''}${escapeHtml(r.team)}</td><td class="hot" style="font-family:'Space Grotesk';font-size:16px">${r.value}</td></tr>`).join('');
   return `<div class="glass" style="overflow-x:auto"><table class="ptbl">${head}<tbody>${body}</tbody></table></div>`;
 }
 async function loadPlayerStats() {
