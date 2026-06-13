@@ -60,6 +60,7 @@ img { display: block; max-width: 100%; }
 .logo .mark { width: 34px; height: 34px; border-radius: 10px; background: var(--gold-grad); display: grid; place-items: center; box-shadow: var(--gold-glow); position: relative; flex: none; }
 .logo .mark::after { content:''; width: 0; height: 0; border-left: 11px solid #1a1206; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
 .logo b { color: var(--ink); } .logo .ex { color: var(--gold); }
+.logo .logo-i { height: 1.45em; width: auto; vertical-align: -.32em; margin: 0 1px; filter: drop-shadow(0 2px 6px rgba(232,184,75,.45)); }
 .nav-links { display: flex; align-items: center; gap: 4px; margin-left: 12px; }
 .nav-links a { position: relative; padding: 9px 15px; border-radius: 999px; white-space: nowrap; font-size: 14.5px; font-weight: 600; color: var(--ink-soft); transition: color .25s, background .25s; cursor: pointer; }
 .nav-links a:hover { color: var(--ink); background: rgba(255,255,255,.05); }
@@ -280,7 +281,7 @@ img { display: block; max-width: 100%; }
 <!-- ===== NAV ===== -->
 <nav class="nav">
   <div class="nav-inner">
-    <div class="logo" onclick="navHome()"><span class="mark"></span><b>WatchIt</b><span class="ex">!</span></div>
+    <div class="logo" onclick="navHome()"><span class="mark"></span><b>Watch<img class="logo-i" src="cup.png" alt="i">t</b><span class="ex">!</span></div>
     <div class="nav-links" id="navLinks">
       <a data-nav="home" class="active" onclick="navHome()">Home</a>
       <a data-nav="tv" onclick="loadLiveTV()">Live TV</a>
@@ -410,7 +411,7 @@ img { display: block; max-width: 100%; }
   <footer class="footer">
     <div class="wrap">
       <div class="footer-grid">
-        <div><div class="logo" onclick="navHome()"><span class="mark"></span><b>WatchIt</b><span class="ex">!</span></div><p class="blurb">Premium live TV & sports streaming. Every channel, every match, always live.</p></div>
+        <div><div class="logo" onclick="navHome()"><span class="mark"></span><b>Watch<img class="logo-i" src="cup.png" alt="i">t</b><span class="ex">!</span></div><p class="blurb">Premium live TV & sports streaming. Every channel, every match, always live.</p></div>
         <div><h5>Watch</h5><ul><li><a onclick="loadLiveTV()">Live TV</a></li><li><a onclick="loadLiveSports()">Live Sports</a></li><li><a onclick="loadFifaWorldCup()">World Cup</a></li></ul></div>
         <div><h5>Sports</h5><ul><li><a onclick="loadLiveSports()">Football</a></li><li><a onclick="loadLiveSports()">Basketball</a></li><li><a onclick="loadLiveSports()">UFC · F1</a></li></ul></div>
         <div><h5>About</h5><ul><li><a href="https://dami-tv.pro" target="_blank" rel="noopener">Powered by DAMITV</a></li></ul></div>
