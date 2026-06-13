@@ -775,7 +775,6 @@ const WC_LEAGUE = '4429';   // FIFA World Cup
 const WC_SEASON = '2026';
 const ROUND_NAMES = { 125: 'Round of 32', 150: 'Round of 16', 160: 'Quarter-Final', 170: 'Semi-Final', 180: 'Third Place', 200: 'Final' };
 let wcCache = {};
-let wcStreams = [];
 let wcCurrentTeam = null;
 let wcState = { events: [], table: [], players: {}, tab: 'matches' };
 
@@ -810,30 +809,18 @@ async function loadFifaWorldCup() {
     wcState.events = (evD.events || []).slice().sort((a, b) => (a.strTimestamp || '').localeCompare(b.strTimestamp || ''));
     wcState.table = tbD.table || [];
     if (!wcState.events.length && !wcState.table.length) { alert('World Cup data is not available yet. Check back near kickoff.'); navHome(); return; }
-    fetchWCStreams();
     const nextEv = wcState.events.find(e => !wcMatchStatus(e).fin) || null;
     renderWCShell(nextEv);
     wcSwitchTab('matches');
   } catch (e) { alert('Failed to load World Cup data. ' + (e.message || e)); navHome(); }
 }
 
-async function fetchWCStreams() {
-  try {
-    const data = await getStreams();
-    wcStreams = flattenStreams(data).filter(s => /world cup|fifa/i.test(s.league || '')).map(s => eventToChannel(s, 'WORLD CUP'));
-    if (wcState.tab === 'matches') renderActiveTab();
-  } catch { wcStreams = []; }
-}
-function wcNorm(x) { return (x || '').toLowerCase().replace(/[^a-z]/g, ''); }
-function findWCStream(home, away) {
-  const h = wcNorm(home), a = wcNorm(away);
-  return wcStreams.find(s => { const n = wcNorm(s.name); return n.includes(h) && n.includes(a) && (s.ev && s.ev.status === 'live'); })
-      || wcStreams.find(s => { const n = wcNorm(s.name); return n.includes(h) && n.includes(a); });
-}
-function wcPlayById(id) {
-  const e = (wcState.events || []).find(x => x.idEvent === id); if (!e) return;
-  const s = findWCStream(e.strHomeTeam, e.strAwayTeam);
-  if (s) decidePlayer(s.url, true, false, e.strEvent, s);
+// Every World Cup match streams through the TSN1 channel.
+const WC_CHANNEL = { name: 'TSN1', url: 'https://dami-tv.pro/embed/channel/?id=tsn' };
+function wcPlayMatch(id) {
+  const e = (wcState.events || []).find(x => x.idEvent === id);
+  const label = (e ? e.strEvent + ' · ' : '') + WC_CHANNEL.name;
+  decidePlayer(WC_CHANNEL.url, true, false, label, { isIframe: true, isEvent: false });
 }
 
 function wcHeroHtml(nextEv) {
@@ -886,9 +873,8 @@ function matchRowHtml(e) {
   const mid = hasScore
     ? `<div class="mr-score">${e.intHomeScore} <span style="color:var(--ink-faint)">–</span> ${e.intAwayScore}</div><div class="mr-meta">${st.live ? '<span style="color:var(--live)">● LIVE</span>' : 'Full time'}</div>`
     : `<div class="mr-score" style="font-size:17px">${(e.strTime || '').slice(0, 5) || 'TBD'}</div><div class="mr-meta">${escapeHtml(roundName(e.intRound))}</div>`;
-  const stream = findWCStream(e.strHomeTeam, e.strAwayTeam);
-  const play = stream ? `is-playable" onclick="wcPlayById('${e.idEvent}')` : '';
-  const watch = stream ? `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch live</span></div>` : '';
+  const play = `is-playable" onclick="wcPlayMatch('${e.idEvent}')`;
+  const watch = `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch on TSN1</span></div>`;
   return `<div class="glass match-row ${play}">
     <div class="mr-team"><img src="${hb}" onerror="this.style.visibility='hidden'"><span class="nm">${escapeHtml(e.strHomeTeam)}</span></div>
     <div class="mr-mid">${mid}${watch}</div>
