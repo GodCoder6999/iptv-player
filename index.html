@@ -337,7 +337,7 @@ img { display: block; max-width: 100%; }
           <div class="stat"><div class="n"><span class="gold-text" data-count="4" data-suffix="K">0</span></div><div class="l">Ultra HD</div></div>
         </div>
       </div>
-      <div class="hero-stage reveal d2">
+      <div class="hero-stage reveal d2" id="heroStage">
         <div class="hero-card tilt" data-tilt="7">
           <div class="art art-pitch" data-parallax="-14"></div>
           <div class="scrim"></div>
@@ -346,7 +346,7 @@ img { display: block; max-width: 100%; }
             <div class="live-badge" style="margin-bottom:12px"><span class="dot"></span>Live</div>
             <div class="scoreboard">
               <div class="team-side"><span class="flag" style="background:linear-gradient(135deg,#009b3a,#ffdf00 70%)">BRA</span><div><div class="nm">Brazil</div></div></div>
-              <div class="score-mid"><div class="sc"><b>1</b><i>–</i><b>0</b></div></div>
+              <div class="score-mid"><div class="sc"><b>V</b><i>·</i><b>S</b></div><div class="clk" style="color:var(--gold)">Featured</div></div>
               <div class="team-side right"><span class="flag" style="background:linear-gradient(135deg,#c1272d,#006233 70%)">MAR</span><div><div class="nm">Morocco</div></div></div>
             </div>
           </div>
@@ -354,7 +354,7 @@ img { display: block; max-width: 100%; }
         <div class="float-badge" data-parallax="22" style="top:-18px;right:-10px">
           <div style="display:flex;align-items:center;gap:8px"><span class="dotlive" style="width:7px;height:7px;border-radius:50%;background:var(--live)"></span><span style="font-weight:700;font-size:13px">World Cup 2026</span></div>
         </div>
-        <div class="float-badge" data-parallax="16" style="bottom:24px;left:-22px">
+        <div class="float-badge" data-parallax="16" style="top:72px;left:-22px">
           <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:13px">Streaming live now</span></div>
         </div>
       </div>
@@ -916,12 +916,57 @@ function toggleCustomFullscreen() {
   else document.exitFullscreen();
 }
 
-// --- HOME: populate trending rail from real data (best-effort) ---
+// --- HOME: hero featured match + trending rail from real data (best-effort) ---
+function heroFlag(team, grad) {
+  const b = damiAbs(team && team.badge);
+  const ab = escapeHtml((team && team.name || '').substring(0, 3).toUpperCase());
+  if (b) return `<span class="flag" style="background:#0d0d14"><img src="${escapeAttr(b)}" style="width:100%;height:100%;object-fit:contain;padding:7px" onerror="this.parentElement.innerHTML='${ab}'"></span>`;
+  return `<span class="flag" style="background:linear-gradient(135deg,${grad})">${ab}</span>`;
+}
+function buildHeroCard(ch) {
+  const stage = document.getElementById('heroStage');
+  if (!stage) return;
+  const s = ch.ev || {};
+  const live = s.status === 'live';
+  const home = s.teams && s.teams.home, away = s.teams && s.teams.away;
+  const artStyle = ch.logo ? `art" style="background-image:url('${escapeAttr(ch.logo)}')` : `art art-pitch"`;
+  const status = live
+    ? `<div class="clk"><span class="dot"></span>Live now</div>`
+    : `<div class="clk" style="color:var(--gold)">${escapeHtml(eventKickoff(s))}</div>`;
+  let board;
+  if (home && away) {
+    board = `<div class="scoreboard">
+        <div class="team-side">${heroFlag(home, '#2c5a6e,#0c1c24')}<div><div class="nm">${escapeHtml(home.name)}</div></div></div>
+        <div class="score-mid"><div class="sc"><b>V</b><i>·</i><b>S</b></div>${status}</div>
+        <div class="team-side right">${heroFlag(away, '#6e2c3a,#240c12')}<div><div class="nm">${escapeHtml(away.name)}</div></div></div>
+      </div>`;
+  } else {
+    board = `<h3 style="font-size:22px">${escapeHtml(s.name || ch.name)}</h3><div style="margin-top:8px">${status}</div>`;
+  }
+  const badge = live
+    ? `<div class="live-badge" style="margin-bottom:12px"><span class="dot"></span>Live</div>`
+    : `<div class="pill gold" style="margin-bottom:12px">Upcoming</div>`;
+  const vw = (live && s.viewers) ? `${formatViewers(s.viewers)} watching` : 'Streaming live';
+  stage.innerHTML = `
+    <div class="hero-card tilt" data-tilt="7" style="cursor:pointer" onclick="window.__playHero()">
+      <div class="${artStyle}" data-parallax="-14"></div>
+      <div class="scrim"></div>
+      <div data-glare style="position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:screen"></div>
+      <span class="play-fab" style="opacity:1;transform:scale(1)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="ov">${badge}${board}</div>
+    </div>
+    <div class="float-badge" data-parallax="22" style="top:-18px;right:-10px"><div style="display:flex;align-items:center;gap:8px"><span class="dotlive" style="width:7px;height:7px;border-radius:50%;background:var(--live)"></span><span style="font-weight:700;font-size:13px">${escapeHtml(s.league || 'Live Sport')}</span></div></div>
+    <div class="float-badge" data-parallax="16" style="top:72px;left:-22px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:13px">${escapeHtml(vw)}</span></div></div>`;
+  window.__playHero = () => decidePlayer(ch.url, true, false, ch.name, ch);
+  applyEffects(stage);
+}
 (async function initHome() {
   try {
     const data = await getStreams();
     const events = flattenStreams(data).map(s => eventToChannel(s, (s.category_name || 'SPORTS').toUpperCase())).sort(sortEvents);
     if (!events.length) return;
+    const heroScore = ch => { const s = ch.ev; let n = 0; if (s.status === 'live') n += 4; if (s.poster) n += 2; if (s.teams && s.teams.home && s.teams.home.badge && s.teams.away && s.teams.away.badge) n += 2; return n; };
+    buildHeroCard([...events].sort((a, b) => heroScore(b) - heroScore(a))[0]);
     const rail = document.getElementById('trendingRail');
     const top = events.slice(0, 8);
     const frag = document.createDocumentFragment();
