@@ -233,6 +233,42 @@
         }
         .channel-card:hover .play-overlay { opacity: 1; transform: translateY(-50%) scale(1); }
 
+        /* --- FIFA WORLD CUP --- */
+        .btn-fifa {
+            background: linear-gradient(135deg, #10b981, #6366f1);
+            color: #fff; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+        }
+        .btn-fifa:hover { filter: brightness(1.12); }
+
+        .fifa-card {
+            min-height: 200px; justify-content: flex-end;
+            background-size: cover; background-position: center;
+        }
+        .fifa-card::before {
+            background: linear-gradient(to bottom, rgba(7,7,10,0.35) 0%, rgba(7,7,10,0.75) 60%, rgba(7,7,10,0.95) 100%);
+            opacity: 1;
+        }
+        .fifa-card:hover::before { opacity: 1; }
+        .fifa-top { display: flex; justify-content: space-between; align-items: center; z-index: 2; position: absolute; top: 16px; left: 16px; right: 16px; }
+        .fifa-teams { display: flex; align-items: center; justify-content: center; gap: 14px; z-index: 2; width: 100%; margin-bottom: 8px; }
+        .fifa-team { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+        .fifa-team img { width: 46px; height: 46px; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+        .fifa-team span { font-size: 0.8rem; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .fifa-vs { font-weight: 800; font-size: 0.9rem; color: var(--accent-yellow); flex-shrink: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .fifa-league { z-index: 2; text-align: center; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; }
+
+        .bg-live { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); display: inline-flex; align-items: center; gap: 6px; }
+        .bg-live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px #ef4444; animation: livePulse 1.4s infinite; }
+        .bg-upcoming { background: rgba(99, 102, 241, 0.18); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); }
+        @keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .fifa-play {
+            position: absolute; right: 16px; bottom: 16px; z-index: 3;
+            width: 42px; height: 42px; border-radius: 50%; background: var(--accent-primary);
+            display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem;
+            opacity: 0; transform: scale(0.8); transition: 0.3s; box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+        }
+        .fifa-card:hover .fifa-play { opacity: 1; transform: scale(1); }
+
         #playerView { overflow: hidden; background: #000; }
         
         .player-header {
@@ -401,6 +437,12 @@
                     <i class="fa-solid fa-circle-play" style="color:var(--accent-cyan)"></i> Pluto TV
                 </button>
             </div>
+
+            <div class="section-divider">LIVE SPORTS</div>
+
+            <button id="fifaBtn" class="btn-action btn-fifa" onclick="loadFifaWorldCup()">
+                <i class="fa-solid fa-futbol"></i> FIFA WORLD CUP 2026
+            </button>
 
             <div id="statusLog" style="margin-top:25px; text-align:left; color:var(--text-dim); font-size:0.85rem; font-family:monospace; max-height: 100px; overflow-y: auto;"></div>
         </div>
@@ -1139,6 +1181,112 @@
             decidePlayer("https://dlhd.link/stream/stream-54.php", true, true, "FOX TV", null);
         }
 
+        // --- FIFA WORLD CUP (DAMITV public API) ---
+        const FIFA_API = 'https://dami-tv.pro/papi/api/streams';
+        let fifaCache = { data: null, ts: 0 };
+
+        function fifaAbs(u) {
+            if (!u) return '';
+            if (u.startsWith('http')) return u;
+            if (u.startsWith('//')) return 'https:' + u;
+            if (u.startsWith('/')) return 'https://dami-tv.pro' + u;
+            return u;
+        }
+
+        function fifaKickoff(s) {
+            if (!s.starts_at) return 'UPCOMING';
+            const d = new Date(s.starts_at * 1000);
+            return d.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatViewers(n) {
+            if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+            return String(n);
+        }
+
+        function fifaBadgeImg(url) {
+            const src = fifaAbs(url);
+            return src ? `<img src="${src}" onerror="this.style.display='none'">` : '';
+        }
+
+        function fifaCardHtml(ch) {
+            const s = ch.fifa || {};
+            const isLive = s.status === 'live';
+            const statusBadge = isLive
+                ? `<span class="badge bg-live">LIVE</span>`
+                : `<span class="badge bg-upcoming">${fifaKickoff(s)}</span>`;
+            const viewers = (isLive && s.viewers)
+                ? `<span class="badge bg-gray"><i class="fa-solid fa-eye"></i> ${formatViewers(s.viewers)}</span>` : '';
+            const home = s.teams && s.teams.home ? s.teams.home : null;
+            const away = s.teams && s.teams.away ? s.teams.away : null;
+            let teamsHtml;
+            if (home && away) {
+                teamsHtml = `
+                    <div class="fifa-teams">
+                        <div class="fifa-team">${fifaBadgeImg(home.badge)}<span>${home.name || ''}</span></div>
+                        <span class="fifa-vs">VS</span>
+                        <div class="fifa-team">${fifaBadgeImg(away.badge)}<span>${away.name || ''}</span></div>
+                    </div>`;
+            } else {
+                teamsHtml = `<div class="fifa-teams"><div class="fifa-team"><span>${ch.name}</span></div></div>`;
+            }
+            return `
+                <div class="fifa-top">${statusBadge}${viewers}</div>
+                ${teamsHtml}
+                <div class="fifa-league">${s.league || 'FIFA World Cup 2026'}</div>
+                <div class="fifa-play"><i class="fa-solid fa-play"></i></div>
+            `;
+        }
+
+        async function loadFifaWorldCup() {
+            const btn = document.getElementById('fifaBtn');
+            const original = '<i class="fa-solid fa-futbol"></i> FIFA WORLD CUP 2026';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> LOADING MATCHES...';
+            try {
+                let data;
+                if (fifaCache.data && Date.now() - fifaCache.ts < 60000) {
+                    data = fifaCache.data;
+                } else {
+                    const raw = await fetchSmart(FIFA_API);
+                    data = JSON.parse(raw);
+                    fifaCache = { data, ts: Date.now() };
+                }
+                const matches = [];
+                (data.streams || []).forEach(cat => {
+                    (cat.streams || []).forEach(s => {
+                        const league = (s.league || '').toLowerCase();
+                        if (league.includes('world cup') || league.includes('fifa')) matches.push(s);
+                    });
+                });
+                matches.sort((a, b) => {
+                    const al = a.status === 'live' ? 0 : 1, bl = b.status === 'live' ? 0 : 1;
+                    if (al !== bl) return al - bl;
+                    return (a.starts_at || 0) - (b.starts_at || 0);
+                });
+                if (matches.length === 0) {
+                    alert('No FIFA World Cup matches available right now. Check back near kickoff.');
+                    return;
+                }
+                allChannels = matches.map(s => ({
+                    name: s.name,
+                    group: 'FIFA WORLD CUP',
+                    source: s.status === 'live' ? 'LIVE' : 'UPCOMING',
+                    url: s.iframe || (s.sources && s.sources[0] && s.sources[0].embed) || '',
+                    logo: fifaAbs(s.poster),
+                    isIframe: true,
+                    isDaddy: false,
+                    isFifa: true,
+                    fifa: s
+                }));
+                renderList(allChannels);
+                navigateTo('list');
+            } catch (e) {
+                alert('Failed to load FIFA World Cup matches. ' + (e.message || e));
+            } finally {
+                btn.innerHTML = original;
+            }
+        }
+
         async function loadPremium() {
             logStatus("Fetching Premium channels...", 'info');
             const staticChannels = [
@@ -1228,6 +1376,13 @@
                 const card = document.createElement('div');
                 card.className = 'channel-card';
                 card.onclick = () => decidePlayer(ch.url || ch.cmd, ch.isIframe, ch.isDaddy, ch.name, ch);
+                if (ch.isFifa) {
+                    card.className = 'channel-card fifa-card';
+                    if (ch.logo) card.style.backgroundImage = `url("${ch.logo}")`;
+                    card.innerHTML = fifaCardHtml(ch);
+                    fragment.appendChild(card);
+                    return;
+                }
                 let badgeClass = 'bg-cyan';
                 if(ch.group === 'DADDYLIVE') badgeClass = 'bg-purple';
                 if(ch.group === 'XTREAM LIVE') badgeClass = 'bg-green';
@@ -1306,7 +1461,7 @@
             target.style.display = 'block';
             btnExternal.style.display = 'flex';
             btnExternal.onclick = () => window.open(url, '_blank');
-            const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
+            const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top') || url.includes('dami-tv.pro');
             const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
             target.innerHTML = `<iframe src="${url}" width="100%" height="100%" style="border:0;" allowfullscreen ${referrerAttr}></iframe>`;
             resBadge.innerText = label; resBadge.style.color = "var(--accent-secondary)";
@@ -1343,7 +1498,7 @@
                 const iframe = target.querySelector('iframe');
                 if(iframe) {
                     const src = iframe.src;
-                    const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
+                    const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top') || src.includes('dami-tv.pro');
                     const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
                     target.innerHTML = '';
                     setTimeout(() => { target.innerHTML = `<iframe src="${src}" width="100%" height="100%" style="border:0;" allowfullscreen ${ref}></iframe>`; }, 100);
