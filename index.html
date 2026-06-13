@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -233,12 +233,25 @@
         }
         .channel-card:hover .play-overlay { opacity: 1; transform: translateY(-50%) scale(1); }
 
-        /* --- FIFA WORLD CUP --- */
+        /* --- SECTION PICKER --- */
+        .tagline { color: var(--text-dim); font-size: 0.9rem; letter-spacing: 1px; margin: -10px 0 28px; text-transform: uppercase; }
+        .btn-section {
+            justify-content: flex-start; text-align: left; gap: 18px;
+            padding: 22px 24px; margin-bottom: 16px; color: #fff;
+            text-transform: none; letter-spacing: 0; font-weight: 600;
+        }
+        .btn-section > i:first-child { font-size: 1.6rem; width: 32px; text-align: center; flex-shrink: 0; }
+        .sec-label { display: flex; flex-direction: column; line-height: 1.3; font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .sec-label small { font-size: 0.78rem; font-weight: 400; letter-spacing: 0.3px; text-transform: none; color: rgba(255,255,255,0.75); margin-top: 3px; }
+        .sec-arrow { margin-left: auto; font-size: 1rem; opacity: 0.7; transition: transform 0.3s; }
+        .btn-section:hover .sec-arrow { transform: translateX(5px); opacity: 1; }
+        .btn-tv { background: linear-gradient(135deg, #06b6d4, #6366f1); box-shadow: 0 8px 25px rgba(6, 182, 212, 0.25); }
+        .btn-sports { background: linear-gradient(135deg, #f97316, #ec4899); box-shadow: 0 8px 25px rgba(249, 115, 22, 0.25); }
         .btn-fifa {
             background: linear-gradient(135deg, #10b981, #6366f1);
             color: #fff; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
         }
-        .btn-fifa:hover { filter: brightness(1.12); }
+        .btn-section:hover { filter: brightness(1.12); }
 
         .fifa-card {
             min-height: 200px; justify-content: flex-end;
@@ -366,82 +379,24 @@
         <div class="load-box">
             <h2>IPTV <span>MASTER</span></h2>
             
-            <div id="inputContainer">
-                <div class="input-row">
-                    <input type="text" class="url-input" value="https://iptv-org.github.io/iptv/index.m3u" placeholder="Playlist URL...">
-                    <button class="btn-action btn-dark" onclick="removeRow(this)" style="width:55px; margin:0; padding:0;"><i class="fa-solid fa-times"></i></button>
-                </div>
-            </div>
-            
-            <button class="btn-action btn-dark" onclick="addInputRow()" style="padding: 12px; font-size: 0.9rem;">
-                <i class="fa-solid fa-plus"></i> Add Another M3U
+            <p class="tagline">Powered by DAMITV — pick a section</p>
+
+            <button id="tvBtn" class="btn-action btn-section btn-tv" onclick="loadLiveTV()">
+                <i class="fa-solid fa-tv"></i>
+                <span class="sec-label">LIVE TV<small>800+ channels worldwide</small></span>
+                <i class="fa-solid fa-chevron-right sec-arrow"></i>
             </button>
 
-            <button class="btn-action btn-gradient" onclick="loadAllPlaylists()">
-                <i class="fa-solid fa-play"></i> LOAD URL PLAYLISTS
+            <button id="sportsBtn" class="btn-action btn-section btn-sports" onclick="loadLiveSports()">
+                <i class="fa-solid fa-basketball"></i>
+                <span class="sec-label">LIVE SPORTS<small>football, NBA, UFC, F1 & more</small></span>
+                <i class="fa-solid fa-chevron-right sec-arrow"></i>
             </button>
 
-            <div class="section-divider">ADVANCED CONNECTION</div>
-
-            <button class="btn-action btn-outline" onclick="toggleForm('xtreamForm')">
-                <i class="fa-solid fa-server"></i> Connect via Xtream
-            </button>
-
-            <div id="xtreamForm" class="login-form">
-                <input type="text" id="xcUrl" class="form-input" placeholder="Server URL (http://...)">
-                <input type="text" id="xcUser" class="form-input" placeholder="Username">
-                <input type="text" id="xcPass" class="form-input" placeholder="Password">
-                <button class="btn-action" style="background:var(--accent-cyan); color:#000;" onclick="connectXtream()">LOGIN XTREAM</button>
-            </div>
-
-            <button class="btn-action btn-outline" style="border-color:var(--accent-orange); color:var(--accent-orange);" onclick="toggleForm('stalkerForm')">
-                <i class="fa-solid fa-microchip"></i> Connect Stalker / MAG
-            </button>
-
-            <div id="stalkerForm" class="login-form">
-                <div style="text-align: left; margin-bottom: 12px; font-size: 0.8rem; color: var(--accent-orange);">
-                    <i class="fa-solid fa-info-circle"></i> Requires proxy.php in same folder
-                </div>
-                <input type="text" id="stPortal" class="form-input" style="border-color:var(--accent-orange);" placeholder="Portal Address">
-                <input type="text" id="stMac" class="form-input" style="border-color:var(--accent-orange);" placeholder="MAC Address" onkeyup="formatMac(this)" maxlength="17">
-                <input type="text" id="stSn" class="form-input" style="border-color:var(--accent-orange);" placeholder="Serial Number (Optional)">
-                <input type="text" id="stDevId" class="form-input" style="border-color:var(--accent-orange);" placeholder="Device ID (Optional)">
-                
-                <button class="btn-action" style="background:var(--accent-orange); color:#000;" onclick="connectStalker()">
-                    <i class="fa-solid fa-plug"></i> CONNECT PORTAL
-                </button>
-            </div>
-
-            <input type="file" id="fileInput" accept=".m3u,.m3u8" style="display:none;" onchange="handleFileUpload(this)">
-            
-            <div style="display: flex; gap: 15px; margin-top: 15px;">
-                <button class="btn-action btn-dark" style="flex:1; margin:0;" onclick="document.getElementById('fileInput').click()">
-                    <i class="fa-solid fa-file-arrow-up"></i> Upload File
-                </button>
-                <button class="btn-action btn-dark" style="flex:1; margin:0; border-color:rgba(245, 158, 11, 0.4);" onclick="loadPremium()">
-                    <i class="fa-solid fa-crown" style="color:var(--accent-yellow)"></i> Premium
-                </button>
-            </div>
-
-            <div style="display: flex; gap: 15px; margin-top: 15px;">
-                <button class="btn-action btn-dark" style="flex:1; margin:0; border-color:rgba(99, 102, 241, 0.5);" onclick="loadDaddyLive()">
-                    <i class="fa-solid fa-satellite-dish" style="color:#a5b4fc"></i> Daddy Live
-                </button>
-                <button class="btn-action btn-dark" style="flex:1; margin:0; border-color:rgba(239, 68, 68, 0.4);" onclick="loadFoxTV()">
-                    <i class="fa-solid fa-tv" style="color:#ef4444"></i> Fox TV
-                </button>
-            </div>
-
-            <div style="display: flex; gap: 15px; margin-top: 15px;">
-                <button class="btn-action btn-dark" style="flex:1; margin:0; border-color:rgba(6, 182, 212, 0.5);" onclick="loadPlutoTV()">
-                    <i class="fa-solid fa-circle-play" style="color:var(--accent-cyan)"></i> Pluto TV
-                </button>
-            </div>
-
-            <div class="section-divider">LIVE SPORTS</div>
-
-            <button id="fifaBtn" class="btn-action btn-fifa" onclick="loadFifaWorldCup()">
-                <i class="fa-solid fa-futbol"></i> FIFA WORLD CUP 2026
+            <button id="fifaBtn" class="btn-action btn-section btn-fifa" onclick="loadFifaWorldCup()">
+                <i class="fa-solid fa-futbol"></i>
+                <span class="sec-label">FIFA WORLD CUP 2026<small>live &amp; upcoming matches</small></span>
+                <i class="fa-solid fa-chevron-right sec-arrow"></i>
             </button>
 
             <div id="statusLog" style="margin-top:25px; text-align:left; color:var(--text-dim); font-size:0.85rem; font-family:monospace; max-height: 100px; overflow-y: auto;"></div>
@@ -543,522 +498,8 @@
         let isListViewMode = false;
         const RENDER_LIMIT = 200;
 
-        // --- PLUTO TV CHANNELS ---
-        const plutoChannels = [
-            { name: "Pluto TV Cars", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c12ba66eae03059cbdc77f2/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53797c-eca6-11ee-8a17-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=061773cb-8a68-49ad-930f-b677f16e3147&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5c12ba66eae03059cbdc77f2/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Spotlight", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ba3fb9c4b078e0f37ad34e8/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538048-eca6-11ee-90c1-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=51b341af-cba2-4b14-b4a5-81fa089644a3&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ba3fb9c4b078e0f37ad34e8/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Icons", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/64b585f84ea480000838e446/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53811a-eca6-11ee-9ab5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=dee0b8c4-bd16-4ca9-8ee6-4aaf7468736e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/64b585f84ea480000838e446/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Action", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/561d7d484dc7c8770484914a/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5381ba-eca6-11ee-88af-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=32f9d3d2-7b34-4d4f-985e-2f6f948982ee&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/561d7d484dc7c8770484914a/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Reaction", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/617b37b361e0fd0008cfd8c5/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538386-eca6-11ee-b8d2-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=e8bfa24c-7608-4afa-a260-12b498279878&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/617b37b361e0fd0008cfd8c5/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Comedy", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5a4d3a00ad95e4718ae8d8db/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538426-eca6-11ee-9bf7-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=b3a0eca6-c707-433c-85fa-7a3b2d1a87e2&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5a4d3a00ad95e4718ae8d8db/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Movies on Verizon", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5efb60a9e426140007c78e4b/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5384bc-eca6-11ee-97b4-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=d91d5b35-d04f-4f39-8aef-06966e59891b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5efb60a9e426140007c78e4b/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Drama", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b4e92e4694c027be6ecece1/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538548-eca6-11ee-ae65-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=bd11756c-6dd2-4ca1-bd30-987c52f0cc69&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b4e92e4694c027be6ecece1/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Fantastic", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b64a245a202b3337f09e51d/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5385d4-eca6-11ee-8078-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=a8d191eb-9616-40b7-9d49-abbceb00f273&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b64a245a202b3337f09e51d/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Romance", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5a66795ef91fef2c7031c599/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538a70-eca6-11ee-98d2-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=3212896f-cf34-4be5-917e-ae1aee1c0a07&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5a66795ef91fef2c7031c599/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Crime Movies", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f4d8594eb979c0007706de7/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538b2e-eca6-11ee-8295-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=6989125c-7089-43e1-9304-ef10eb566a21&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f4d8594eb979c0007706de7/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Thrillers", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b4e69e08291147bd04a9fd7/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538bc4-eca6-11ee-b015-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=d3110b35-4954-48c8-b05e-c2abbdbd502d&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b4e69e08291147bd04a9fd7/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Horror", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/569546031a619b8f07ce6e25/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538c50-eca6-11ee-80a3-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=24679ab7-1b40-4f8d-bff0-375370f264c0&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/569546031a619b8f07ce6e25/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Terror", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c6dc88fcd232425a6e0f06e/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538d4a-eca6-11ee-9b07-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=1d46700b-592d-4f6f-93de-a6b6130e0763&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5c6dc88fcd232425a6e0f06e/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Black Cinema", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/58af4c093a41ca9d4ecabe96/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538de0-eca6-11ee-8b50-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9504598a-8d66-45d5-9c72-44b7d01ac6f1&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/58af4c093a41ca9d4ecabe96/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "MovieSphere by Lionsgate", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/645e7828e1979c00087b75b4/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538ea8-eca6-11ee-acdd-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=80af4abd-122e-4c64-a43b-5c95cdd43616&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/645e7828e1979c00087b75b4/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Staff Picks", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f4d863b98b41000076cd061/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d538f34-eca6-11ee-a3f5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=a1533d0f-8e15-483f-b35c-f95723718333&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f4d863b98b41000076cd061/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Documentaries", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b85a7582921777994caea63/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539024-eca6-11ee-b6c5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=fd1dcfbf-0727-4a98-8ffd-eed12c0c3c2e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b85a7582921777994caea63/colorLogoPNG-1646155426722.png", group: "Pluto TV" },
-            { name: "00s Replay", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/62ba60f059624e000781c436/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5390ec-eca6-11ee-b640-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=d83fee33-c450-464e-ab8d-76af51309f37&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/62ba60f059624e000781c436/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "90s Throwback", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f4d86f519358a00072b978e/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539182-eca6-11ee-ad32-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=92b9c25b-f123-42fe-bab4-4dd338f0ad1d&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f4d86f519358a00072b978e/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "80s Rewind", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ca525b650be2571e3943c63/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53920e-eca6-11ee-a329-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c7e616fa-3c6e-44d8-8aba-60bd49556cde&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ca525b650be2571e3943c63/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "70s Cinema", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f4d878d3d19b30007d2e782/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53929a-eca6-11ee-8d8a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=6f4d4bd6-285d-4b57-b40b-29353b1e7880&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f4d878d3d19b30007d2e782/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Paramount Movie Channel", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cb0cae7a461406ffe3f5213/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53933a-eca6-11ee-92f1-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0ad25191-ee1c-459c-9f9c-fbdd306acf78&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5cb0cae7a461406ffe3f5213/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Westerns", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b4e94282d4ec87bdcbb87cd/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5393c6-eca6-11ee-a1b4-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=53c09bd1-42ce-49a6-8203-38abe0eba07c&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b4e94282d4ec87bdcbb87cd/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Classic Movies Channel", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/561c5b0dada51f8004c4d855/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539452-eca6-11ee-b4d5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=67b71724-9bb2-4e58-80fd-6dd95d98103f&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/561c5b0dada51f8004c4d855/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Cult Films", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c665db3e6c01b72c4977bc2/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5394de-eca6-11ee-8d7d-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=f59cbef1-7fb7-4dec-938d-36a5d7597ebf&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5c665db3e6c01b72c4977bc2/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Universal Monsters", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/65a9b20f0c7ff50008d3a3b6/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5395b0-eca6-11ee-ab6b-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9922b643-7ca2-4903-ae26-d29713a3571c&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/65a9b20f0c7ff50008d3a3b6/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Flicks of Fury", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/58e55b14ad8e9c364d55f717/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539646-eca6-11ee-b3e4-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9eaa29ec-1b35-4e23-8c59-0e6bda1601ec&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/58e55b14ad8e9c364d55f717/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Movies for Gamers", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6008ddf24ef92b00079d61cf/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539786-eca6-11ee-a9a5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=6e91c344-5c0e-48ba-9564-c3728272a670&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6008ddf24ef92b00079d61cf/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "TV Land Sitcoms 2", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f778a052360b30007fa5e32/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539830-eca6-11ee-bb0e-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=f9e73709-547c-4381-97a3-520b1b719af1&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f778a052360b30007fa5e32/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Sitcom Legends", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/633354b63df9700007f6a1b7/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5398c6-eca6-11ee-980c-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=aec3a7f2-ce54-4cf3-9c1b-54f19f7e8b8b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/633354b63df9700007f6a1b7/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "TV Land Sitcoms", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c2d64ffbdf11b71587184b8/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53995c-eca6-11ee-aa6e-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=30ead199-e503-40de-94ab-8bab40629bf8&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5c2d64ffbdf11b71587184b8/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "More TV Sitcoms", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6132619f9ddaa50007e7dd86/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5399e8-eca6-11ee-8f9c-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0d4db2e9-b0fc-44ff-94e3-6a55fe1001d3&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6132619f9ddaa50007e7dd86/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Black Throwbacks", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/61326275b3c86a00078e4833/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539a74-eca6-11ee-9099-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=474e63b6-8181-44c5-8fc9-9624317b0c0e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/61326275b3c86a00078e4833/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Funny AF", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/580e87ff497c73ba2f321dd3/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539b0a-eca6-11ee-c01a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=1c4b1fc6-d38f-485e-97af-669aa252c893&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/580e87ff497c73ba2f321dd3/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Comedy Central Pluto TV", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ca671f215a62078d2ec0abf/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539bf0-eca6-11ee-8b9c-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c62df949-126f-40ee-99ce-fd61a2a53db5&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ca671f215a62078d2ec0abf/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Comedy Central Animation", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f99e24636d67d0007a94e6d/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539c86-eca6-11ee-aa2c-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=956ab981-9020-42d9-a35f-aa7a859600da&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f99e24636d67d0007a94e6d/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Pranks", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60f86f539f03cd00070c503a/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539d12-eca6-11ee-bfbb-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0b22cafb-c28e-4dd7-b85f-15d2e541d074&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/60f86f539f03cd00070c503a/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Tosh.0", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5dae084727c8af0009fe40a4/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539da8-eca6-11ee-8a3b-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=488e2d15-e91f-474e-ac1e-c90abb81f4b9&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5dae084727c8af0009fe40a4/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Wild 'N Out", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d48678d34ceb37d3c458a55/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539e34-eca6-11ee-c0c6-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=cb34eafc-0644-4220-b1e4-2751d1bca0eb&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5d48678d34ceb37d3c458a55/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Kevin Hart's LOL! Network", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5af09e645126c2157123f9eb/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539eca-eca6-11ee-bcd7-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=cdcbf29f-eee6-4444-9bca-f4ef9bbd09bb&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5af09e645126c2157123f9eb/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Stand-Up TV", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5637d31f319573e26b64040b/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539f56-eca6-11ee-ae79-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=19bcc77d-b46e-4428-9b27-c9046f05e310&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5637d31f319573e26b64040b/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Slightly Off IFC", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e82547b6b3df60007fec2b5/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d539fe2-eca6-11ee-b413-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c3293109-3aa3-408c-af9e-76391663cb75&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5e82547b6b3df60007fec2b5/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "British Comedy", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60f870184865da00074210ee/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a06e-eca6-11ee-816a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=7bff9f8a-00f8-4adb-a1aa-d1c54a2f6118&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/60f870184865da00074210ee/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "MST3K", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/545943f1c9f133a519bbac92/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a1cc-eca6-11ee-901b-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=70b845bf-1b93-4d2b-b553-b9ec99ccb4a5&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/545943f1c9f133a519bbac92/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "RiffTrax", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/58d947b9e420d8656ee101ab/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a276-eca6-11ee-b901-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0f5fc360-263b-4624-988d-03976744a8da&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/58d947b9e420d8656ee101ab/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Always Funny Videos", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e82b55ad0213e00079c509f/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a302-eca6-11ee-baa4-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=5ff115b9-950e-4286-8b8e-c2abe95a1feb&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5e82b55ad0213e00079c509f/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "FailArmy", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/554158e864526b29254ff105/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a3d4-eca6-11ee-8bd4-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=a0696e8e-bf9a-4568-8ef1-398077a76c9e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/554158e864526b29254ff105/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Classic TV Comedy", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f15e32b297f96000768f928/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a474-eca6-11ee-ac1c-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=1e268f75-31f1-4fea-81b6-42c6472019e7&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f15e32b297f96000768f928/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Classic TV: Families", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/61325d18f5166c00081b84e0/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a500-eca6-11ee-9679-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=b9f75d7c-5264-4910-9b92-45bea152d16d&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/61325d18f5166c00081b84e0/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Black Classics", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60f85644a9493e0007a1f035/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a58c-eca6-11ee-a2a5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=17b1cd7f-6f34-418f-a7e4-b1b582e1974b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/60f85644a9493e0007a1f035/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "I Love Lucy", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/634f3011f4fff20007431641/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a618-eca6-11ee-c043-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=4ec04dc6-17a1-4849-96a1-d4773222b12b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/634f3011f4fff20007431641/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Andy Griffith Show", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60f75178e7f8aa0007e9c259/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a6f4-eca6-11ee-a8aa-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=a52530aa-3241-4f0d-9dfc-b4b7a3e7321b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/60f75178e7f8aa0007e9c259/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Addams Family", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d81607ab737153ea3c1c80e/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a78a-eca6-11ee-96af-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=d6a377ba-8d9d-4a6d-91ab-c8c54f4d345f&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5d81607ab737153ea3c1c80e/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Beverly Hillbillies", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f7796e470510900070d4e3d/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a820-eca6-11ee-85b2-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=aac9cc24-0001-4cd5-aa89-15bfaf462bf2&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f7796e470510900070d4e3d/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Happy Days", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f7794162a4559000781fc12/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a8ac-eca6-11ee-a917-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=5224311c-6202-4be7-a332-0a7dc64c2dfc&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f7794162a4559000781fc12/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Three's Company", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ef3977e5d773400077de284/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a942-eca6-11ee-b3f1-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=f9b7df33-3d40-4028-91c2-e0e43c101ff9&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ef3977e5d773400077de284/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Family Ties", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f77939a630f530007dde654/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53a9ce-eca6-11ee-b5ab-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=2f725599-f078-4be7-bb6e-ea8a43dee1dd&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f77939a630f530007dde654/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Love Boat", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f7794a788d29000079d2f07/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53aa5a-eca6-11ee-858e-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=178acf8d-a5f3-4e54-9364-6308b4d2cb54&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f7794a788d29000079d2f07/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Dynasty", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/64d1606b4c5ed80008e3b8b9/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53aae6-eca6-11ee-8f60-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=cbc62452-9e3d-421b-bfab-86ea1735e74e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/64d1606b4c5ed80008e3b8b9/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Little House on the Prairie", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/654933ac986ad20008a1f406/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ab72-eca6-11ee-9c4e-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=7956e558-f6e7-4ca2-b9cb-bd3dadfce2e6&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/654933ac986ad20008a1f406/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Classic TV Drama", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f15e3cccf49290007053c67/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ac3a-eca6-11ee-a555-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=25206847-c21a-4efa-89ee-d0b633ea88fe&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f15e3cccf49290007053c67/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Classic TV Crime Drama", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/61325c4f982acd000723287e/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53acd0-eca6-11ee-adce-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=657be6f3-2006-4da7-969e-a2d37b7a0a64&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/61325c4f982acd000723287e/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Universal Crime", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6549341853fc9700083901ac/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ad5c-eca6-11ee-ab6f-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0a4c93a0-2837-4fa2-be42-000e6ac1fda2&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6549341853fc9700083901ac/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Matlock", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60f754f98185580007eb0754/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ade8-eca6-11ee-bcab-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9886f583-6a90-49aa-8c22-f57bba76afa6&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/60f754f98185580007eb0754/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Murder, She Wrote", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6549337183595c000815ad05/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ae7e-eca6-11ee-8cbf-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=07fc37b8-a6b4-4653-8290-4d44ac40c052&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6549337183595c000815ad05/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Perry Mason", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6197086891ddd4000739941a/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53af0a-eca6-11ee-98c3-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=439620be-4e53-4222-af4a-0fee1e0df136&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6197086891ddd4000739941a/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Mission Impossible", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f77977bd924d80007eee60c/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53af96-eca6-11ee-9831-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c25ca3f8-0206-4faa-ac35-c79775b3284a&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f77977bd924d80007eee60c/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Western TV", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e8df4bc16e34700077e77d3/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b02c-eca6-11ee-9126-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=fa1d2172-f73b-43e7-b6b6-78b58132b554&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5e8df4bc16e34700077e77d3/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Gunsmoke", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60f75771dfc72a00071fd0e0/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b108-eca6-11ee-bb24-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=323ea21f-7f2e-4bca-a4e7-dc7abb953604&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/60f75771dfc72a00071fd0e0/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Rawhide", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/634f307c7a068e00072c9982/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b19e-eca6-11ee-a957-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=444d8161-ebe4-478e-82a0-849c8030d2ae&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/634f307c7a068e00072c9982/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Lone Ranger", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/65a6dafb7bdc8d0008473c85/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b414-eca6-11ee-87dd-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9156fe9a-8e36-46a2-9db6-0518baf6906e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/65a6dafb7bdc8d0008473c85/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Wanted: Dead or Alive", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6089788de5c8410007808e26/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b4d2-eca6-11ee-9f78-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c8096e6f-66c7-437e-9fc6-b14fcdc93d97&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6089788de5c8410007808e26/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Rifleman", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e825550e758c700077b0aef/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b59a-eca6-11ee-bb7a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=94df6915-4e9d-4348-aedf-f60529584df4&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5e825550e758c700077b0aef/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Classic TV Variety", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/64d1867c6b1fdb0008c6c95b/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b63a-eca6-11ee-a2e9-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=ad0c7b23-cd01-4b8e-bc99-7f262cb62224&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/64d1867c6b1fdb0008c6c95b/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Bob Ross Channel", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f36d726234ce10007784f2a/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b6f8-eca6-11ee-8815-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=44374d0d-456d-4876-b4e9-0a102d7d40d7&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f36d726234ce10007784f2a/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Shout! TV", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/55a6a3275616b6240c26f393/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b784-eca6-11ee-9974-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=2cffd2b0-2d07-45ce-8ab2-92950e9141b3&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/55a6a3275616b6240c26f393/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "CSI 2", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f778729ac60bd0007023d07/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b84c-eca6-11ee-bed5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=4c19ab17-9228-4228-bf34-f488efaecf4f&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f778729ac60bd0007023d07/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Star Trek", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5efbd39f8c4ce900075d7698/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b932-eca6-11ee-bdcf-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=bb6ca3cc-e703-499a-b406-fb7c6c9d7876&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5efbd39f8c4ce900075d7698/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "More Star Trek", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/634dacf51d90320007fcd5fa/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53b9c8-eca6-11ee-a676-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=8b0c7502-f160-49ed-b079-5b3aa6c0be53&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/634dacf51d90320007fcd5fa/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Stargate", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/620bfa7df72827000703ddb1/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ba54-eca6-11ee-8395-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=a3ca95e9-e511-424f-be11-a8fb2366ef3b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/620bfa7df72827000703ddb1/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Doctor Who Classic", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ce4475cd43850831ca91ce7/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bae0-eca6-11ee-9683-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=53ea65cb-0e06-4222-bbc9-957c25f4e3bf&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ce4475cd43850831ca91ce7/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Sci-Fi", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b4fc274694c027be6ed3eea/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bb76-eca6-11ee-a507-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=730d8daf-36ef-4d32-95cf-bc887c655c01&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b4fc274694c027be6ed3eea/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "The Asylum", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/591105034c1806b47438342c/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bc0c-eca6-11ee-bf49-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=bfcd7578-5e55-4ad9-9cbc-94cbbb5e4546&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/591105034c1806b47438342c/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Godzilla", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6452c8cee1979c0008608e27/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bc98-eca6-11ee-882c-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=face6360-1d37-446f-9c2f-aeafe1c6edad&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6452c8cee1979c0008608e27/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "TokuSHOUTsu", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5c3f8f12a93c2d61b9990a4e/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bd24-eca6-11ee-845a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c230c311-d99c-4f0a-b429-bf883811a0a8&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5c3f8f12a93c2d61b9990a4e/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "CSI", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5efbd29e4aa26700076c0d06/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53be82-eca6-11ee-bf2d-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=30c36e9c-277a-4e5d-a60f-4697e28c9b2d&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5efbd29e4aa26700076c0d06/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "CSI: Miami", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/62f54c11b3af68000702c304/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bf36-eca6-11ee-b8fa-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9da788d7-2bd8-4def-b04b-b00b6a5239bf&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/62f54c11b3af68000702c304/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "CSI: NY", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/62f54c6439183b000769fb8f/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53bfc2-eca6-11ee-8280-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0beee90d-f7cd-42f0-a071-2781448c372d&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/62f54c6439183b000769fb8f/colorLogoPNG-1662428890751.png", group: "Pluto TV" },
-            { name: "Criminal Minds", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/65653817c917a5000844bc30/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53c04e-eca6-11ee-bcb5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=00b3a9e3-55b7-470f-8960-6f8bed61adca&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/65653817c917a5000844bc30/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Blue Bloods", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/61b3b8c645b45d0007a9bb8d/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53c0e4-eca6-11ee-a341-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=632f3fbe-1f25-4c8e-9773-869601bd1b6b&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/61b3b8c645b45d0007a9bb8d/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Crime Drama", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f31fd1b4c510e00071c3103/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53c17a-eca6-11ee-a130-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=90f84a21-7523-4f5e-ae6a-5cc166837ae2&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f31fd1b4c510e00071c3103/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV True Crime", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5812be1c249444e05d09cc50/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53cc88-eca6-11ee-9c46-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=5ea4bb07-4ec2-4e01-8876-5e9ce306e43a&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5812be1c249444e05d09cc50/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Dateline 24/7", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/637413d8531e0c0007442d6d/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ce2c-eca6-11ee-b6aa-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=43e9e23f-467a-4f1d-abe1-2fcd8cba8e06&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/637413d8531e0c0007442d6d/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "48 Hours", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6176f39e709f160007ec61c3/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53ceb8-eca6-11ee-934f-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=be98baf7-e563-4df4-a602-0b92f4cbccba&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/6176f39e709f160007ec61c3/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Unsolved Mysteries", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5b4e96a0423e067bd6df6901/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53cfc6-eca6-11ee-8c03-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=e06633ed-46e1-42f3-bd9e-87beafc56961&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5b4e96a0423e067bd6df6901/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Forensic Files", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5bb1af6a268cae539bcedb0a/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53d17e-eca6-11ee-ac2a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=be5e1f74-04a6-46a0-afd3-e7daca42bb61&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5bb1af6a268cae539bcedb0a/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "COPS", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e1f7e089f23700009d66303/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53d3fe-eca6-11ee-92d6-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=7e77f544-17d4-409b-8736-a62852bf0351&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5e1f7e089f23700009d66303/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Dog the Bounty Hunter", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5bee1a7359ee03633e780238/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53d57a-eca6-11ee-99c5-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=0c2c99e6-2bb8-4921-9b5d-b1956ce93c4c&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5bee1a7359ee03633e780238/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Reality", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d8bf0b06d2d855ee15115e3/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53d7fa-eca6-11ee-818d-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=caf7d831-1dbd-454d-ad9a-374a72a6811a&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5d8bf0b06d2d855ee15115e3/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Paranormal", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5adf96e3e738977e2c31cb04/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d53e0b0-eca6-11ee-96ec-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=5edb07ca-3104-4533-8edf-503f37e2a968&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5adf96e3e738977e2c31cb04/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV News", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5268abcd0ce20a8472000114/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d540e50-eca6-11ee-a10a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9fb9eb15-be1c-4d56-a0b5-d7830e1caf5a&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5268abcd0ce20a8472000114/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "NFL Channel", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ced7d5df64be98e07ed47b6/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d540b08-eca6-11ee-bbd7-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c4a62041-badf-4f88-9b3d-ce15a5e3a15e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ced7d5df64be98e07ed47b6/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Sports", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/56340779a738201b4ccfeac9/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d541e86-eca6-11ee-ab93-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c0ea5724-1876-45c3-82d5-c56dab673d93&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/56340779a738201b4ccfeac9/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV History", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5a4d35dfa5c02e717a234f86/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d54273c-eca6-11ee-a457-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=23443229-4112-4b8c-9257-3bb9965f3ddd&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5a4d35dfa5c02e717a234f86/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Science", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/563a970aa1a1f7fe7c9daad7/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5427d2-eca6-11ee-a956-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=3a68f584-3aab-4fb0-bf29-3f97bec44d3f&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/563a970aa1a1f7fe7c9daad7/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Animals", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/56b27f85ff3037045055037e/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d544014-eca6-11ee-aaf4-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=ba38fd45-bdd7-45f1-bdde-a5bc6cd1cb5c&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/56b27f85ff3037045055037e/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Nick Jr. Pluto TV", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ca6748a37b88b269472dad9/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d54428a-eca6-11ee-b79a-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=9b3bd3d8-a3a0-43ce-9212-22ded55b943e&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ca6748a37b88b269472dad9/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Nickelodeon Pluto TV", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ca673e0d0bd6c2689c94ce3/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5446b8-eca6-11ee-98cb-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=6bd24252-6a4d-4fcd-a9e4-9bc518c688f2&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5ca673e0d0bd6c2689c94ce3/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Anime All Day", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5812b7d3249444e05d09cc49/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d545112-eca6-11ee-a95d-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=22020bd3-ba11-41cc-b3dc-4a369d475e42&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5812b7d3249444e05d09cc49/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "One Piece", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5f7790b3ed0c88000720b241/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5453c4-eca6-11ee-a3b8-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=908050c5-babb-415c-872c-491d59d1d366&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5f7790b3ed0c88000720b241/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Naruto", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5da0c85bd2c9c10009370984/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d5454a0-eca6-11ee-95ec-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=c8913645-7203-40d3-949f-6430c40ab953&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5da0c85bd2c9c10009370984/colorLogoPNG.png", group: "Pluto TV" },
-            { name: "Pluto TV Food", url: "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5877ac8cb791f4eb4a140d81/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=3d543934-eca6-11ee-b803-aca72e323d0f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=948c2fcb-3e2a-41a6-b2a0-c01273ab8c9c&userId=&serverSideAds=true", logo: "https://images.pluto.tv/channels/5877ac8cb791f4eb4a140d81/colorLogoPNG.png", group: "Pluto TV" },
-        ];
-
-        // --- DADDYLIVE CHANNELS (New Embed API) ---
-        // URL format: https://daddylive.cv/embed/stream.php?id=CHANNEL_ID&player=1&source=tv
-        const dlChannels = [
-            // ── USA BROADCAST ──
-            { id: 51,  name: "ABC USA",           group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ABC-2021-LOGO.svg/220px-ABC-2021-LOGO.svg.png" },
-            { id: 52,  name: "CBS USA",            group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/CBS_logo.svg/220px-CBS_logo.svg.png" },
-            { id: 53,  name: "NBC USA",            group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/NBC_logo.svg/220px-NBC_logo.svg.png" },
-            { id: 54,  name: "FOX USA",            group: "USA Broadcast", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/FOX_logo.svg/220px-FOX_logo.svg.png" },
-            { id: 55,  name: "PBS USA",            group: "USA Broadcast" },
-            { id: 56,  name: "The CW",             group: "USA Broadcast" },
-
-            // ── USA SPORTS ──
-            { id: 44,  name: "ESPN",               group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/220px-ESPN_wordmark.svg.png" },
-            { id: 45,  name: "ESPN2",              group: "USA Sports" },
-            { id: 46,  name: "ESPN News",          group: "USA Sports" },
-            { id: 47,  name: "ESPNu",              group: "USA Sports" },
-            { id: 39,  name: "Fox Sports 1",       group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Fox_Sports_1_logo.svg/220px-Fox_Sports_1_logo.svg.png" },
-            { id: 40,  name: "Fox Sports 2",       group: "USA Sports" },
-            { id: 57,  name: "CBS Sports Network", group: "USA Sports" },
-            { id: 58,  name: "NFL Network",        group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/National_Football_League_logo.svg/220px-National_Football_League_logo.svg.png" },
-            { id: 59,  name: "NFL RedZone",        group: "USA Sports" },
-            { id: 60,  name: "NBA TV",             group: "USA Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/National_Basketball_Association_logo.svg/220px-National_Basketball_Association_logo.svg.png" },
-            { id: 61,  name: "NHL Network",        group: "USA Sports" },
-            { id: 62,  name: "MLB Network",        group: "USA Sports" },
-            { id: 63,  name: "Golf Channel",       group: "USA Sports" },
-            { id: 64,  name: "Tennis Channel",     group: "USA Sports" },
-            { id: 65,  name: "FS1",                group: "USA Sports" },
-            { id: 66,  name: "FS2",                group: "USA Sports" },
-            { id: 67,  name: "Big Ten Network",    group: "USA Sports" },
-            { id: 68,  name: "SEC Network",        group: "USA Sports" },
-            { id: 69,  name: "ACC Network",        group: "USA Sports" },
-            { id: 70,  name: "Pac-12 Network",     group: "USA Sports" },
-            { id: 71,  name: "TUDN",               group: "USA Sports" },
-            { id: 72,  name: "beIN Sports USA",    group: "USA Sports" },
-            { id: 73,  name: "Fight Network",      group: "USA Sports" },
-            { id: 74,  name: "Willow Cricket",     group: "USA Sports" },
-            { id: 75,  name: "CBSSN",              group: "USA Sports" },
-            { id: 76,  name: "Olympic Channel",    group: "USA Sports" },
-
-            // ── USA NEWS ──
-            { id: 345, name: "CNN",                group: "USA News", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/220px-CNN.svg.png" },
-            { id: 347, name: "Fox News",           group: "USA News", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/220px-Fox_News_Channel_logo.svg.png" },
-            { id: 327, name: "MSNBC",              group: "USA News" },
-            { id: 309, name: "CNBC",               group: "USA News" },
-            { id: 77,  name: "HLN",                group: "USA News" },
-            { id: 78,  name: "NewsNation",         group: "USA News" },
-            { id: 79,  name: "OAN",                group: "USA News" },
-            { id: 80,  name: "Newsmax",            group: "USA News" },
-            { id: 81,  name: "Bloomberg TV",       group: "USA News" },
-            { id: 82,  name: "C-SPAN",             group: "USA News" },
-            { id: 83,  name: "C-SPAN 2",           group: "USA News" },
-            { id: 84,  name: "C-SPAN 3",           group: "USA News" },
-
-            // ── USA ENTERTAINMENT ──
-            { id: 85,  name: "TNT",                group: "USA Entertainment" },
-            { id: 86,  name: "TBS",                group: "USA Entertainment" },
-            { id: 87,  name: "USA Network",        group: "USA Entertainment" },
-            { id: 88,  name: "FX",                 group: "USA Entertainment" },
-            { id: 89,  name: "FXX",                group: "USA Entertainment" },
-            { id: 90,  name: "AMC",                group: "USA Entertainment" },
-            { id: 91,  name: "HBO",                group: "USA Entertainment" },
-            { id: 92,  name: "Showtime",           group: "USA Entertainment" },
-            { id: 93,  name: "Starz",              group: "USA Entertainment" },
-            { id: 94,  name: "Cinemax",            group: "USA Entertainment" },
-            { id: 95,  name: "Paramount Network",  group: "USA Entertainment" },
-            { id: 96,  name: "Bravo",              group: "USA Entertainment" },
-            { id: 97,  name: "E! Entertainment",   group: "USA Entertainment" },
-            { id: 98,  name: "Lifetime",           group: "USA Entertainment" },
-            { id: 99,  name: "Oxygen",             group: "USA Entertainment" },
-            { id: 100, name: "SYFY",               group: "USA Entertainment" },
-            { id: 101, name: "Comedy Central",     group: "USA Entertainment" },
-            { id: 102, name: "Adult Swim",         group: "USA Entertainment" },
-            { id: 103, name: "Cartoon Network",    group: "USA Entertainment" },
-            { id: 104, name: "Nickelodeon",        group: "USA Entertainment" },
-            { id: 105, name: "Nick Jr.",           group: "USA Entertainment" },
-            { id: 106, name: "Disney Channel",     group: "USA Entertainment" },
-            { id: 107, name: "Disney XD",          group: "USA Entertainment" },
-            { id: 108, name: "Disney Junior",      group: "USA Entertainment" },
-            { id: 109, name: "Freeform",           group: "USA Entertainment" },
-            { id: 110, name: "IFC",                group: "USA Entertainment" },
-            { id: 111, name: "Sundance TV",        group: "USA Entertainment" },
-            { id: 112, name: "VH1",                group: "USA Entertainment" },
-            { id: 113, name: "MTV",                group: "USA Entertainment" },
-            { id: 114, name: "BET",                group: "USA Entertainment" },
-            { id: 115, name: "OWN",                group: "USA Entertainment" },
-            { id: 116, name: "TLC",                group: "USA Entertainment" },
-            { id: 117, name: "Hallmark Channel",   group: "USA Entertainment" },
-            { id: 118, name: "Hallmark Movies",    group: "USA Entertainment" },
-            { id: 119, name: "TV Land",            group: "USA Entertainment" },
-            { id: 120, name: "TV One",             group: "USA Entertainment" },
-            { id: 121, name: "Bounce TV",          group: "USA Entertainment" },
-
-            // ── USA LIFESTYLE / DOCUMENTARY ──
-            { id: 122, name: "History",            group: "USA Lifestyle" },
-            { id: 123, name: "History 2",          group: "USA Lifestyle" },
-            { id: 124, name: "Nat Geo",            group: "USA Lifestyle" },
-            { id: 125, name: "Nat Geo Wild",       group: "USA Lifestyle" },
-            { id: 126, name: "Discovery",          group: "USA Lifestyle" },
-            { id: 127, name: "Animal Planet",      group: "USA Lifestyle" },
-            { id: 128, name: "Science Channel",    group: "USA Lifestyle" },
-            { id: 129, name: "Discovery Life",     group: "USA Lifestyle" },
-            { id: 130, name: "Destination America",group: "USA Lifestyle" },
-            { id: 131, name: "Travel Channel",     group: "USA Lifestyle" },
-            { id: 132, name: "HGTV",               group: "USA Lifestyle" },
-            { id: 133, name: "Food Network",       group: "USA Lifestyle" },
-            { id: 134, name: "Cooking Channel",    group: "USA Lifestyle" },
-            { id: 135, name: "DIY Network",        group: "USA Lifestyle" },
-            { id: 136, name: "Investigation Discovery", group: "USA Lifestyle" },
-            { id: 137, name: "Crime & Investigation", group: "USA Lifestyle" },
-            { id: 138, name: "True Crime Network", group: "USA Lifestyle" },
-            { id: 139, name: "A&E",                group: "USA Lifestyle" },
-            { id: 140, name: "Lifetime Movies",    group: "USA Lifestyle" },
-
-            // ── UK CHANNELS ──
-            { id: 150, name: "BBC One",            group: "UK", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/BBC_One_logo_%282021%29.svg/220px-BBC_One_logo_%282021%29.svg.png" },
-            { id: 151, name: "BBC Two",            group: "UK" },
-            { id: 152, name: "BBC Three",          group: "UK" },
-            { id: 153, name: "BBC Four",           group: "UK" },
-            { id: 154, name: "BBC News",           group: "UK" },
-            { id: 155, name: "ITV",                group: "UK" },
-            { id: 156, name: "ITV2",               group: "UK" },
-            { id: 157, name: "ITV3",               group: "UK" },
-            { id: 158, name: "ITV4",               group: "UK" },
-            { id: 159, name: "Channel 4",          group: "UK" },
-            { id: 160, name: "Channel 5",          group: "UK" },
-            { id: 161, name: "Sky One",            group: "UK" },
-            { id: 162, name: "Sky Atlantic",       group: "UK" },
-            { id: 163, name: "Sky News",           group: "UK" },
-            { id: 164, name: "Sky Sports Main",    group: "UK Sports" },
-            { id: 165, name: "Sky Sports Football",group: "UK Sports" },
-            { id: 166, name: "Sky Sports Cricket", group: "UK Sports" },
-            { id: 167, name: "Sky Sports F1",      group: "UK Sports" },
-            { id: 168, name: "Sky Sports Golf",    group: "UK Sports" },
-            { id: 169, name: "Sky Sports Action",  group: "UK Sports" },
-            { id: 170, name: "Sky Sports Arena",   group: "UK Sports" },
-            { id: 171, name: "TNT Sports 1",       group: "UK Sports" },
-            { id: 172, name: "TNT Sports 2",       group: "UK Sports" },
-            { id: 173, name: "TNT Sports 3",       group: "UK Sports" },
-            { id: 174, name: "TNT Sports 4",       group: "UK Sports" },
-            { id: 175, name: "Eurosport 1 UK",     group: "UK Sports" },
-            { id: 176, name: "Eurosport 2 UK",     group: "UK Sports" },
-            { id: 177, name: "Dave",               group: "UK" },
-            { id: 178, name: "E4",                 group: "UK" },
-            { id: 179, name: "Gold",               group: "UK" },
-            { id: 180, name: "Film4",              group: "UK" },
-
-            // ── SPORTS: beIN / GULF ──
-            { id: 200, name: "beIN Sports 1 HD",   group: "beIN Sports" },
-            { id: 201, name: "beIN Sports 2 HD",   group: "beIN Sports" },
-            { id: 202, name: "beIN Sports 3 HD",   group: "beIN Sports" },
-            { id: 203, name: "beIN Sports 4 HD",   group: "beIN Sports" },
-            { id: 204, name: "beIN Sports 5 HD",   group: "beIN Sports" },
-            { id: 205, name: "beIN Sports 6 HD",   group: "beIN Sports" },
-            { id: 206, name: "beIN Sports 7 HD",   group: "beIN Sports" },
-            { id: 207, name: "beIN Sports 8 HD",   group: "beIN Sports" },
-            { id: 208, name: "beIN Sports 9 HD",   group: "beIN Sports" },
-            { id: 209, name: "beIN Sports 10 HD",  group: "beIN Sports" },
-            { id: 210, name: "beIN Sports MAX 1",  group: "beIN Sports" },
-            { id: 211, name: "beIN Sports MAX 2",  group: "beIN Sports" },
-            { id: 212, name: "beIN Sports MAX 3",  group: "beIN Sports" },
-            { id: 213, name: "beIN XTRA 1",        group: "beIN Sports" },
-            { id: 214, name: "beIN XTRA 2",        group: "beIN Sports" },
-
-            // ── SPORTS: SKY SPORTS (INT'L) ──
-            { id: 220, name: "Sky Sports PL",      group: "Sky Sports" },
-            { id: 221, name: "Sky Sports Mix",     group: "Sky Sports" },
-            { id: 222, name: "Sky Sports Racing",  group: "Sky Sports" },
-            { id: 223, name: "Sky Sports Ashes",   group: "Sky Sports" },
-
-            // ── SPORTS: DAZN ──
-            { id: 230, name: "DAZN 1",             group: "DAZN" },
-            { id: 231, name: "DAZN 2",             group: "DAZN" },
-            { id: 232, name: "DAZN 3",             group: "DAZN" },
-            { id: 233, name: "DAZN 4",             group: "DAZN" },
-
-            // ── SPORTS: CANAL+ ──
-            { id: 240, name: "Canal+ Sport FR",    group: "Canal+" },
-            { id: 241, name: "Canal+ Sport 2 FR",  group: "Canal+" },
-            { id: 242, name: "Canal+ Sport 3 FR",  group: "Canal+" },
-            { id: 243, name: "Canal+ MotoGP",      group: "Canal+" },
-            { id: 244, name: "Canal+ Formula 1",   group: "Canal+" },
-            { id: 245, name: "Canal+ Football",    group: "Canal+" },
-            { id: 246, name: "Canal+ Sport PL",    group: "Canal+" },
-            { id: 247, name: "Canal+ Sport 2 PL",  group: "Canal+" },
-
-            // ── SPORTS: POLSAT ──
-            { id: 250, name: "Polsat Sport 1",     group: "Polsat" },
-            { id: 251, name: "Polsat Sport 2",     group: "Polsat" },
-            { id: 252, name: "Polsat Sport 3",     group: "Polsat" },
-
-            // ── SPORTS: SPORT TV (PT) ──
-            { id: 260, name: "Sport TV1",          group: "Sport TV" },
-            { id: 261, name: "Sport TV2",          group: "Sport TV" },
-            { id: 262, name: "Sport TV3",          group: "Sport TV" },
-            { id: 263, name: "Sport TV4",          group: "Sport TV" },
-            { id: 264, name: "Sport TV5",          group: "Sport TV" },
-            { id: 265, name: "Sport TV6",          group: "Sport TV" },
-
-            // ── SPORTS: SUPERSPORT (AFRICA) ──
-            { id: 270, name: "SuperSport Grandstand", group: "SuperSport" },
-            { id: 271, name: "SuperSport PSL",     group: "SuperSport" },
-            { id: 272, name: "SuperSport Premier League", group: "SuperSport" },
-            { id: 273, name: "SuperSport LaLiga",  group: "SuperSport" },
-            { id: 274, name: "SuperSport Variety 1", group: "SuperSport" },
-            { id: 275, name: "SuperSport Variety 2", group: "SuperSport" },
-            { id: 276, name: "SuperSport Variety 3", group: "SuperSport" },
-            { id: 277, name: "SuperSport Variety 4", group: "SuperSport" },
-            { id: 278, name: "SuperSport Rugby",   group: "SuperSport" },
-            { id: 279, name: "SuperSport Golf",    group: "SuperSport" },
-            { id: 280, name: "SuperSport Tennis",  group: "SuperSport" },
-            { id: 281, name: "SuperSport Cricket", group: "SuperSport" },
-            { id: 282, name: "SuperSport Motorsport", group: "SuperSport" },
-            { id: 283, name: "SuperSport MaXimo 1", group: "SuperSport" },
-
-            // ── SPORTS: SPORTSNET (CA) ──
-            { id: 290, name: "Sportsnet East",     group: "Sportsnet" },
-            { id: 291, name: "Sportsnet Ontario",  group: "Sportsnet" },
-            { id: 292, name: "Sportsnet West",     group: "Sportsnet" },
-            { id: 293, name: "Sportsnet Pacific",  group: "Sportsnet" },
-            { id: 294, name: "Sportsnet One",      group: "Sportsnet" },
-            { id: 295, name: "Sportsnet 360",      group: "Sportsnet" },
-            { id: 296, name: "TSN 1",              group: "Sportsnet" },
-            { id: 297, name: "TSN 2",              group: "Sportsnet" },
-            { id: 298, name: "TSN 3",              group: "Sportsnet" },
-            { id: 299, name: "TSN 4",              group: "Sportsnet" },
-            { id: 300, name: "TSN 5",              group: "Sportsnet" },
-
-            // ── SPORTS: EUROSPORT ──
-            { id: 310, name: "Eurosport 1",        group: "Eurosport" },
-            { id: 311, name: "Eurosport 2",        group: "Eurosport" },
-
-            // ── SPORTS: ESPN (INT'L) ──
-            { id: 320, name: "ESPN Brasil",        group: "ESPN International" },
-            { id: 321, name: "ESPN2 Brasil",       group: "ESPN International" },
-            { id: 322, name: "ESPN3 Brasil",       group: "ESPN International" },
-            { id: 323, name: "ESPN Argentina",     group: "ESPN International" },
-            { id: 324, name: "ESPN2 Argentina",    group: "ESPN International" },
-
-            // ── SPORTS: FOX SPORTS (AU) ──
-            { id: 330, name: "Fox Sports 501 AU",  group: "Fox Sports AU" },
-            { id: 331, name: "Fox Sports 502 AU",  group: "Fox Sports AU" },
-            { id: 332, name: "Fox Sports 503 AU",  group: "Fox Sports AU" },
-            { id: 333, name: "Fox Sports 504 AU",  group: "Fox Sports AU" },
-            { id: 334, name: "Fox Sports 505 AU",  group: "Fox Sports AU" },
-
-            // ── SPORTS: MISC ──
-            { id: 340, name: "Arena Sport 1",      group: "Sports: Misc" },
-            { id: 341, name: "Arena Sport 2",      group: "Sports: Misc" },
-            { id: 342, name: "Arena Sport 3",      group: "Sports: Misc" },
-            { id: 343, name: "Sport Klub 1",       group: "Sports: Misc" },
-            { id: 344, name: "Sport Klub 2",       group: "Sports: Misc" },
-            { id: 345, name: "Sport Klub 3",       group: "Sports: Misc" },
-            { id: 346, name: "LFC TV",             group: "Sports: Misc" },
-            { id: 347, name: "MUTV",               group: "Sports: Misc" },
-            { id: 348, name: "Real Madrid TV",     group: "Sports: Misc" },
-            { id: 349, name: "Barca TV",           group: "Sports: Misc" },
-            { id: 350, name: "WWE Network",        group: "Sports: Misc" },
-            { id: 351, name: "TNA Wrestling",      group: "Sports: Misc" },
-            { id: 352, name: "Bellator MMA",       group: "Sports: Misc" },
-            { id: 353, name: "PFL MMA",            group: "Sports: Misc" },
-            { id: 354, name: "PDC Darts",          group: "Sports: Misc" },
-            { id: 355, name: "Racing TV",          group: "Sports: Misc" },
-            { id: 356, name: "BT Sport / TNT",     group: "Sports: Misc" },
-            { id: 357, name: "Ziggo Sport",        group: "Sports: Misc" },
-            { id: 358, name: "Eleven Sports 1",    group: "Sports: Misc" },
-            { id: 359, name: "Eleven Sports 2",    group: "Sports: Misc" },
-
-            // ── SPORTS: CRICKET ──
-            { id: 360, name: "Sky Sports Cricket", group: "Cricket" },
-            { id: 361, name: "Star Sports 1",      group: "Cricket" },
-            { id: 362, name: "Star Sports Hindi",  group: "Cricket" },
-            { id: 363, name: "Willow Cricket",     group: "Cricket" },
-            { id: 364, name: "Willow Extra",       group: "Cricket" },
-            { id: 365, name: "SuperSport Cricket", group: "Cricket" },
-            { id: 366, name: "Fox Cricket AU",     group: "Cricket" },
-            { id: 367, name: "Astro Cricket MY",   group: "Cricket" },
-            { id: 368, name: "T Sports BD",        group: "Cricket" },
-            { id: 369, name: "A Sports PK",        group: "Cricket" },
-            { id: 370, name: "Ten Sports PK",      group: "Cricket" },
-
-            // ── INTERNATIONAL GENERAL ──
-            { id: 380, name: "RTL Germany",        group: "Germany" },
-            { id: 381, name: "SAT.1",              group: "Germany" },
-            { id: 382, name: "ProSieben",          group: "Germany" },
-            { id: 383, name: "Kabel Eins",         group: "Germany" },
-            { id: 384, name: "ZDF",                group: "Germany" },
-            { id: 385, name: "ARD",                group: "Germany" },
-            { id: 386, name: "Sport1 DE",          group: "Germany" },
-
-            { id: 390, name: "TF1",                group: "France" },
-            { id: 391, name: "France 2",           group: "France" },
-            { id: 392, name: "France 3",           group: "France" },
-            { id: 393, name: "M6",                 group: "France" },
-            { id: 394, name: "RMC Sport 1",        group: "France" },
-            { id: 395, name: "RMC Sport 2",        group: "France" },
-            { id: 396, name: "L'Équipe TV",        group: "France" },
-
-            { id: 400, name: "La 1 Spain",         group: "Spain" },
-            { id: 401, name: "La 2 Spain",         group: "Spain" },
-            { id: 402, name: "Telecinco",          group: "Spain" },
-            { id: 403, name: "Cuatro",             group: "Spain" },
-            { id: 404, name: "La Sexta",           group: "Spain" },
-            { id: 405, name: "Movistar LaLiga",    group: "Spain" },
-            { id: 406, name: "Movistar Deportes",  group: "Spain" },
-            { id: 407, name: "DAZN LaLiga",        group: "Spain" },
-            { id: 408, name: "DAZN F1 ES",         group: "Spain" },
-
-            { id: 410, name: "Rai 1",              group: "Italy" },
-            { id: 411, name: "Rai 2",              group: "Italy" },
-            { id: 412, name: "Rai 3",              group: "Italy" },
-            { id: 413, name: "Rai Sport",          group: "Italy" },
-            { id: 414, name: "Sky Sport Uno",      group: "Italy" },
-            { id: 415, name: "Sky Sport Calcio",   group: "Italy" },
-            { id: 416, name: "Sky Sport F1 IT",    group: "Italy" },
-            { id: 417, name: "DAZN Italy",         group: "Italy" },
-            { id: 418, name: "Mediaset Italia 1",  group: "Italy" },
-
-            { id: 420, name: "RTP 1",              group: "Portugal" },
-            { id: 421, name: "RTP 2",              group: "Portugal" },
-            { id: 422, name: "TVI",                group: "Portugal" },
-            { id: 423, name: "SIC",                group: "Portugal" },
-            { id: 424, name: "Benfica TV",         group: "Portugal" },
-            { id: 425, name: "Porto Canal",        group: "Portugal" },
-            { id: 426, name: "Eleven Sports PT",   group: "Portugal" },
-
-            { id: 430, name: "RTE One",            group: "Ireland" },
-            { id: 431, name: "RTE Two",            group: "Ireland" },
-            { id: 432, name: "Virgin Media 1",     group: "Ireland" },
-
-            { id: 440, name: "CTV Canada",         group: "Canada" },
-            { id: 441, name: "CBC Canada",         group: "Canada" },
-            { id: 442, name: "Global TV",          group: "Canada" },
-
-            { id: 450, name: "Fox Sports AR",      group: "Latin America" },
-            { id: 451, name: "ESPN Argentina",     group: "Latin America" },
-            { id: 452, name: "TyC Sports AR",      group: "Latin America" },
-            { id: 453, name: "DirecTV Sports AR",  group: "Latin America" },
-            { id: 454, name: "TNT Sports AR",      group: "Latin America" },
-            { id: 455, name: "ESPN Brasil",        group: "Latin America" },
-            { id: 456, name: "SporTV BR",          group: "Latin America" },
-            { id: 457, name: "Globo SP",           group: "Latin America" },
-            { id: 458, name: "Band Sports BR",     group: "Latin America" },
-            { id: 459, name: "Combate BR",         group: "Latin America" },
-
-            { id: 460, name: "Astro SS1 MY",       group: "Asia" },
-            { id: 461, name: "Astro SS2 MY",       group: "Asia" },
-            { id: 462, name: "Astro SS3 MY",       group: "Asia" },
-            { id: 463, name: "One Sports PH",      group: "Asia" },
-
-            { id: 470, name: "Nova Sport 1 GR",    group: "Greece" },
-            { id: 471, name: "Nova Sport 2 GR",    group: "Greece" },
-            { id: 472, name: "Cosmote Sport 1",    group: "Greece" },
-            { id: 473, name: "Cosmote Sport 2",    group: "Greece" },
-            { id: 474, name: "Cosmote Sport 3",    group: "Greece" },
-
-            { id: 480, name: "Digi Sport 1 RO",    group: "Romania" },
-            { id: 481, name: "Digi Sport 2 RO",    group: "Romania" },
-            { id: 482, name: "Digi Sport 3 RO",    group: "Romania" },
-            { id: 483, name: "Prima Sport 1 RO",   group: "Romania" },
-            { id: 484, name: "Prima Sport 2 RO",   group: "Romania" },
-
-            { id: 490, name: "Match TV RU",        group: "Russia" },
-            { id: 491, name: "Match Football 1",   group: "Russia" },
-            { id: 492, name: "Match Football 2",   group: "Russia" },
-            { id: 493, name: "Match Football 3",   group: "Russia" },
-
-            { id: 500, name: "Abu Dhabi Sports 1", group: "Middle East" },
-            { id: 501, name: "Abu Dhabi Sports 2", group: "Middle East" },
-            { id: 502, name: "SSC Sport 1 SA",     group: "Middle East" },
-            { id: 503, name: "SSC Sport 2 SA",     group: "Middle East" },
-            { id: 504, name: "SSC Sport 3 SA",     group: "Middle East" },
-            { id: 505, name: "SSC Sport 4 SA",     group: "Middle East" },
-            { id: 506, name: "SSC Sport 5 SA",     group: "Middle East" },
-            { id: 507, name: "Alkass One QA",      group: "Middle East" },
-            { id: 508, name: "Alkass Two QA",      group: "Middle East" },
-            { id: 509, name: "Alkass Three QA",    group: "Middle East" },
-            { id: 510, name: "Alkass Four QA",     group: "Middle East" },
-            { id: 511, name: "Dubai Sports 1",     group: "Middle East" },
-            { id: 512, name: "Dubai Sports 2",     group: "Middle East" },
-            { id: 513, name: "Dubai Sports 3",     group: "Middle East" },
-            { id: 514, name: "On Time Sports EG",  group: "Middle East" },
-        ];
 
         // --- UI UTILS ---
-        function toggleForm(id) {
-            ['xtreamForm', 'stalkerForm'].forEach(fid => { if(fid !== id) document.getElementById(fid).style.display = 'none'; });
-            const form = document.getElementById(id);
-            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
-        }
-
-        function formatMac(input) {
-            let r = input.value.replace(/[^0-9a-fA-F]/g,"");
-            if(r.length > 2) {
-                let groups = [];
-                for(let i=0; i<r.length; i+=2) groups.push(r.substr(i,2));
-                input.value = groups.join(":").toUpperCase();
-            } else { input.value = r.toUpperCase(); }
-        }
-
         function logStatus(msg, type='info') {
             const log = document.getElementById('statusLog');
             let color = 'var(--text-dim)';
@@ -1084,106 +525,47 @@
             }
         }
 
-        // --- DATA LOADING LOGIC ---
-        async function connectXtream() {
-            const url = document.getElementById('xcUrl').value.trim();
-            const user = document.getElementById('xcUser').value.trim();
-            const pass = document.getElementById('xcPass').value.trim();
-            if(!url || !user || !pass) return alert("Please fill in all Xtream fields.");
-            const btn = document.querySelector('#xtreamForm .btn-action');
-            const originalText = btn.innerText;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
-            logStatus("Contacting Xtream Server...", 'info');
-            try {
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(`${url}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`);
-                const response = await fetch(proxyUrl);
-                if(!response.ok) throw new Error("Server connection failed");
-                const data = await response.json();
-                if(data.length === 0) throw new Error("No channels found or invalid credentials");
-                allChannels = data.map(channel => ({
-                    name: channel.name, group: "XTREAM LIVE", source: "XC", logo: channel.stream_icon,
-                    url: `${url}/live/${user}/${pass}/${channel.stream_id}.m3u8`
-                }));
-                logStatus(`Xtream Connected! Loaded ${allChannels.length} channels`, 'success');
-                renderList(allChannels); navigateTo('list');
-            } catch (e) {
-                logStatus(`Xtream Error: ${e.message}`, 'error');
-                alert("Connection failed. Check URL/Credentials or CORS restriction.");
-            } finally { btn.innerHTML = originalText; }
+        // --- DAMITV DATA LAYER (public API) ---
+        const DAMI_STREAMS = 'https://dami-tv.pro/papi/api/streams';
+        const DAMI_TVLIST  = 'https://dami-tv.pro/data/tv-channels.json';
+        let streamCache = { data: null, ts: 0 };
+        let tvCache = { data: null, ts: 0 };
+
+        async function damiJSON(url) {
+            const raw = await fetchSmart(url);
+            return JSON.parse(raw.replace(/^﻿/, ''));
         }
 
-        async function connectStalker() {
-            const portal = document.getElementById('stPortal').value.trim();
-            const mac = document.getElementById('stMac').value.trim();
-            const sn = document.getElementById('stSn').value.trim();
-            const devId = document.getElementById('stDevId').value.trim();
-            if (!portal || !mac) return alert("Portal Address and MAC are required.");
-            const btn = document.querySelector('#stalkerForm .btn-action');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> CONNECTING...';
-            try {
-                logStatus("Authenticating with Stalker...", 'info');
-                const response = await fetch(`proxy.php?action=get_channels&portal=${encodeURIComponent(portal)}&mac=${encodeURIComponent(mac)}&sn=${encodeURIComponent(sn)}&device_id=${encodeURIComponent(devId)}`);
-                if(!response.ok) throw new Error("Proxy connection failed.");
-                const data = await response.json();
-                const channels = data.js ? data.js.data : (data.items ? data.items : []);
-                if (!channels || channels.length === 0) throw new Error("Authentication failed or no channels found.");
-                allChannels = channels.map(ch => ({
-                    name: ch.name, group: "STALKER TV", source: "MAG", logo: ch.logo,
-                    cmd: ch.cmd, portal_url: portal, mac_address: mac, isStalker: true
-                }));
-                logStatus(`Stalker Connected! Loaded ${allChannels.length} channels`, 'success');
-                toggleForm('stalkerForm'); renderList(allChannels); navigateTo('list');
-            } catch (e) {
-                logStatus(`Stalker Error: ${e.message}`, 'error'); alert("Connection Failed. Check credentials or proxy.");
-            } finally { btn.innerHTML = '<i class="fa-solid fa-plug"></i> CONNECT PORTAL'; }
+        async function getStreams() {
+            if (streamCache.data && Date.now() - streamCache.ts < 60000) return streamCache.data;
+            const data = await damiJSON(DAMI_STREAMS);
+            streamCache = { data, ts: Date.now() };
+            return data;
         }
 
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-            logStatus(`Reading file: ${file.name}...`, 'info');
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newChannels = parseM3U(e.target.result, "LOCAL FILE");
-                if (newChannels.length > 0) {
-                    allChannels = newChannels;
-                    logStatus(`Loaded ${allChannels.length} channels`, 'success');
-                    renderList(allChannels); navigateTo('list');
-                } else { alert("Invalid M3U file"); }
+        function flattenStreams(data) {
+            const out = [];
+            (data.streams || []).forEach(cat => (cat.streams || []).forEach(s => out.push(s)));
+            return out;
+        }
+
+        function eventToChannel(s, groupLabel) {
+            return {
+                name: s.name,
+                group: groupLabel || (s.category_name || s.league || 'EVENT').toUpperCase(),
+                source: s.status === 'live' ? 'LIVE' : 'UPCOMING',
+                url: s.iframe || (s.sources && s.sources[0] && s.sources[0].embed) || '',
+                logo: fifaAbs(s.poster),
+                isIframe: true, isDaddy: false, isFifa: true, fifa: s
             };
-            reader.readAsText(file);
         }
 
-        function loadPlutoTV() {
-            allChannels = plutoChannels.map(ch => ({ ...ch, source: "PLUTO", isIframe: false }));
-            renderList(allChannels);
-            navigateTo('list');
+        function sortEvents(a, b) {
+            const al = (a.fifa && a.fifa.status === 'live') ? 0 : 1;
+            const bl = (b.fifa && b.fifa.status === 'live') ? 0 : 1;
+            if (al !== bl) return al - bl;
+            return ((a.fifa && a.fifa.starts_at) || 0) - ((b.fifa && b.fifa.starts_at) || 0);
         }
-
-        function loadDaddyLive() {
-            allChannels = dlChannels.map((item) => {
-                const embedUrl = `https://daddylive.cv/embed/stream.php?id=${item.id}&player=1&source=tv`;
-                return {
-                    name: item.name,
-                    group: item.group || "DADDYLIVE",
-                    source: "DLHD",
-                    url: embedUrl,
-                    logo: item.logo || null,
-                    isIframe: true,
-                    isDaddy: true
-                };
-            });
-            renderList(allChannels);
-            navigateTo('list');
-        }
-
-        function loadFoxTV() {
-            decidePlayer("https://dlhd.link/stream/stream-54.php", true, true, "FOX TV", null);
-        }
-
-        // --- FIFA WORLD CUP (DAMITV public API) ---
-        const FIFA_API = 'https://dami-tv.pro/papi/api/streams';
-        let fifaCache = { data: null, ts: 0 };
 
         function fifaAbs(u) {
             if (!u) return '';
@@ -1240,94 +622,77 @@
 
         async function loadFifaWorldCup() {
             const btn = document.getElementById('fifaBtn');
-            const original = '<i class="fa-solid fa-futbol"></i> FIFA WORLD CUP 2026';
+            const orig = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> LOADING MATCHES...';
             try {
-                let data;
-                if (fifaCache.data && Date.now() - fifaCache.ts < 60000) {
-                    data = fifaCache.data;
-                } else {
-                    const raw = await fetchSmart(FIFA_API);
-                    data = JSON.parse(raw);
-                    fifaCache = { data, ts: Date.now() };
-                }
-                const matches = [];
-                (data.streams || []).forEach(cat => {
-                    (cat.streams || []).forEach(s => {
-                        const league = (s.league || '').toLowerCase();
-                        if (league.includes('world cup') || league.includes('fifa')) matches.push(s);
-                    });
-                });
-                matches.sort((a, b) => {
-                    const al = a.status === 'live' ? 0 : 1, bl = b.status === 'live' ? 0 : 1;
-                    if (al !== bl) return al - bl;
-                    return (a.starts_at || 0) - (b.starts_at || 0);
-                });
-                if (matches.length === 0) {
+                const data = await getStreams();
+                const matches = flattenStreams(data)
+                    .filter(s => /world cup|fifa/i.test(s.league || ''))
+                    .map(s => eventToChannel(s, 'FIFA WORLD CUP'))
+                    .sort(sortEvents);
+                if (!matches.length) {
                     alert('No FIFA World Cup matches available right now. Check back near kickoff.');
                     return;
                 }
-                allChannels = matches.map(s => ({
-                    name: s.name,
-                    group: 'FIFA WORLD CUP',
-                    source: s.status === 'live' ? 'LIVE' : 'UPCOMING',
-                    url: s.iframe || (s.sources && s.sources[0] && s.sources[0].embed) || '',
-                    logo: fifaAbs(s.poster),
-                    isIframe: true,
-                    isDaddy: false,
-                    isFifa: true,
-                    fifa: s
-                }));
+                allChannels = matches;
                 renderList(allChannels);
                 navigateTo('list');
             } catch (e) {
                 alert('Failed to load FIFA World Cup matches. ' + (e.message || e));
             } finally {
-                btn.innerHTML = original;
+                btn.innerHTML = orig;
             }
         }
 
-        async function loadPremium() {
-            logStatus("Fetching Premium channels...", 'info');
-            const staticChannels = [
-                { name: "Aaj Tak HD", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://i.imgur.com/RpIdCB3.png", group: "News", source: "PREMIUM" },
-                { name: "India TV", url: "https://d7d3gu3ex55r8.cloudfront.net/out/v1/70e7a2b9703643799863c03cb7923720/index.m3u8", group: "News", source: "PREMIUM" }
-            ];
-            try {
-                const response = await fetchSmart('https://iptv-org.github.io/iptv/countries/in.m3u');
-                const dynamicChannels = parseM3U(response, "PREMIUM");
-                allChannels = [...staticChannels, ...dynamicChannels];
-                renderList(allChannels); navigateTo('list');
-            } catch (e) {
-                allChannels = staticChannels;
-                renderList(allChannels); navigateTo('list');
-            }
-        }
-
-        async function loadAllPlaylists() {
-            const inputs = document.querySelectorAll('.url-input');
-            document.getElementById('statusLog').innerHTML = '';
-            let urls = [];
-            inputs.forEach(input => { if(input.value.trim()) urls.push(input.value.trim()); });
-            if(urls.length === 0) return alert("Please enter a URL.");
-            allChannels = [];
-            logStatus("Connecting...", 'info');
-            const btn = document.querySelector('.btn-gradient');
+        async function loadLiveSports() {
+            const btn = document.getElementById('sportsBtn');
+            const orig = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> LOADING...';
-            for (let i = 0; i < urls.length; i++) {
-                let url = urls[i]; let sourceLabel = 'List ' + (i+1);
-                try {
-                    const content = await fetchSmart(url);
-                    const newChannels = parseM3U(content, sourceLabel);
-                    if(newChannels.length > 0) {
-                        logStatus(`Loaded ${newChannels.length} from ${sourceLabel}`, 'success');
-                        allChannels = allChannels.concat(newChannels);
-                    } else { logStatus(`Empty playlist: ${sourceLabel}`, 'error'); }
-                } catch (e) { logStatus(`Failed to load: ${sourceLabel}`, 'error'); }
+            try {
+                const data = await getStreams();
+                const events = flattenStreams(data)
+                    .map(s => eventToChannel(s, (s.category_name || 'SPORTS').toUpperCase()))
+                    .sort(sortEvents);
+                if (!events.length) { alert('No live sports available right now.'); return; }
+                allChannels = events;
+                renderList(allChannels);
+                navigateTo('list');
+            } catch (e) {
+                alert('Failed to load live sports. ' + (e.message || e));
+            } finally {
+                btn.innerHTML = orig;
             }
-            btn.innerHTML = '<i class="fa-solid fa-play"></i> LOAD URL PLAYLISTS';
-            if(allChannels.length > 0) { renderList(allChannels); navigateTo('list'); }
-            else { alert("No channels found. Check logs."); }
+        }
+
+        async function loadLiveTV() {
+            const btn = document.getElementById('tvBtn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> LOADING CHANNELS...';
+            try {
+                let data;
+                if (tvCache.data && Date.now() - tvCache.ts < 300000) data = tvCache.data;
+                else { data = await damiJSON(DAMI_TVLIST); tvCache = { data, ts: Date.now() }; }
+                const channels = (data.channels || []).filter(c => c.status === 'online');
+                if (!channels.length) { alert('No TV channels available.'); return; }
+                channels.sort((a, b) =>
+                    (a.category || '').localeCompare(b.category || '') ||
+                    (a.name || '').localeCompare(b.name || ''));
+                allChannels = channels.map(c => ({
+                    name: c.name,
+                    group: (c.category || 'TV').toUpperCase() + (c.country && c.country.code ? ' · ' + c.country.code.toUpperCase() : ''),
+                    source: 'LIVE TV',
+                    url: 'https://dami-tv.pro/embed/channel/?id=' + encodeURIComponent(c.slug),
+                    logo: c.logo || null,
+                    isIframe: true,
+                    isDaddy: false
+                }));
+                renderList(allChannels);
+                navigateTo('list');
+            } catch (e) {
+                alert('Failed to load TV channels. ' + (e.message || e));
+            } finally {
+                btn.innerHTML = orig;
+            }
         }
 
         async function fetchSmart(url) {
@@ -1340,31 +705,6 @@
             }
         }
 
-        function parseM3U(content, sourceLabel) {
-            const lines = content.split('\n');
-            const channels = []; let current = {};
-            lines.forEach(line => {
-                line = line.trim();
-                if(line.startsWith('#EXTINF:')) {
-                    const logo = line.match(/tvg-logo="([^"]*)"/); const group = line.match(/group-title="([^"]*)"/);
-                    const name = line.substring(line.lastIndexOf(',') + 1).trim();
-                    current.logo = logo ? logo[1] : null; current.group = group ? group[1] : 'General'; current.name = name || 'Unknown Channel';
-                } else if(line.startsWith('http') || line.endsWith('.m3u8') || line.endsWith('.ts')) {
-                    current.url = line; current.source = sourceLabel; current.isIframe = false;
-                    if(current.name) channels.push(current);
-                    current = {};
-                }
-            });
-            return channels;
-        }
-
-        function addInputRow() {
-            const container = document.getElementById('inputContainer');
-            const div = document.createElement('div'); div.className = 'input-row';
-            div.innerHTML = `<input type="text" class="url-input" placeholder="Another Playlist URL..."><button class="btn-action btn-dark" onclick="removeRow(this)" style="width:55px; margin:0; padding:0;"><i class="fa-solid fa-times"></i></button>`;
-            container.appendChild(div);
-        }
-        function removeRow(btn) { btn.parentElement.remove(); }
 
         // --- RENDER & SEARCH ---
         function renderList(channels) {
