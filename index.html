@@ -802,17 +802,44 @@ function emptyPanel(msg) { return `<div class="empty-note">${escapeHtml(msg)}</d
 async function loadFifaWorldCup() {
   closeMenu(); setActiveNav('wc'); setLoading('wc');
   try {
-    const [evD, tbD] = await Promise.all([
-      tsdb(`/eventsseason.php?id=${WC_LEAGUE}&s=${WC_SEASON}`),
-      tsdb(`/lookuptable.php?l=${WC_LEAGUE}&s=${WC_SEASON}`).catch(() => ({ table: [] }))
-    ]);
-    wcState.events = (evD.events || []).slice().sort((a, b) => (a.strTimestamp || '').localeCompare(b.strTimestamp || ''));
-    wcState.table = tbD.table || [];
-    if (!wcState.events.length && !wcState.table.length) { alert('World Cup data is not available yet. Check back near kickoff.'); navHome(); return; }
+    // Group-stage rounds carry strGroup + full fixtures (48 teams); season feed adds knockouts.
+    const rounds = await Promise.all([1, 2, 3].map(r => tsdb(`/eventsround.php?id=${WC_LEAGUE}&r=${r}&s=${WC_SEASON}`).catch(() => ({ events: [] }))));
+    const season = await tsdb(`/eventsseason.php?id=${WC_LEAGUE}&s=${WC_SEASON}`).catch(() => ({ events: [] }));
+    const seen = new Set(); const evs = [];
+    [].concat(...rounds.map(d => d.events || []), season.events || []).forEach(e => { if (e && !seen.has(e.idEvent)) { seen.add(e.idEvent); evs.push(e); } });
+    wcState.events = evs.sort((a, b) => (a.strTimestamp || '').localeCompare(b.strTimestamp || ''));
+    wcState.table = computeStandings(wcState.events);
+    if (!wcState.events.length) { alert('World Cup data is not available yet. Check back near kickoff.'); navHome(); return; }
     const nextEv = wcState.events.find(e => !wcMatchStatus(e).fin) || null;
     renderWCShell(nextEv);
     wcSwitchTab('matches');
   } catch (e) { alert('Failed to load World Cup data. ' + (e.message || e)); navHome(); }
+}
+
+// Build complete group standings from the fixtures (the API table is only partial).
+function computeStandings(events) {
+  const groups = {};
+  (events || []).filter(e => e.strGroup && +e.intRound <= 3).forEach(e => {
+    const g = 'Group ' + e.strGroup;
+    const G = groups[g] || (groups[g] = {});
+    [[e.idHomeTeam, e.strHomeTeam, e.strHomeTeamBadge], [e.idAwayTeam, e.strAwayTeam, e.strAwayTeamBadge]].forEach(([id, nm, badge]) => {
+      if (id && !G[id]) G[id] = { idTeam: id, strTeam: nm, strBadge: badge, strGroup: g, intPlayed: 0, intWin: 0, intDraw: 0, intLoss: 0, intGoalsFor: 0, intGoalsAgainst: 0 };
+    });
+    if (wcMatchStatus(e).fin && e.intHomeScore != null && e.intHomeScore !== '') {
+      const H = G[e.idHomeTeam], A = G[e.idAwayTeam], hs = +e.intHomeScore, as = +e.intAwayScore;
+      if (H && A) {
+        H.intPlayed++; A.intPlayed++; H.intGoalsFor += hs; H.intGoalsAgainst += as; A.intGoalsFor += as; A.intGoalsAgainst += hs;
+        if (hs > as) { H.intWin++; A.intLoss++; } else if (hs < as) { A.intWin++; H.intLoss++; } else { H.intDraw++; A.intDraw++; }
+      }
+    }
+  });
+  const rows = [];
+  Object.values(groups).forEach(G => {
+    const list = Object.values(G).map(t => { t.intGoalDifference = t.intGoalsFor - t.intGoalsAgainst; t.intPoints = t.intWin * 3 + t.intDraw; return t; });
+    list.sort((a, b) => b.intPoints - a.intPoints || b.intGoalDifference - a.intGoalDifference || b.intGoalsFor - a.intGoalsFor || a.strTeam.localeCompare(b.strTeam));
+    list.forEach((t, i) => { t.intRank = i + 1; rows.push(t); });
+  });
+  return rows;
 }
 
 // Every World Cup match streams through the TSN1 channel.
