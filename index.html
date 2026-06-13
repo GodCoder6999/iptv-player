@@ -250,6 +250,39 @@ img { display: block; max-width: 100%; }
 .res-badge { position: absolute; top: 16px; left: 16px; z-index: 20; background: rgba(0,0,0,.6); color: var(--cool); padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 12px; letter-spacing:.04em; pointer-events: none; border: 1px solid var(--stroke); backdrop-filter: blur(6px); }
 .player-shell:fullscreen { aspect-ratio: auto; border-radius: 0; }
 
+/* WC source picker modal */
+.wc-picker-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(4,4,8,.88); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); display: none; place-items: center; padding: 24px; }
+.wc-picker-overlay.open { display: grid; animation: viewIn .35s var(--ease-out); }
+.wc-picker { width: min(480px, 92vw); }
+.wc-picker-head { text-align: center; margin-bottom: 28px; }
+.wc-picker-head h2 { font-size: clamp(24px, 4vw, 34px); margin-top: 10px; }
+.wc-picker-head p { color: var(--ink-soft); font-size: 14px; margin-top: 8px; }
+.wc-picker-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.wc-src-card { position: relative; border-radius: var(--r-lg); padding: 28px 20px; text-align: center; cursor: pointer; border: 1.5px solid var(--stroke); background: var(--panel); backdrop-filter: blur(12px); transition: transform .3s var(--ease-out), border-color .3s, box-shadow .3s; }
+.wc-src-card:hover { transform: translateY(-4px); border-color: rgba(232,184,75,.5); box-shadow: 0 16px 48px -12px rgba(232,184,75,.3); }
+.wc-src-card .src-icon { width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 16px; display: grid; place-items: center; font-weight: 800; font-size: 13px; letter-spacing: .05em; }
+.wc-src-card .src-icon.is4k { background: linear-gradient(135deg, #E8B84B, #F7DD9A); color: #1a1206; }
+.wc-src-card .src-icon.issd { background: linear-gradient(135deg, #4FD8E8, #2a8d99); color: #0c2226; }
+.wc-src-card .src-label { font-weight: 800; font-size: 17px; font-family: 'Bricolage Grotesque', sans-serif; }
+.wc-src-card .src-sub { color: var(--ink-soft); font-size: 12px; margin-top: 6px; }
+.wc-src-card .src-badge { display: inline-block; margin-top: 12px; padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.wc-src-card .src-badge.gold { background: rgba(232,184,75,.14); color: var(--gold-hi); border: 1px solid rgba(232,184,75,.35); }
+.wc-src-card .src-badge.cool { background: rgba(79,216,232,.12); color: var(--cool); border: 1px solid rgba(79,216,232,.3); }
+.wc-picker-close { display: block; margin: 24px auto 0; padding: 12px 28px; border-radius: 999px; border: 1px solid var(--stroke); background: rgba(255,255,255,.04); color: var(--ink-soft); font-family: 'Manrope'; font-weight: 700; font-size: 14px; cursor: pointer; transition: .25s; }
+.wc-picker-close:hover { color: var(--ink); background: rgba(255,255,255,.08); }
+@media (max-width: 420px) { .wc-picker-cards { grid-template-columns: 1fr; } }
+
+/* WC channel switcher bar below player */
+.wc-switcher { display: none; margin-top: 18px; padding: 16px 20px; border-radius: var(--r-md); background: var(--panel); border: 1px solid var(--stroke); backdrop-filter: blur(12px); }
+.wc-switcher.active { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; animation: viewIn .35s var(--ease-out); }
+.wc-switcher .sw-label { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-mut); white-space: nowrap; }
+.wc-switcher .sw-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.wc-sw-btn { padding: 9px 18px; border-radius: 999px; border: 1px solid var(--stroke); background: rgba(255,255,255,.03); color: var(--ink-soft); font-family: 'Manrope'; font-weight: 700; font-size: 13px; cursor: pointer; transition: .25s var(--ease); white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+.wc-sw-btn:hover { color: var(--ink); border-color: var(--stroke-strong); background: rgba(255,255,255,.06); }
+.wc-sw-btn.active { color: #1a1206; background: var(--gold-grad); border-color: transparent; box-shadow: 0 6px 20px -8px rgba(232,184,75,.55); }
+.wc-sw-btn .dot4k { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+.wc-sw-btn .dotsd { width: 8px; height: 8px; border-radius: 50%; background: var(--cool); }
+
 @media (max-width: 1080px) {
   .hero-grid { grid-template-columns: 1fr; gap: 36px; }
   .entry-cards { grid-template-columns: 1fr 1fr; }
@@ -550,8 +583,25 @@ img { display: block; max-width: 100%; }
         <div id="foxContainer"></div>
         <div id="daddyContainer"></div>
       </div>
+      <div class="wc-switcher" id="wcSwitcher">
+        <span class="sw-label">Source</span>
+        <div class="sw-btns" id="wcSwBtns"></div>
+      </div>
     </div>
   </section>
+</div>
+
+<!-- WC SOURCE PICKER MODAL -->
+<div class="wc-picker-overlay" id="wcPickerOverlay">
+  <div class="wc-picker">
+    <div class="wc-picker-head">
+      <div class="eyebrow" style="justify-content:center">World Cup 2026</div>
+      <h2 id="wcPickerTitle">Choose Stream Quality</h2>
+      <p id="wcPickerSub">Select your preferred broadcast source</p>
+    </div>
+    <div class="wc-picker-cards" id="wcPickerCards"></div>
+    <button class="wc-picker-close" onclick="closeWcPicker()">Cancel</button>
+  </div>
 </div>
 
 </main>
@@ -859,12 +909,63 @@ function computeStandings(events) {
   return rows;
 }
 
-// Every World Cup match streams through the TSN1 channel.
-const WC_CHANNEL = { name: 'TSN1', url: 'https://dami-tv.pro/embed/channel/?id=tsn' };
+// World Cup streams through FOX embed sources.
+const WC_CHANNELS = [
+  { key: 'fox4k', name: 'FOX 4K USA', url: 'https://junkieembeds.pages.dev/embed/fox4k-usa', quality: '4K UHD', icon: 'is4k', badge: 'gold', desc: 'Ultra HD · Best quality' },
+  { key: 'foxsd', name: 'FOX USA',    url: 'https://junkieembeds.pages.dev/embed/fox-usa',   quality: 'HD',     icon: 'issd', badge: 'cool', desc: 'Standard HD · Reliable' }
+];
+let wcActiveSource = WC_CHANNELS[0].key;
+let wcCurrentMatchId = null;
+
 function wcPlayMatch(id) {
+  wcCurrentMatchId = id;
   const e = (wcState.events || []).find(x => x.idEvent === id);
-  const label = (e ? e.strEvent + ' · ' : '') + WC_CHANNEL.name;
-  decidePlayer(WC_CHANNEL.url, true, false, label, { isIframe: true, isEvent: false });
+  const title = e ? e.strEvent : 'World Cup Match';
+  showWcPicker(title, id);
+}
+function showWcPicker(title, matchId) {
+  const overlay = document.getElementById('wcPickerOverlay');
+  document.getElementById('wcPickerTitle').textContent = title;
+  const cards = document.getElementById('wcPickerCards');
+  cards.innerHTML = WC_CHANNELS.map(ch => `
+    <div class="wc-src-card glass" onclick="selectWcSource('${ch.key}', '${matchId}')">
+      <div class="src-icon ${ch.icon}">${ch.quality}</div>
+      <div class="src-label">${escapeHtml(ch.name)}</div>
+      <div class="src-sub">${escapeHtml(ch.desc)}</div>
+      <span class="src-badge ${ch.badge}">${ch.quality === '4K UHD' ? '★ Recommended' : 'Backup'}</span>
+    </div>
+  `).join('');
+  overlay.classList.add('open');
+}
+function closeWcPicker() {
+  document.getElementById('wcPickerOverlay').classList.remove('open');
+}
+function selectWcSource(key, matchId) {
+  closeWcPicker();
+  wcActiveSource = key;
+  const ch = WC_CHANNELS.find(c => c.key === key) || WC_CHANNELS[0];
+  const e = (wcState.events || []).find(x => x.idEvent === matchId);
+  const label = (e ? e.strEvent + ' · ' : '') + ch.name;
+  decidePlayer(ch.url, true, false, label, { isIframe: true, isEvent: false, isWorldCup: true, matchId: matchId });
+}
+function switchWcSource(key) {
+  wcActiveSource = key;
+  const ch = WC_CHANNELS.find(c => c.key === key) || WC_CHANNELS[0];
+  const e = wcCurrentMatchId ? (wcState.events || []).find(x => x.idEvent === wcCurrentMatchId) : null;
+  const label = (e ? e.strEvent + ' · ' : '') + ch.name;
+  document.getElementById('channelNameText').innerText = label;
+  playIframe(ch.url, ch.quality, 'iframe');
+  updateWcSwitcher();
+}
+function updateWcSwitcher() {
+  const bar = document.getElementById('wcSwitcher');
+  const btns = document.getElementById('wcSwBtns');
+  bar.classList.add('active');
+  btns.innerHTML = WC_CHANNELS.map(ch => `
+    <button class="wc-sw-btn ${ch.key === wcActiveSource ? 'active' : ''}" onclick="switchWcSource('${ch.key}')">
+      <span class="${ch.key === 'fox4k' ? 'dot4k' : 'dotsd'}"></span>${escapeHtml(ch.name)} · ${ch.quality}
+    </button>
+  `).join('');
 }
 
 function wcHeroHtml(nextEv) {
@@ -918,7 +1019,7 @@ function matchRowHtml(e) {
     ? `<div class="mr-score">${e.intHomeScore} <span style="color:var(--ink-faint)">–</span> ${e.intAwayScore}</div><div class="mr-meta">${st.live ? '<span style="color:var(--live)">● LIVE</span>' : 'Full time'}</div>`
     : `<div class="mr-score" style="font-size:17px">${(e.strTime || '').slice(0, 5) || 'TBD'}</div><div class="mr-meta">${escapeHtml(roundName(e.intRound))}</div>`;
   const play = `is-playable" onclick="wcPlayMatch('${e.idEvent}')`;
-  const watch = `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch on TSN1</span></div>`;
+  const watch = `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch on FOX</span></div>`;
   return `<div class="glass match-row ${play}">
     <div class="mr-team"><img src="${hb}" onerror="this.style.visibility='hidden'"><span class="nm">${escapeHtml(e.strHomeTeam)}</span></div>
     <div class="mr-mid">${mid}${watch}</div>
@@ -1242,8 +1343,17 @@ function startCountdown(el) {
 async function decidePlayer(urlOrCmd, isIframe, isDaddy, name, channelObj) {
   navigateTo('player');
   document.getElementById('channelNameText').innerText = name || 'Live Stream';
+  const isWC = channelObj && channelObj.isWorldCup;
   if (isIframe) playIframe(urlOrCmd, isDaddy ? 'DADDY LIVE' : 'LIVE', isDaddy ? 'daddy' : 'iframe');
   else playHLS(urlOrCmd);
+  // Show/hide WC channel switcher
+  const switcher = document.getElementById('wcSwitcher');
+  if (isWC) {
+    wcCurrentMatchId = channelObj.matchId || wcCurrentMatchId;
+    updateWcSwitcher();
+  } else {
+    switcher.classList.remove('active');
+  }
 }
 function playIframe(url, label, type) {
   stopPlayer();
@@ -1253,13 +1363,14 @@ function playIframe(url, label, type) {
   btnExternal.onclick = () => window.open(url, '_blank');
   const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
   const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
-  // dami-tv embed gates playback behind a popunder-ad test: if window.open is blocked it shows
-  // "Sandbox Error" and kills the video. Grant allow-popups so its test passes.
   const isDami = url.includes('dami-tv.pro');
+  const isJunkie = url.includes('junkieembeds.pages.dev');
+  const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
+  const scrollAttr = isJunkie ? 'scrolling="no"' : '';
   const damiAttrs = isDami
-    ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"'
+    ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"'
     : '';
-  target.innerHTML = `<iframe src="${url}" allowfullscreen ${referrerAttr} ${damiAttrs}></iframe>`;
+  target.innerHTML = `<iframe src="${url}" allowfullscreen ${referrerAttr} ${allowAttr} ${scrollAttr} ${damiAttrs}></iframe>`;
   resBadge.innerText = label; resBadge.style.color = 'var(--gold)';
 }
 function playHLS(url) {
@@ -1281,6 +1392,7 @@ function stopPlayer() {
   if (foxContainer) { foxContainer.innerHTML = ''; foxContainer.style.display = 'none'; }
   if (daddyContainer) { daddyContainer.innerHTML = ''; daddyContainer.style.display = 'none'; }
   btnExternal.style.display = 'none';
+  document.getElementById('wcSwitcher').classList.remove('active');
 }
 function reloadStream() {
   const isIframe = (foxContainer.style.display === 'block' || daddyContainer.style.display === 'block');
@@ -1291,11 +1403,15 @@ function reloadStream() {
       const src = iframe.src;
       const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
       const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
-      const dami = src.includes('dami-tv.pro')
-        ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"'
+      const isDami = src.includes('dami-tv.pro');
+      const isJunkie = src.includes('junkieembeds.pages.dev');
+      const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
+      const scrollAttr = isJunkie ? 'scrolling="no"' : '';
+      const dami = isDami
+        ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"'
         : '';
       target.innerHTML = '';
-      setTimeout(() => { target.innerHTML = `<iframe src="${src}" allowfullscreen ${ref} ${dami}></iframe>`; }, 100);
+      setTimeout(() => { target.innerHTML = `<iframe src="${src}" allowfullscreen ${ref} ${allowAttr} ${scrollAttr} ${dami}></iframe>`; }, 100);
     }
   } else if (hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
 }
