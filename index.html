@@ -1083,31 +1083,38 @@ function renderKnockout() {
 }
 
 // ---- STATS ----
-// Player stats (Goals/Assists/Yellow/Red) come from API-Football. The free plan
-// can't access season 2026, so we fall back to the newest accessible WC season.
-const AF_BASE = 'https://v3.football.api-sports.io';
-const AF_KEY = '107ba013ee19e405cebac23fea3c38ee';
-const AF_WC_LEAGUE = 1;
-const AF_METRICS = [['goals', 'Goals', 'topscorers'], ['assists', 'Assists', 'topassists'], ['yellow', 'Yellow Cards', 'topyellowcards'], ['red', 'Red Cards', 'topredcards']];
-let afCache = {};
+// Live 2026 player leaderboards from ESPN's free, keyless, CORS-open API.
+const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/soccer/leagues/fifa.world';
+const ESPN_SEASON = 2026;
+const ESPN_METRICS = [['goals', 'Goals', 'goalsLeaders'], ['assists', 'Assists', 'assistsLeaders'], ['yellow', 'Yellow Cards', 'yellowCards'], ['red', 'Red Cards', 'redCards']];
+let espnCache = {};
+let espnLeadersData = null;
 let wcStatMetric = 'goals';
-let wcStatSeason = null;
 
-async function afGet(path) {
-  if (afCache[path]) return afCache[path];
-  const r = await fetch(AF_BASE + path, { headers: { 'x-apisports-key': AF_KEY } });
-  const d = await r.json();
-  afCache[path] = d;
-  return d;
-}
-async function afTop(metric) {
-  const ep = (AF_METRICS.find(m => m[0] === metric) || [])[2];
-  const seasons = wcStatSeason ? [wcStatSeason] : [2026, 2022];
-  for (const s of seasons) {
-    const d = await afGet(`/players/${ep}?league=${AF_WC_LEAGUE}&season=${s}`);
-    if (d && (d.response || []).length) { wcStatSeason = s; return { rows: d.response, season: s }; }
+function httpsify(u) { return (u || '').replace(/^http:/, 'https:'); }
+async function espnGet(url) { url = httpsify(url); if (espnCache[url]) return espnCache[url]; const r = await fetch(url); const d = await r.json(); espnCache[url] = d; return d; }
+async function espnLeaders() {
+  if (espnLeadersData) return espnLeadersData;
+  for (const t of [1, 2, 3]) {
+    try {
+      const d = await espnGet(`${ESPN_CORE}/seasons/${ESPN_SEASON}/types/${t}/leaders`);
+      if (d && (d.categories || []).some(c => (c.leaders || []).length)) { espnLeadersData = d; return d; }
+    } catch { }
   }
-  return { rows: [], season: wcStatSeason || 2026 };
+  espnLeadersData = { categories: [] }; return espnLeadersData;
+}
+async function espnTop(metric, limit) {
+  const cat = (ESPN_METRICS.find(m => m[0] === metric) || [])[2];
+  const d = await espnLeaders();
+  const c = (d.categories || []).find(x => x.name === cat);
+  const leaders = ((c && c.leaders) || []).slice(0, limit || 20).filter(l => +l.value > 0);
+  return Promise.all(leaders.map(async l => {
+    const [a, t] = await Promise.all([
+      l.athlete && l.athlete.$ref ? espnGet(l.athlete.$ref).catch(() => null) : null,
+      l.team && l.team.$ref ? espnGet(l.team.$ref).catch(() => null) : null
+    ]);
+    return { value: l.value, name: (a && a.displayName) || '—', pos: (a && a.position && a.position.abbreviation) || '', team: (t && (t.displayName || t.name)) || '', logo: (t && t.logos && t.logos[0] && t.logos[0].href) || '' };
+  }));
 }
 function teamStatStrip() {
   const fin = (wcState.events || []).filter(e => wcMatchStatus(e).fin && e.intHomeScore !== '' && e.intHomeScore != null);
@@ -1118,9 +1125,9 @@ function teamStatStrip() {
   return `<div class="stat-grid">` + cards.map(c => `<div class="glass stat-card"><div class="v">${c[1]}</div><div class="k">${c[0]}</div></div>`).join('') + `</div>`;
 }
 function renderStats() {
-  const chips = AF_METRICS.map(m => `<button class="chip ${m[0] === wcStatMetric ? 'active' : ''}" onclick="wcSetStatMetric('${m[0]}')">${m[1]}</button>`).join('');
+  const chips = ESPN_METRICS.map(m => `<button class="chip ${m[0] === wcStatMetric ? 'active' : ''}" onclick="wcSetStatMetric('${m[0]}')">${m[1]}</button>`).join('');
   return teamStatStrip() +
-    `<div style="margin-top:34px"><div class="sec-head" style="margin-bottom:18px"><div><div class="eyebrow">Player leaderboard</div></div></div>` +
+    `<div style="margin-top:34px"><div class="sec-head" style="margin-bottom:18px"><div><div class="eyebrow">Player leaderboard</div><p style="color:var(--ink-mut);font-size:13px;margin-top:4px">Live World Cup 2026 · top players by metric</p></div></div>` +
     `<div class="chips" id="wcStatChips" style="margin-bottom:20px">${chips}</div>` +
     `<div id="wcStatBox"><div class="empty-note"><i class="fa-solid fa-circle-notch spin-ring"></i> &nbsp;Loading player stats…</div></div></div>`;
 }
@@ -1129,27 +1136,21 @@ function wcSetStatMetric(m) {
   document.querySelectorAll('#wcStatChips .chip').forEach(c => c.classList.toggle('active', c.getAttribute('onclick').includes(`'${m}'`)));
   loadPlayerStats();
 }
-function afStatVals(p) {
-  const s = (p.statistics && p.statistics[0]) || {};
-  return { g: (s.goals && s.goals.total) || 0, a: (s.goals && s.goals.assists) || 0, y: (s.cards && s.cards.yellow) || 0, r: (s.cards && s.cards.red) || 0, team: (s.team && s.team.name) || '', logo: (s.team && s.team.logo) || '' };
-}
-function playerStatTableHtml(rows, season, metric) {
-  const note = +season !== 2026 ? `<div class="stat-note"><i class="fa-solid fa-circle-info"></i> Player stats shown for <b>World Cup ${season}</b> — the free API-Football tier doesn't include 2026. Upgrade the plan and these become live 2026 numbers automatically.</div>` : '';
-  const col = { goals: 'g', assists: 'a', yellow: 'y', red: 'r' }[metric];
-  const hot = k => col === k ? ' class="hot"' : '';
-  const head = `<thead><tr><th>#</th><th>Player</th><th>Team</th><th${hot('g')}>G</th><th${hot('a')}>A</th><th${hot('y')}>Y</th><th${hot('r')}>R</th></tr></thead>`;
-  const body = rows.map((p, i) => { const v = afStatVals(p); return `<tr><td class="rk">${i + 1}</td><td class="pl"><span class="cell"><img src="${escapeAttr(p.player.photo)}" loading="lazy" onerror="this.style.visibility='hidden'"><span>${escapeHtml(p.player.name)}</span></span></td><td class="tm">${v.logo ? `<img src="${escapeAttr(v.logo)}" onerror="this.style.display='none'">` : ''}${escapeHtml(v.team)}</td><td${hot('g')}>${v.g}</td><td${hot('a')}>${v.a}</td><td${hot('y')}>${v.y}</td><td${hot('r')}>${v.r}</td></tr>`; }).join('');
-  return note + `<div class="glass" style="overflow-x:auto"><table class="ptbl">${head}<tbody>${body}</tbody></table></div>`;
+function playerStatTableHtml(rows, metric) {
+  const label = (ESPN_METRICS.find(m => m[0] === metric) || ['', 'Stat'])[1];
+  const head = `<thead><tr><th>#</th><th>Player</th><th>Country</th><th class="hot">${escapeHtml(label)}</th></tr></thead>`;
+  const body = rows.map((r, i) => `<tr><td class="rk">${i + 1}</td><td class="pl"><span class="cell"><span>${escapeHtml(r.name)}</span>${r.pos ? ` <span style="color:var(--ink-mut);font-size:11px;font-weight:600">${escapeHtml(r.pos)}</span>` : ''}</span></td><td class="tm">${r.logo ? `<img src="${escapeAttr(httpsify(r.logo))}" onerror="this.style.display='none'">` : ''}${escapeHtml(r.team)}</td><td class="hot" style="font-family:'Space Grotesk';font-size:16px">${r.value}</td></tr>`).join('');
+  return `<div class="glass" style="overflow-x:auto"><table class="ptbl">${head}<tbody>${body}</tbody></table></div>`;
 }
 async function loadPlayerStats() {
   const box = document.getElementById('wcStatBox'); if (!box) return;
   const want = wcStatMetric;
   box.innerHTML = '<div class="empty-note"><i class="fa-solid fa-circle-notch spin-ring"></i> &nbsp;Loading…</div>';
   try {
-    const { rows, season } = await afTop(want);
+    const rows = await espnTop(want, 20);
     if (wcStatMetric !== want) return;
-    if (!rows.length) { box.innerHTML = emptyPanel('Player stats are not available for this metric yet.'); return; }
-    box.innerHTML = playerStatTableHtml(rows, season, want);
+    if (!rows.length) { box.innerHTML = emptyPanel('No ' + want + ' recorded yet — check back once matches are played.'); return; }
+    box.innerHTML = playerStatTableHtml(rows, want);
     applyEffects(box);
   } catch (e) { box.innerHTML = emptyPanel('Failed to load player stats. ' + (e.message || '')); }
 }
@@ -1361,16 +1362,20 @@ function playIframe(url, label, type) {
   target.style.display = 'block';
   btnExternal.style.display = 'grid';
   btnExternal.onclick = () => window.open(url, '_blank');
-  const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
-  const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
-  const isDami = url.includes('dami-tv.pro');
+  
   const isJunkie = url.includes('junkieembeds.pages.dev');
-  const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
-  const scrollAttr = isJunkie ? 'scrolling="no"' : '';
-  const damiAttrs = isDami
-    ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"'
-    : '';
-  target.innerHTML = `<iframe src="${url}" allowfullscreen ${referrerAttr} ${allowAttr} ${scrollAttr} ${damiAttrs}></iframe>`;
+  if (isJunkie) {
+    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  } else {
+    const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
+    const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
+    const isDami = url.includes('dami-tv.pro');
+    const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
+    const damiAttrs = isDami
+      ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"'
+      : '';
+    target.innerHTML = `<iframe src="${url}" allowfullscreen ${referrerAttr} ${allowAttr} ${damiAttrs}></iframe>`;
+  }
   resBadge.innerText = label; resBadge.style.color = 'var(--gold)';
 }
 function playHLS(url) {
@@ -1401,17 +1406,22 @@ function reloadStream() {
     const iframe = target.querySelector('iframe');
     if (iframe) {
       const src = iframe.src;
-      const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
-      const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
-      const isDami = src.includes('dami-tv.pro');
       const isJunkie = src.includes('junkieembeds.pages.dev');
-      const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
-      const scrollAttr = isJunkie ? 'scrolling="no"' : '';
-      const dami = isDami
-        ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"'
-        : '';
       target.innerHTML = '';
-      setTimeout(() => { target.innerHTML = `<iframe src="${src}" allowfullscreen ${ref} ${allowAttr} ${scrollAttr} ${dami}></iframe>`; }, 100);
+      setTimeout(() => {
+        if (isJunkie) {
+          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+        } else {
+          const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
+          const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
+          const isDami = src.includes('dami-tv.pro');
+          const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
+          const dami = isDami
+            ? 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"'
+            : '';
+          target.innerHTML = `<iframe src="${src}" allowfullscreen ${ref} ${allowAttr} ${dami}></iframe>`;
+        }
+      }, 100);
     }
   } else if (hls) { hls.stopLoad(); hls.startLoad(); video.play(); }
 }
