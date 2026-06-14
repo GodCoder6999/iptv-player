@@ -810,16 +810,20 @@ function dlhdName(id) {
   return _dlhdById[String(id)] || null;
 }
 function eventToChannel(s, groupLabel) {
-  const srcs = (s.sources || []).filter(x => x && x.embed).map((x, i) => {
+  const named = (s.sources || []).filter(x => x && x.embed).map((x, i) => {
     const m = String(x.embed).match(/[?&]ch=([^&]+)/);
     const real = m ? dlhdName(m[1]) : null;
     return { name: real || x.name || x.source || ('Server ' + (i + 1)), embed: x.embed };
   });
+  // The event-level iframe (no ch=) lets DAMITV auto-pick a working feed — most reliable, so default to it.
+  const srcs = [];
+  if (s.iframe) srcs.push({ name: 'Auto', embed: s.iframe, auto: true });
+  named.forEach(n => { if (n.embed && n.embed !== s.iframe) srcs.push(n); });
   return {
     name: s.name, group: groupLabel || (s.category_name || s.league || 'EVENT').toUpperCase(),
     cat: (s.category_name || 'event').toLowerCase(),
     source: s.status === 'live' ? 'LIVE' : 'UPCOMING',
-    url: (srcs[0] && srcs[0].embed) || s.iframe || '',
+    url: (srcs[0] && srcs[0].embed) || '',
     sources: srcs,
     logo: damiAbs(s.poster), isIframe: true, isDaddy: false, isEvent: true, ev: s
   };
@@ -1582,7 +1586,7 @@ let curSources = [], curEventName = '';
 function showSportsSwitcher(activeUrl) {
   const bar = document.getElementById('wcSwitcher'), btns = document.getElementById('wcSwBtns');
   bar.classList.add('active');
-  btns.innerHTML = curSources.map((s, i) => `<button class="wc-sw-btn ${s.embed === activeUrl ? 'active' : ''}" onclick="pickSportSource(${i})"><span class="dotsd"></span>${escapeHtml(s.name)}<span class="sw-hd">HD</span></button>`).join('');
+  btns.innerHTML = curSources.map((s, i) => `<button class="wc-sw-btn ${s.embed === activeUrl ? 'active' : ''}" onclick="pickSportSource(${i})"><span class="${s.auto ? 'dot4k' : 'dotsd'}"></span>${escapeHtml(s.name)}<span class="sw-hd">${s.auto ? 'AUTO' : 'HD'}</span></button>`).join('');
 }
 function pickSportSource(i) {
   const s = curSources[i]; if (!s) return;
