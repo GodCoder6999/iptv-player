@@ -953,21 +953,51 @@ async function loadFifaWorldCup() {
     wcState.table = rows;
     wcState.events = (sched.events || []).map(ev => espnEventToInternal(ev, teamGroup, imgMap)).sort((a, b) => (a.strTimestamp || '').localeCompare(b.strTimestamp || ''));
     if (!wcState.events.length && !wcState.table.length) { alert('World Cup data is not available yet. Check back near kickoff.'); navHome(); return; }
+    loadWcReplays();
     const nextEv = wcState.events.find(e => !wcMatchStatus(e).fin) || null;
     renderWCShell(nextEv);
     wcSwitchTab('matches');
   } catch (e) { alert('Failed to load World Cup data. ' + (e.message || e)); navHome(); }
 }
 
-// World Cup playback sources: live FOX embeds + TimStreams full-match replay.
+// World Cup playback: live FOX embeds always; TimStreams replay added per-match
+// only when TimStreams publishes a real stream for that fixture (their replays API).
 const WC_CHANNELS = [
   { key: 'fox4k', name: 'FOX 4K USA', url: 'https://junkieembeds.pages.dev/embed/fox4k-usa', quality: '4K UHD', icon: 'is4k', badge: 'gold', desc: 'Ultra HD · Best quality', tag: '★ Recommended' },
-  { key: 'foxsd', name: 'FOX USA',    url: 'https://junkieembeds.pages.dev/embed/fox-usa',   quality: 'HD',     icon: 'issd', badge: 'cool', desc: 'Standard HD · Reliable', tag: 'Backup' },
-  { key: 'tims',  name: 'TimStreams', url: 'https://timstreams.upn.one/#gl15xx',              quality: 'Replay', icon: 'issd', badge: 'cool', desc: 'Full match replay · TimStreams', tag: '↻ Replay' }
+  { key: 'foxsd', name: 'FOX USA',    url: 'https://junkieembeds.pages.dev/embed/fox-usa',   quality: 'HD',     icon: 'issd', badge: 'cool', desc: 'Standard HD · Reliable', tag: 'Backup' }
 ];
+const TIMS_REPLAYS_API = 'https://api.nuevasantino.xyz/api/replays';
+let wcReplays = {};            // idEvent -> { url, name }
 let wcActiveSource = WC_CHANNELS[0].key;
 let wcCurrentMatchId = null;
 
+async function loadWcReplays() {
+  try {
+    const r = await fetch(TIMS_REPLAYS_API);
+    const d = await r.json();
+    const wc = (d.replays || []).find(x => /world cup|fifa/i.test((x.name || '') + ' ' + (x.url || '')));
+    if (!wc) return;
+    const map = {};
+    (wc.streams || []).forEach(s => {
+      if (!s.url || /example\.com/i.test(s.url) || /suppost|not suppost/i.test(s.name || '')) return; // skip placeholders
+      const ev = wcMatchByName(s.name);
+      if (ev) map[ev.idEvent] = { url: s.url, name: s.name };
+    });
+    wcReplays = map;
+    const sw = document.getElementById('wcSwitcher');
+    if (sw && sw.classList.contains('active')) updateWcSwitcher();
+  } catch { }
+}
+function wcMatchByName(name) {
+  const n = wcNorm(name); if (!n) return null;
+  return (wcState.events || []).find(e => { const h = wcNorm(e.strHomeTeam), a = wcNorm(e.strAwayTeam); return h && a && n.includes(h) && n.includes(a); });
+}
+function wcSourcesFor(id) {
+  const list = WC_CHANNELS.slice();
+  const rep = wcReplays[id];
+  if (rep) list.push({ key: 'tims', name: 'TimStreams', url: rep.url, quality: 'Replay', icon: 'issd', badge: 'cool', desc: 'Full match replay · TimStreams', tag: '↻ Replay' });
+  return list;
+}
 function wcPlayMatch(id) {
   wcCurrentMatchId = id;
   const e = (wcState.events || []).find(x => x.idEvent === id);
@@ -978,7 +1008,7 @@ function showWcPicker(title, matchId) {
   const overlay = document.getElementById('wcPickerOverlay');
   document.getElementById('wcPickerTitle').textContent = title;
   const cards = document.getElementById('wcPickerCards');
-  cards.innerHTML = WC_CHANNELS.map(ch => `
+  cards.innerHTML = wcSourcesFor(matchId).map(ch => `
     <div class="wc-src-card glass" onclick="selectWcSource('${ch.key}', '${matchId}')">
       <div class="src-icon ${ch.icon}">${ch.quality}</div>
       <div class="src-label">${escapeHtml(ch.name)}</div>
@@ -994,14 +1024,14 @@ function closeWcPicker() {
 function selectWcSource(key, matchId) {
   closeWcPicker();
   wcActiveSource = key;
-  const ch = WC_CHANNELS.find(c => c.key === key) || WC_CHANNELS[0];
+  const ch = wcSourcesFor(matchId).find(c => c.key === key) || WC_CHANNELS[0];
   const e = (wcState.events || []).find(x => x.idEvent === matchId);
   const label = (e ? e.strEvent + ' · ' : '') + ch.name;
   decidePlayer(ch.url, true, false, label, { isIframe: true, isEvent: false, isWorldCup: true, matchId: matchId });
 }
 function switchWcSource(key) {
   wcActiveSource = key;
-  const ch = WC_CHANNELS.find(c => c.key === key) || WC_CHANNELS[0];
+  const ch = wcSourcesFor(wcCurrentMatchId).find(c => c.key === key) || WC_CHANNELS[0];
   const e = wcCurrentMatchId ? (wcState.events || []).find(x => x.idEvent === wcCurrentMatchId) : null;
   const label = (e ? e.strEvent + ' · ' : '') + ch.name;
   document.getElementById('channelNameText').innerText = label;
@@ -1012,7 +1042,7 @@ function updateWcSwitcher() {
   const bar = document.getElementById('wcSwitcher');
   const btns = document.getElementById('wcSwBtns');
   bar.classList.add('active');
-  btns.innerHTML = WC_CHANNELS.map(ch => `
+  btns.innerHTML = wcSourcesFor(wcCurrentMatchId).map(ch => `
     <button class="wc-sw-btn ${ch.key === wcActiveSource ? 'active' : ''}" onclick="switchWcSource('${ch.key}')">
       <span class="${ch.key === 'fox4k' ? 'dot4k' : 'dotsd'}"></span>${escapeHtml(ch.name)} · ${ch.quality}
     </button>
