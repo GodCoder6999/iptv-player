@@ -966,31 +966,39 @@ const WC_CHANNELS = [
   { key: 'fox4k', name: 'FOX 4K USA', url: 'https://junkieembeds.pages.dev/embed/fox4k-usa', quality: '4K UHD', icon: 'is4k', badge: 'gold', desc: 'Ultra HD · Best quality', tag: '★ Recommended' },
   { key: 'foxsd', name: 'FOX USA',    url: 'https://junkieembeds.pages.dev/embed/fox-usa',   quality: 'HD',     icon: 'issd', badge: 'cool', desc: 'Standard HD · Reliable', tag: 'Backup' }
 ];
-const TIMS_REPLAYS_API = 'https://api.nuevasantino.xyz/api/replays';
+// TimStreams publishes per-match replays on its World Cup page; each card calls
+// openModal('<upn.one url>','<Home vs Away>','<group>'). Parse that for the map.
+const TIMS_WC_PAGE = 'https://timstreams.net/fifawc2026';
 let wcReplays = {};            // idEvent -> { url, name }
 let wcActiveSource = WC_CHANNELS[0].key;
 let wcCurrentMatchId = null;
 
 async function loadWcReplays() {
   try {
-    const r = await fetch(TIMS_REPLAYS_API);
-    const d = await r.json();
-    const wc = (d.replays || []).find(x => /world cup|fifa/i.test((x.name || '') + ' ' + (x.url || '')));
-    if (!wc) return;
+    const r = await fetch(TIMS_WC_PAGE);
+    const html = await r.text();
     const map = {};
-    (wc.streams || []).forEach(s => {
-      if (!s.url || /example\.com/i.test(s.url) || /suppost|not suppost/i.test(s.name || '')) return; // skip placeholders
-      const ev = wcMatchByName(s.name);
-      if (ev) map[ev.idEvent] = { url: s.url, name: s.name };
-    });
+    const re = /openModal\(\s*'(https?:\/\/[^']+)'\s*,\s*'([^']+)'/g;
+    let m;
+    while ((m = re.exec(html))) {
+      const ev = wcMatchByTitle(m[2]);
+      if (ev && !map[ev.idEvent]) map[ev.idEvent] = { url: m[1], name: m[2] };
+    }
     wcReplays = map;
     const sw = document.getElementById('wcSwitcher');
     if (sw && sw.classList.contains('active')) updateWcSwitcher();
   } catch { }
 }
-function wcMatchByName(name) {
-  const n = wcNorm(name); if (!n) return null;
-  return (wcState.events || []).find(e => { const h = wcNorm(e.strHomeTeam), a = wcNorm(e.strAwayTeam); return h && a && n.includes(h) && n.includes(a); });
+// Canonicalise country-name variants so TimStreams titles match ESPN fixtures.
+const WC_CANON = [['czechrepublic', 'czech'], ['czechia', 'czech'], ['bosniaandherzegovina', 'bosnia'], ['bosniaherzegovina', 'bosnia'], ['unitedstates', 'usa'], ['cotedivoire', 'ivorycoast'], ['capeverde', 'caboverde'], ['turkiye', 'turkey'], ['southkorea', 'korea'], ['korearepublic', 'korea']];
+function wcCanon(s) { s = wcNorm(s); for (const [a, b] of WC_CANON) if (s === a) return b; return s; }
+function wcSideMatch(a, b) { const x = wcCanon(a), y = wcCanon(b); return !!x && !!y && (x === y || x.includes(y) || y.includes(x)); }
+function wcMatchByTitle(title) {
+  const p = String(title).split(/\s+vs\.?\s+/i);
+  if (p.length < 2) return null;
+  return (wcState.events || []).find(e =>
+    (wcSideMatch(p[0], e.strHomeTeam) && wcSideMatch(p[1], e.strAwayTeam)) ||
+    (wcSideMatch(p[0], e.strAwayTeam) && wcSideMatch(p[1], e.strHomeTeam)));
 }
 function wcSourcesFor(id) {
   const list = WC_CHANNELS.slice();
