@@ -886,50 +886,77 @@ function wcMatchStatus(e) {
   };
 }
 function roundName(r) { r = +r; if (ROUND_NAMES[r]) return ROUND_NAMES[r]; if (r >= 1 && r <= 3) return 'Matchday ' + r; return 'Knockout'; }
-function isKnockout(e) { return +e.intRound > 3; }
+function isKnockout(e) { return !e.strGroup; }
 function emptyPanel(msg) { return `<div class="empty-note">${escapeHtml(msg)}</div>`; }
 
+// ESPN is the complete, reliable source for fixtures + standings (TheSportsDB's free
+// feed only returns a partial slice). TheSportsDB is still used for banner/player images.
+const ESPN_SITE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world';
+const ESPN_STAND = 'https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings';
+function espnStat(stats, name) { const s = (stats || []).find(x => x.name === name); return s ? s.value : 0; }
+function espnStandingsToRows(data) {
+  const rows = []; const teamGroup = {};
+  (data.children || []).forEach(child => {
+    const g = child.name || 'Group';
+    const entries = ((child.standings && child.standings.entries) || []).slice();
+    entries.forEach(en => {
+      const t = en.team || {}; teamGroup[t.id] = g;
+      rows.push({
+        idTeam: t.id, strTeam: t.displayName || t.name, strBadge: (t.logos && t.logos[0] && t.logos[0].href) || '', strGroup: g,
+        intPlayed: espnStat(en.stats, 'gamesPlayed'), intWin: espnStat(en.stats, 'wins'), intDraw: espnStat(en.stats, 'ties'), intLoss: espnStat(en.stats, 'losses'),
+        intGoalsFor: espnStat(en.stats, 'pointsFor'), intGoalsAgainst: espnStat(en.stats, 'pointsAgainst'), intGoalDifference: espnStat(en.stats, 'pointDifferential'),
+        intPoints: espnStat(en.stats, 'points'), intRank: espnStat(en.stats, 'rank')
+      });
+    });
+  });
+  return { rows, teamGroup };
+}
+function espnEventToInternal(ev, teamGroup, imgMap) {
+  const c = (ev.competitions && ev.competitions[0]) || {};
+  const co = c.competitors || [];
+  const home = co.find(x => x.homeAway === 'home') || co[0] || {};
+  const away = co.find(x => x.homeAway === 'away') || co[1] || {};
+  const state = (c.status && c.status.type && c.status.type.state) || 'pre';
+  const ht = home.team || {}, at = away.team || {};
+  const grp = (teamGroup[ht.id] && teamGroup[ht.id] === teamGroup[at.id]) ? teamGroup[ht.id] : '';
+  const d = new Date(ev.date);
+  const iso = isNaN(d) ? '' : d.toISOString();
+  const key = wcNorm(ht.displayName) + '|' + wcNorm(at.displayName);
+  const img = imgMap[key] || {};
+  return {
+    idEvent: String(ev.id), strHomeTeam: ht.displayName || ht.name || 'TBD', strAwayTeam: at.displayName || at.name || 'TBD',
+    idHomeTeam: ht.id, idAwayTeam: at.id,
+    strHomeTeamBadge: ht.logo || (ht.logos && ht.logos[0] && ht.logos[0].href) || '', strAwayTeamBadge: at.logo || (at.logos && at.logos[0] && at.logos[0].href) || '',
+    intHomeScore: (home.score == null || home.score === '') ? '' : String(home.score), intAwayScore: (away.score == null || away.score === '') ? '' : String(away.score),
+    strStatus: state === 'post' ? 'FT' : state === 'in' ? 'LIVE' : '',
+    strTimestamp: iso.replace('Z', ''), dateEvent: iso.slice(0, 10), strTime: iso.slice(11, 16),
+    strVenue: (c.venue && c.venue.fullName) || '', strGroup: grp,
+    strBanner: img.banner || '', strThumb: img.thumb || '', strPoster: img.poster || ''
+  };
+}
+function wcNorm(x) { return (x || '').toLowerCase().replace(/[^a-z]/g, ''); }
 async function loadFifaWorldCup() {
   closeMenu(); setActiveNav('wc'); setLoading('wc');
   try {
-    // Group-stage rounds carry strGroup + full fixtures (48 teams); season feed adds knockouts.
-    const rounds = await Promise.all([1, 2, 3].map(r => tsdb(`/eventsround.php?id=${WC_LEAGUE}&r=${r}&s=${WC_SEASON}`).catch(() => ({ events: [] }))));
-    const season = await tsdb(`/eventsseason.php?id=${WC_LEAGUE}&s=${WC_SEASON}`).catch(() => ({ events: [] }));
-    const seen = new Set(); const evs = [];
-    [].concat(...rounds.map(d => d.events || []), season.events || []).forEach(e => { if (e && !seen.has(e.idEvent)) { seen.add(e.idEvent); evs.push(e); } });
-    wcState.events = evs.sort((a, b) => (a.strTimestamp || '').localeCompare(b.strTimestamp || ''));
-    wcState.table = computeStandings(wcState.events);
-    if (!wcState.events.length) { alert('World Cup data is not available yet. Check back near kickoff.'); navHome(); return; }
+    const yr = WC_SEASON;
+    const [sched, stand] = await Promise.all([
+      espnGet(`${ESPN_SITE}/scoreboard?dates=${yr}0601-${yr}0720&limit=200`),
+      espnGet(`${ESPN_STAND}?season=${yr}`).catch(() => ({ children: [] }))
+    ]);
+    // Best-effort TheSportsDB image map for the hero banner (names -> art).
+    const imgMap = {};
+    try {
+      const rds = await Promise.all([1, 2, 3].map(r => tsdb(`/eventsround.php?id=${WC_LEAGUE}&r=${r}&s=${yr}`).catch(() => ({ events: [] }))));
+      [].concat(...rds.map(d => d.events || [])).forEach(e => { imgMap[wcNorm(e.strHomeTeam) + '|' + wcNorm(e.strAwayTeam)] = { banner: e.strBanner, thumb: e.strThumb, poster: e.strPoster }; });
+    } catch { }
+    const { rows, teamGroup } = espnStandingsToRows(stand);
+    wcState.table = rows;
+    wcState.events = (sched.events || []).map(ev => espnEventToInternal(ev, teamGroup, imgMap)).sort((a, b) => (a.strTimestamp || '').localeCompare(b.strTimestamp || ''));
+    if (!wcState.events.length && !wcState.table.length) { alert('World Cup data is not available yet. Check back near kickoff.'); navHome(); return; }
     const nextEv = wcState.events.find(e => !wcMatchStatus(e).fin) || null;
     renderWCShell(nextEv);
     wcSwitchTab('matches');
   } catch (e) { alert('Failed to load World Cup data. ' + (e.message || e)); navHome(); }
-}
-
-// Build complete group standings from the fixtures (the API table is only partial).
-function computeStandings(events) {
-  const groups = {};
-  (events || []).filter(e => e.strGroup && +e.intRound <= 3).forEach(e => {
-    const g = 'Group ' + e.strGroup;
-    const G = groups[g] || (groups[g] = {});
-    [[e.idHomeTeam, e.strHomeTeam, e.strHomeTeamBadge], [e.idAwayTeam, e.strAwayTeam, e.strAwayTeamBadge]].forEach(([id, nm, badge]) => {
-      if (id && !G[id]) G[id] = { idTeam: id, strTeam: nm, strBadge: badge, strGroup: g, intPlayed: 0, intWin: 0, intDraw: 0, intLoss: 0, intGoalsFor: 0, intGoalsAgainst: 0 };
-    });
-    if (wcMatchStatus(e).fin && e.intHomeScore != null && e.intHomeScore !== '') {
-      const H = G[e.idHomeTeam], A = G[e.idAwayTeam], hs = +e.intHomeScore, as = +e.intAwayScore;
-      if (H && A) {
-        H.intPlayed++; A.intPlayed++; H.intGoalsFor += hs; H.intGoalsAgainst += as; A.intGoalsFor += as; A.intGoalsAgainst += hs;
-        if (hs > as) { H.intWin++; A.intLoss++; } else if (hs < as) { A.intWin++; H.intLoss++; } else { H.intDraw++; A.intDraw++; }
-      }
-    }
-  });
-  const rows = [];
-  Object.values(groups).forEach(G => {
-    const list = Object.values(G).map(t => { t.intGoalDifference = t.intGoalsFor - t.intGoalsAgainst; t.intPoints = t.intWin * 3 + t.intDraw; return t; });
-    list.sort((a, b) => b.intPoints - a.intPoints || b.intGoalDifference - a.intGoalDifference || b.intGoalsFor - a.intGoalsFor || a.strTeam.localeCompare(b.strTeam));
-    list.forEach((t, i) => { t.intRank = i + 1; rows.push(t); });
-  });
-  return rows;
 }
 
 // World Cup streams through FOX embed sources.
@@ -1034,7 +1061,7 @@ function wcFeatured(events) {
 function wcSlideHtml(e, i) {
   const st = wcMatchStatus(e);
   const bg = tsImg(e.strBanner || e.strThumb || e.strPoster) || WC_STADIUM;
-  const badge = st.live ? `<span class="live-badge"><span class="dot"></span>Live now</span>` : st.fin ? `<span class="pill gold">Full time</span>` : `<span class="pill gold">${escapeHtml(roundName(e.intRound))}</span>`;
+  const badge = st.live ? `<span class="live-badge"><span class="dot"></span>Live now</span>` : st.fin ? `<span class="pill gold">Full time</span>` : `<span class="pill gold">${escapeHtml(e.strGroup || 'Knockout')}</span>`;
   const hasScore = (st.fin || st.live) && e.intHomeScore != null && e.intHomeScore !== '';
   const dt = e.strTimestamp ? new Date(e.strTimestamp + 'Z') : null;
   const when = st.live ? 'LIVE NOW' : dt ? dt.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }) + ' · ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Upcoming';
@@ -1093,7 +1120,7 @@ function matchRowHtml(e) {
   const hasScore = e.intHomeScore != null && e.intHomeScore !== '' && (st.fin || st.live);
   const mid = hasScore
     ? `<div class="mr-score">${e.intHomeScore} <span style="color:var(--ink-faint)">–</span> ${e.intAwayScore}</div><div class="mr-meta">${st.live ? '<span style="color:var(--live)">● LIVE</span>' : 'Full time'}</div>`
-    : `<div class="mr-score" style="font-size:17px">${(e.strTime || '').slice(0, 5) || 'TBD'}</div><div class="mr-meta">${escapeHtml(roundName(e.intRound))}</div>`;
+    : `<div class="mr-score" style="font-size:17px">${(e.strTime || '').slice(0, 5) || 'TBD'}</div><div class="mr-meta">${escapeHtml(e.strGroup || 'Knockout')}</div>`;
   const play = `is-playable" onclick="wcPlayMatch('${e.idEvent}')`;
   const watch = `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch on FOX</span></div>`;
   return `<div class="glass match-row ${play}">
@@ -1137,7 +1164,8 @@ function bkMatchHtml(e) {
   return `<div class="glass bk-match">${side(e.strHomeTeam, e.strHomeTeamBadge, h, hw)}${side(e.strAwayTeam, e.strAwayTeamBadge, a, aw)}</div>`;
 }
 function renderKnockout() {
-  const ko = (wcState.events || []).filter(isKnockout);
+  // A knockout tie is "real" once both teams are decided (not TBD placeholders).
+  const ko = (wcState.events || []).filter(e => isKnockout(e) && e.strHomeTeam && e.strHomeTeam !== 'TBD' && e.strAwayTeam && e.strAwayTeam !== 'TBD');
   if (!ko.length) {
     const qual = (wcState.table || []).filter(r => +r.intRank <= 2);
     let q = '';
@@ -1152,9 +1180,9 @@ function renderKnockout() {
     return `<div class="glass" style="padding:34px;text-align:center"><h3 style="font-size:24px">Bracket unlocks after the group stage</h3><p style="color:var(--ink-soft);margin-top:10px;max-width:52ch;margin-inline:auto">32 teams advance to the Round of 32. Here's who's currently qualifying from each group.</p></div>${q}`;
   }
   const rounds = {};
-  ko.forEach(e => { (rounds[e.intRound] = rounds[e.intRound] || []).push(e); });
-  return `<div class="bracket">` + Object.keys(rounds).map(Number).sort((a, b) => a - b).map(r =>
-    `<div class="bk-round"><h5>${escapeHtml(roundName(r))}</h5>${rounds[r].map(bkMatchHtml).join('')}</div>`
+  ko.forEach(e => { const k = e.dateEvent || 'KO'; (rounds[k] = rounds[k] || []).push(e); });
+  return `<div class="bracket">` + Object.keys(rounds).sort().map(k =>
+    `<div class="bk-round"><h5>${escapeHtml(fmtDay(k))}</h5>${rounds[k].map(bkMatchHtml).join('')}</div>`
   ).join('') + `</div>`;
 }
 
@@ -1259,10 +1287,34 @@ function renderPlayers() {
   return picker + `<div id="wcPlayers"><div class="empty-note"><i class="fa-solid fa-circle-notch spin-ring"></i> &nbsp;Loading squad…</div></div>`;
 }
 function wcSelectTeam(id) { wcCurrentTeam = id; document.querySelectorAll('.team-pick').forEach(p => p.classList.toggle('active', p.getAttribute('onclick').includes(`'${id}'`))); loadSquad(id); }
+function wcTeamName(id) {
+  const r = (wcState.table || []).find(x => x.idTeam === id); if (r) return r.strTeam;
+  const e = (wcState.events || []).find(x => x.idHomeTeam === id || x.idAwayTeam === id);
+  return e ? (e.idHomeTeam === id ? e.strHomeTeam : e.strAwayTeam) : '';
+}
+// ESPN team names -> TheSportsDB senior national-team names (squads come from TheSportsDB).
+const TSDB_NAME_FIX = { 'United States': 'USA', 'Czechia': 'Czech Republic', 'IR Iran': 'Iran', 'Korea Republic': 'South Korea', 'China PR': 'China', 'Türkiye': 'Turkey', 'Côte d\'Ivoire': 'Ivory Coast', 'Cabo Verde': 'Cape Verde', 'Korea DPR': 'North Korea' };
+let wcTsdbTeamId = {};
+async function resolveTsdbTeam(name) {
+  const q = TSDB_NAME_FIX[name] || name;
+  if (q in wcTsdbTeamId) return wcTsdbTeamId[q];
+  let id = null;
+  try {
+    const d = await tsdb(`/searchteams.php?t=${encodeURIComponent(q)}`);
+    const teams = (d.teams || []).filter(t => /soccer/i.test(t.strSport || '') && !/women|u-?1[5-9]|u-?2[01]|youth|qualif/i.test((t.strLeague || '') + ' ' + (t.strTeam || '')));
+    const t = teams.find(x => /^fifa world cup$/i.test(x.strLeague || '')) || teams.find(x => /world cup/i.test(x.strLeague || '')) || teams[0];
+    if (t) id = t.idTeam;
+  } catch { }
+  wcTsdbTeamId[q] = id; return id;
+}
 async function loadSquad(id) {
   const box = document.getElementById('wcPlayers'); if (!box || !id) return;
   try {
-    if (!wcState.players[id]) { const d = await tsdb(`/lookup_all_players.php?id=${id}`); wcState.players[id] = d.player || []; }
+    if (!wcState.players[id]) {
+      const tid = await resolveTsdbTeam(wcTeamName(id));
+      const d = tid ? await tsdb(`/lookup_all_players.php?id=${tid}`) : { player: [] };
+      wcState.players[id] = d.player || [];
+    }
     if (wcCurrentTeam !== id) return;
     const pls = wcState.players[id];
     if (!pls.length) { box.innerHTML = emptyPanel('Squad not listed for this team yet.'); return; }
