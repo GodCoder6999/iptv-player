@@ -247,10 +247,6 @@ img { display: block; max-width: 100%; }
 .player-shell video, .player-shell #foxContainer, .player-shell #daddyContainer { position: absolute; inset: 0; width: 100%; height: 100%; display: none; background:#000; }
 .player-shell #foxContainer iframe, .player-shell #daddyContainer iframe { width: 100%; height: 100%; border: 0; }
 .res-badge { position: absolute; top: 16px; left: 16px; z-index: 20; background: rgba(0,0,0,.6); color: var(--cool); padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 12px; letter-spacing:.04em; pointer-events: none; border: 1px solid var(--stroke); backdrop-filter: blur(6px); }
-.ad-shield { position: absolute; inset: 0; z-index: 18; cursor: pointer; background: transparent; }
-.ad-shield.off { display: none; }
-.ad-shield-tip { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(8,8,11,.82); border: 1px solid var(--stroke-strong); color: var(--ink-soft); font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; backdrop-filter: blur(8px); white-space: nowrap; opacity: 0; transition: opacity .3s; pointer-events: none; }
-.ad-shield:hover .ad-shield-tip { opacity: 1; }
 .player-shell:fullscreen { aspect-ratio: auto; border-radius: 0; }
 
 /* WC source picker modal */
@@ -1608,14 +1604,7 @@ function playIframe(url, label, type) {
   
   const isJunkie = url.includes('junkieembeds.pages.dev');
   const isDlhd = url.includes('dlhd.pk');
-  if (isJunkie) {
-    // Allow popups (so the player's anti-sandbox check passes) but OMIT allow-top-navigation,
-    // which blocks the full-page redirect to ad sites. Plus a click-guard overlay to swallow
-    // the clicks that trigger popups. Double-click the video toggles the guard off.
-    const sbx = 'sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-presentation"';
-    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" ${sbx} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="ad-shield" id="adShield" ondblclick="toggleAdShield()"><span class="ad-shield-tip"><i class="fa-solid fa-shield-halved"></i> Ad-guard on · double-click to interact</span></div>`;
-  } else if (isDlhd) {
-    // dlhd player pages embed as a plain iframe (per their docs) — no referrerpolicy/sandbox.
+  if (isJunkie || isDlhd) {
     target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   } else {
     const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
@@ -1642,7 +1631,6 @@ function playHLS(url) {
     video.src = url; video.play().catch(() => {});
   }
 }
-function toggleAdShield() { const s = document.getElementById('adShield'); if (s) s.classList.toggle('off'); }
 function stopPlayer() {
   if (video) { video.pause(); video.removeAttribute('src'); video.load(); video.style.display = 'none'; }
   if (hls) { hls.destroy(); hls = null; }
@@ -1662,8 +1650,7 @@ function reloadStream() {
       target.innerHTML = '';
       setTimeout(() => {
         if (isJunkie) {
-          const sbx = 'sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-presentation"';
-          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" ${sbx} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="ad-shield" id="adShield" ondblclick="toggleAdShield()"><span class="ad-shield-tip"><i class="fa-solid fa-shield-halved"></i> Ad-guard on · double-click to interact</span></div>`;
+          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
         } else {
           const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
           const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
