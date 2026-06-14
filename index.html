@@ -1609,9 +1609,11 @@ function playIframe(url, label, type) {
   const isJunkie = url.includes('junkieembeds.pages.dev');
   const isDlhd = url.includes('dlhd.pk');
   if (isJunkie) {
-    // This FOX player refuses sandbox, so use a transparent click-guard overlay that
-    // swallows the clicks the popup/redirect ads fire on. Double-click toggles it off.
-    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="ad-shield" id="adShield" ondblclick="toggleAdShield()"><span class="ad-shield-tip"><i class="fa-solid fa-shield-halved"></i> Ad-guard on · double-click to interact</span></div>`;
+    // Allow popups (so the player's anti-sandbox check passes) but OMIT allow-top-navigation,
+    // which blocks the full-page redirect to ad sites. Plus a click-guard overlay to swallow
+    // the clicks that trigger popups. Double-click the video toggles the guard off.
+    const sbx = 'sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-presentation"';
+    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" ${sbx} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="ad-shield" id="adShield" ondblclick="toggleAdShield()"><span class="ad-shield-tip"><i class="fa-solid fa-shield-halved"></i> Ad-guard on · double-click to interact</span></div>`;
   } else if (isDlhd) {
     // dlhd player pages embed as a plain iframe (per their docs) — no referrerpolicy/sandbox.
     target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
@@ -1660,7 +1662,8 @@ function reloadStream() {
       target.innerHTML = '';
       setTimeout(() => {
         if (isJunkie) {
-          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="ad-shield" id="adShield" ondblclick="toggleAdShield()"><span class="ad-shield-tip"><i class="fa-solid fa-shield-halved"></i> Ad-guard on · double-click to interact</span></div>`;
+          const sbx = 'sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-presentation"';
+          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" ${sbx} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="ad-shield" id="adShield" ondblclick="toggleAdShield()"><span class="ad-shield-tip"><i class="fa-solid fa-shield-halved"></i> Ad-guard on · double-click to interact</span></div>`;
         } else {
           const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
           const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
