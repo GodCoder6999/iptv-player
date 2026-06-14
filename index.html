@@ -823,26 +823,30 @@ function eventKickoff(s) {
 function formatViewers(n) { return n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n); }
 
 // --- LOADERS ---
+// Live TV via the Daddylive (dlhd.pk) public channels API + public player pages.
+const DLHD_BASE = 'https://dlhd.pk';
+const DLHD_CHANNELS = DLHD_BASE + '/daddyapi.php?endpoint=channels';
+function dlhdLogo(lg) { if (!lg) return null; return /^https?:/i.test(lg) ? lg : DLHD_BASE + '/' + String(lg).replace(/^\//, ''); }
 async function loadLiveTV() {
   closeMenu(); setActiveNav('tv');
   setLoading('tv');
   try {
     let data;
     if (tvCache.data && Date.now() - tvCache.ts < 300000) data = tvCache.data;
-    else { data = await damiJSON(DAMI_TVLIST); tvCache = { data, ts: Date.now() }; }
-    const channels = (data.channels || []).filter(c => c.status === 'online');
-    if (!channels.length) { alert('No TV channels available.'); return; }
-    channels.sort((a, b) => (a.category || '').localeCompare(b.category || '') || (a.name || '').localeCompare(b.name || ''));
-    allChannels = channels.map(c => ({
-      name: c.name,
-      group: (c.category || 'TV') + (c.country && c.country.code ? ' · ' + c.country.code.toUpperCase() : ''),
-      cat: (c.category || 'tv').toLowerCase(),
-      country: c.country && c.country.code ? c.country.code.toUpperCase() : '',
-      source: 'LIVE TV',
-      url: 'https://dami-tv.pro/embed/channel/?id=' + encodeURIComponent(c.slug),
-      logo: c.logo || null, isIframe: true, isDaddy: false, isEvent: false
-    }));
-    openSection({ key: 'tv', eyebrow: 'Live Television', title: 'Browse all channels', sub: channels.length + ' channels worldwide — tap a category to filter.', chips: true });
+    else { data = await damiJSON(DLHD_CHANNELS); tvCache = { data, ts: Date.now() }; }
+    const arr = (data && (data.data || (Array.isArray(data) ? data : data.channels))) || [];
+    const seen = new Set();
+    allChannels = arr.filter(c => c && c.channel_id != null && !seen.has(String(c.channel_id)) && seen.add(String(c.channel_id)))
+      .map(c => ({
+        name: c.channel_name || ('Channel ' + c.channel_id),
+        group: 'Live TV', cat: 'tv', country: '',
+        source: 'LIVE TV',
+        url: `${DLHD_BASE}/stream/stream-${encodeURIComponent(c.channel_id)}.php`,
+        logo: dlhdLogo(c.logo_url), isIframe: true, isDaddy: false, isEvent: false
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    if (!allChannels.length) { alert('No TV channels available.'); return; }
+    openSection({ key: 'tv', eyebrow: 'Live Television', title: 'Browse all channels', sub: allChannels.length + ' channels — search to find yours.', chips: false });
   } catch (e) { alert('Failed to load TV channels. ' + (e.message || e)); }
 }
 async function loadLiveSports() {
@@ -1578,7 +1582,7 @@ function playIframe(url, label, type) {
   if (isJunkie) {
     target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   } else {
-    const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
+    const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top') || url.includes('dlhd.pk');
     const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
     const isDami = url.includes('dami-tv.pro');
     const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
@@ -1623,7 +1627,7 @@ function reloadStream() {
         if (isJunkie) {
           target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
         } else {
-          const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
+          const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top') || src.includes('dlhd.pk');
           const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
           const isDami = src.includes('dami-tv.pro');
           const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
