@@ -959,10 +959,11 @@ async function loadFifaWorldCup() {
   } catch (e) { alert('Failed to load World Cup data. ' + (e.message || e)); navHome(); }
 }
 
-// World Cup streams through FOX embed sources.
+// World Cup playback sources: live FOX embeds + TimStreams full-match replay.
 const WC_CHANNELS = [
-  { key: 'fox4k', name: 'FOX 4K USA', url: 'https://junkieembeds.pages.dev/embed/fox4k-usa', quality: '4K UHD', icon: 'is4k', badge: 'gold', desc: 'Ultra HD · Best quality' },
-  { key: 'foxsd', name: 'FOX USA',    url: 'https://junkieembeds.pages.dev/embed/fox-usa',   quality: 'HD',     icon: 'issd', badge: 'cool', desc: 'Standard HD · Reliable' }
+  { key: 'fox4k', name: 'FOX 4K USA', url: 'https://junkieembeds.pages.dev/embed/fox4k-usa', quality: '4K UHD', icon: 'is4k', badge: 'gold', desc: 'Ultra HD · Best quality', tag: '★ Recommended' },
+  { key: 'foxsd', name: 'FOX USA',    url: 'https://junkieembeds.pages.dev/embed/fox-usa',   quality: 'HD',     icon: 'issd', badge: 'cool', desc: 'Standard HD · Reliable', tag: 'Backup' },
+  { key: 'tims',  name: 'TimStreams', url: 'https://timstreams.upn.one/#gl15xx',              quality: 'Replay', icon: 'issd', badge: 'cool', desc: 'Full match replay · TimStreams', tag: '↻ Replay' }
 ];
 let wcActiveSource = WC_CHANNELS[0].key;
 let wcCurrentMatchId = null;
@@ -982,7 +983,7 @@ function showWcPicker(title, matchId) {
       <div class="src-icon ${ch.icon}">${ch.quality}</div>
       <div class="src-label">${escapeHtml(ch.name)}</div>
       <div class="src-sub">${escapeHtml(ch.desc)}</div>
-      <span class="src-badge ${ch.badge}">${ch.quality === '4K UHD' ? '★ Recommended' : 'Backup'}</span>
+      <span class="src-badge ${ch.badge}">${ch.tag || (ch.quality === '4K UHD' ? '★ Recommended' : 'Backup')}</span>
     </div>
   `).join('');
   overlay.classList.add('open');
@@ -1074,7 +1075,7 @@ function wcSlideHtml(e, i) {
       <h2>${escapeHtml(e.strHomeTeam)} <span class="sep">vs</span> ${escapeHtml(e.strAwayTeam)}</h2>
       <div class="wc-sb"><img src="${tsImg(e.strHomeTeamBadge)}" onerror="this.style.visibility='hidden'">${mid}<img src="${tsImg(e.strAwayTeamBadge)}" onerror="this.style.visibility='hidden'"></div>
       <div class="meta">${escapeHtml(when)}${e.strVenue ? ' · ' + escapeHtml(e.strVenue) : ''}</div>
-      <button class="btn lg" onclick="wcPlayMatch('${e.idEvent}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Watch on TSN1</button>
+      <button class="btn lg" onclick="wcPlayMatch('${e.idEvent}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Watch / Replay</button>
     </div></div>`;
 }
 function wcBannerHtml(events) {
@@ -1122,7 +1123,7 @@ function matchRowHtml(e) {
     ? `<div class="mr-score">${e.intHomeScore} <span style="color:var(--ink-faint)">–</span> ${e.intAwayScore}</div><div class="mr-meta">${st.live ? '<span style="color:var(--live)">● LIVE</span>' : 'Full time'}</div>`
     : `<div class="mr-score" style="font-size:17px">${(e.strTime || '').slice(0, 5) || 'TBD'}</div><div class="mr-meta">${escapeHtml(e.strGroup || 'Knockout')}</div>`;
   const play = `is-playable" onclick="wcPlayMatch('${e.idEvent}')`;
-  const watch = `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch on FOX</span></div>`;
+  const watch = `<div class="mr-meta"><span class="pl"><i class="fa-solid fa-play" style="font-size:9px"></i> Watch / Replay</span></div>`;
   return `<div class="glass match-row ${play}">
     <div class="mr-team"><img src="${hb}" onerror="this.style.visibility='hidden'"><span class="nm">${escapeHtml(e.strHomeTeam)}</span></div>
     <div class="mr-mid">${mid}${watch}</div>
