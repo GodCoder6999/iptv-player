@@ -1603,7 +1603,11 @@ function playIframe(url, label, type) {
   
   const isJunkie = url.includes('junkieembeds.pages.dev');
   const isDlhd = url.includes('dlhd.pk');
-  if (isJunkie || isDlhd) {
+  if (isJunkie) {
+    // World Cup FOX embed: sandbox blocks ad popups/redirects (no allow-popups / top-navigation),
+    // but keeps allow-scripts + allow-same-origin so the player runs without a sandbox error.
+    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  } else if (isDlhd) {
     // dlhd player pages embed as a plain iframe (per their docs) — no referrerpolicy/sandbox.
     target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   } else {
@@ -1650,7 +1654,7 @@ function reloadStream() {
       target.innerHTML = '';
       setTimeout(() => {
         if (isJunkie) {
-          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+          target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
         } else {
           const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
           const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
