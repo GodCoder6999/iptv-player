@@ -1000,10 +1000,32 @@ function wcMatchByTitle(title) {
     (wcSideMatch(p[0], e.strHomeTeam) && wcSideMatch(p[1], e.strAwayTeam)) ||
     (wcSideMatch(p[0], e.strAwayTeam) && wcSideMatch(p[1], e.strHomeTeam)));
 }
+// Official FIFA highlights (YouTube, via TheSportsDB) for finished matches.
+let wcHl = {};   // idEvent -> youtube id | null
+function ytId(u) { const m = String(u || '').match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/); return m ? m[1] : null; }
+function ytEmbed(id) { return 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1'; }
+async function wcHighlight(e) {
+  if (!e) return null;
+  if (e.idEvent in wcHl) return wcHl[e.idEvent];
+  const fix = n => (TSDB_NAME_FIX[n] || n);
+  const q = (fix(e.strHomeTeam) + '_vs_' + fix(e.strAwayTeam)).replace(/\s+/g, '_');
+  let vid = null;
+  try {
+    const d = await tsdb(`/searchevents.php?e=${encodeURIComponent(q)}&s=2026`);
+    const m = (d.event || []).find(x => /4429/.test(x.idLeague || '') && x.strVideo) || (d.event || []).find(x => x.strVideo);
+    if (m) vid = ytId(m.strVideo);
+  } catch { }
+  wcHl[e.idEvent] = vid; return vid;
+}
 function wcSourcesFor(id) {
   const list = WC_CHANNELS.slice();
   const rep = wcReplays[id];
   if (rep) list.push({ key: 'tims', name: 'TimStreams', url: rep.url, quality: 'Replay', icon: 'issd', badge: 'cool', desc: 'Full match replay · TimStreams', tag: '↻ Replay' });
+  const e = (wcState.events || []).find(x => x.idEvent === id);
+  if (e && wcMatchStatus(e).fin) {
+    const vid = wcHl[id];
+    list.push({ key: 'hl', name: 'Highlights', url: vid ? ytEmbed(vid) : '', quality: 'Highlights', icon: 'issd', badge: 'cool', desc: 'Official FIFA highlights', tag: '▷ Highlights' });
+  }
   return list;
 }
 function wcPlayMatch(id) {
@@ -1029,17 +1051,29 @@ function showWcPicker(title, matchId) {
 function closeWcPicker() {
   document.getElementById('wcPickerOverlay').classList.remove('open');
 }
-function selectWcSource(key, matchId) {
+async function wcResolveSource(key, matchId) {
+  const e = (wcState.events || []).find(x => x.idEvent === matchId);
+  let ch = wcSourcesFor(matchId).find(c => c.key === key) || WC_CHANNELS[0];
+  if (key === 'hl' && !ch.url) {
+    const vid = await wcHighlight(e);
+    if (!vid) return null;
+    ch = Object.assign({}, ch, { url: ytEmbed(vid) });
+  }
+  return ch;
+}
+async function selectWcSource(key, matchId) {
   closeWcPicker();
   wcActiveSource = key;
-  const ch = wcSourcesFor(matchId).find(c => c.key === key) || WC_CHANNELS[0];
   const e = (wcState.events || []).find(x => x.idEvent === matchId);
+  const ch = await wcResolveSource(key, matchId);
+  if (!ch) { alert('No official highlights available yet for this match.'); return; }
   const label = (e ? e.strEvent + ' · ' : '') + ch.name;
   decidePlayer(ch.url, true, false, label, { isIframe: true, isEvent: false, isWorldCup: true, matchId: matchId });
 }
-function switchWcSource(key) {
+async function switchWcSource(key) {
+  const ch = await wcResolveSource(key, wcCurrentMatchId);
+  if (!ch) { alert('No official highlights available yet for this match.'); return; }
   wcActiveSource = key;
-  const ch = wcSourcesFor(wcCurrentMatchId).find(c => c.key === key) || WC_CHANNELS[0];
   const e = wcCurrentMatchId ? (wcState.events || []).find(x => x.idEvent === wcCurrentMatchId) : null;
   const label = (e ? e.strEvent + ' · ' : '') + ch.name;
   document.getElementById('channelNameText').innerText = label;
