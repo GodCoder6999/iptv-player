@@ -1569,10 +1569,12 @@ function playIframe(url, label, type) {
   btnExternal.onclick = () => window.open(url, '_blank');
   
   const isJunkie = url.includes('junkieembeds.pages.dev');
-  if (isJunkie) {
-    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  const isDlhd = url.includes('dlhd.pk');
+  if (isJunkie || isDlhd) {
+    // dlhd player pages embed as a plain iframe (per their docs) — no referrerpolicy/sandbox.
+    target.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" scrolling="no" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   } else {
-    const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top') || url.includes('dlhd.pk');
+    const isDaddyLink = url.includes('daddylive.cv') || url.includes('dlhd.link') || url.includes('dlstreams.top');
     const referrerAttr = isDaddyLink ? 'referrerpolicy="no-referrer"' : '';
     const isDami = url.includes('dami-tv.pro');
     const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
@@ -1617,7 +1619,7 @@ function reloadStream() {
         if (isJunkie) {
           target.innerHTML = `<iframe src="${src}" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
         } else {
-          const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top') || src.includes('dlhd.pk');
+          const isDaddy = src.includes('daddylive.cv') || src.includes('dlhd.link') || src.includes('dlstreams.top');
           const ref = isDaddy ? 'referrerpolicy="no-referrer"' : '';
           const isDami = src.includes('dami-tv.pro');
           const allowAttr = 'allow="autoplay; encrypted-media; picture-in-picture; fullscreen"';
