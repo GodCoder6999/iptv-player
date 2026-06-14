@@ -282,6 +282,8 @@ img { display: block; max-width: 100%; }
 .wc-sw-btn.active { color: #1a1206; background: var(--gold-grad); border-color: transparent; box-shadow: 0 6px 20px -8px rgba(232,184,75,.55); }
 .wc-sw-btn .dot4k { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
 .wc-sw-btn .dotsd { width: 8px; height: 8px; border-radius: 50%; background: var(--cool); }
+.wc-sw-btn .sw-hd { font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 5px; background: rgba(232,184,75,.18); color: var(--gold); letter-spacing: .04em; }
+.wc-sw-btn.active .sw-hd { background: rgba(26,18,6,.2); color: #1a1206; }
 
 @media (max-width: 1080px) {
   .hero-grid { grid-template-columns: 1fr; gap: 36px; }
@@ -803,11 +805,13 @@ async function getStreams() {
 function flattenStreams(data) { const out = []; (data.streams || []).forEach(c => (c.streams || []).forEach(s => out.push(s))); return out; }
 function damiAbs(u) { if (!u) return ''; if (u.startsWith('http')) return u; if (u.startsWith('//')) return 'https:' + u; if (u.startsWith('/')) return 'https://dami-tv.pro' + u; return u; }
 function eventToChannel(s, groupLabel) {
+  const srcs = (s.sources || []).filter(x => x && x.embed).map((x, i) => ({ name: x.name || x.source || ('Server ' + (i + 1)), embed: x.embed }));
   return {
     name: s.name, group: groupLabel || (s.category_name || s.league || 'EVENT').toUpperCase(),
     cat: (s.category_name || 'event').toLowerCase(),
     source: s.status === 'live' ? 'LIVE' : 'UPCOMING',
-    url: s.iframe || (s.sources && s.sources[0] && s.sources[0].embed) || '',
+    url: (srcs[0] && srcs[0].embed) || s.iframe || '',
+    sources: srcs,
     logo: damiAbs(s.poster), isIframe: true, isDaddy: false, isEvent: true, ev: s
   };
 }
@@ -1552,14 +1556,30 @@ async function decidePlayer(urlOrCmd, isIframe, isDaddy, name, channelObj) {
   const isWC = channelObj && channelObj.isWorldCup;
   if (isIframe) playIframe(urlOrCmd, isDaddy ? 'DADDY LIVE' : 'LIVE', isDaddy ? 'daddy' : 'iframe');
   else playHLS(urlOrCmd);
-  // Show/hide WC channel switcher
+  // Show/hide channel/server switcher
   const switcher = document.getElementById('wcSwitcher');
   if (isWC) {
     wcCurrentMatchId = channelObj.matchId || wcCurrentMatchId;
     updateWcSwitcher();
+  } else if (channelObj && channelObj.sources && channelObj.sources.length > 1) {
+    curSources = channelObj.sources; curEventName = name || '';
+    showSportsSwitcher(urlOrCmd);
   } else {
     switcher.classList.remove('active');
   }
+}
+// Sports events expose multiple servers (sources[]); let the viewer switch between them.
+let curSources = [], curEventName = '';
+function showSportsSwitcher(activeUrl) {
+  const bar = document.getElementById('wcSwitcher'), btns = document.getElementById('wcSwBtns');
+  bar.classList.add('active');
+  btns.innerHTML = curSources.map((s, i) => `<button class="wc-sw-btn ${s.embed === activeUrl ? 'active' : ''}" onclick="pickSportSource(${i})"><span class="dotsd"></span>${escapeHtml(s.name)}<span class="sw-hd">HD</span></button>`).join('');
+}
+function pickSportSource(i) {
+  const s = curSources[i]; if (!s) return;
+  document.getElementById('channelNameText').innerText = (curEventName ? curEventName + ' · ' : '') + s.name;
+  playIframe(s.embed, s.name, 'iframe');
+  document.querySelectorAll('#wcSwBtns .wc-sw-btn').forEach((b, k) => b.classList.toggle('active', k === i));
 }
 function playIframe(url, label, type) {
   stopPlayer();
