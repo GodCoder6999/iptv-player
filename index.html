@@ -215,11 +215,18 @@ img { display: block; max-width: 100%; }
 /* World Cup ceremony */
 .wc-hero { position: relative; overflow: hidden; padding: 50px 0 10px; }
 .wc-hero::before { content:''; position:absolute; inset:0; z-index:0; pointer-events:none; background: radial-gradient(1000px 520px at 50% -10%, rgba(232,184,75,.16), transparent 62%); }
-.trophy { width: 180px; height: 180px; margin: 0 auto; position: relative; display: grid; place-items: center; }
+.trophy { width: 180px; height: 180px; margin: 0 auto; position: relative; display: grid; place-items: center; perspective: 900px; }
 .trophy .ring { position:absolute; inset:0; border-radius:50%; border:1px solid rgba(232,184,75,.28); }
 .trophy .ring.r2 { inset:20px; border-color: rgba(232,184,75,.18); }
 .trophy .ring.r3 { inset:40px; border-color: rgba(232,184,75,.12); }
-.trophy .glyph { font-size: 92px; width: 124px; height: 124px; object-fit: contain; filter: drop-shadow(0 8px 30px rgba(232,184,75,.5)); }
+.trophy .glyph { font-size: 92px; width: 124px; height: 124px; object-fit: contain; transform-style: preserve-3d; will-change: transform; backface-visibility: visible; animation: trophy3d 6s cubic-bezier(.45,.05,.55,.95) infinite; }
+@keyframes trophy3d {
+  0%   { transform: rotateX(8deg) rotateY(0deg)   scale(1);    filter: drop-shadow(-10px 8px 26px rgba(232,184,75,.55)) brightness(1); }
+  25%  { transform: rotateX(8deg) rotateY(90deg)  scale(.92);  filter: drop-shadow(0 8px 22px rgba(232,184,75,.35)) brightness(1.35); }
+  50%  { transform: rotateX(8deg) rotateY(180deg) scale(1);    filter: drop-shadow(10px 8px 26px rgba(232,184,75,.55)) brightness(1); }
+  75%  { transform: rotateX(8deg) rotateY(270deg) scale(.92);  filter: drop-shadow(0 8px 22px rgba(232,184,75,.35)) brightness(1.35); }
+  100% { transform: rotateX(8deg) rotateY(360deg) scale(1);    filter: drop-shadow(-10px 8px 26px rgba(232,184,75,.55)) brightness(1); }
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin-slow { animation: spin 36s linear infinite; }
 .spin-rev { animation: spin 28s linear infinite reverse; }
